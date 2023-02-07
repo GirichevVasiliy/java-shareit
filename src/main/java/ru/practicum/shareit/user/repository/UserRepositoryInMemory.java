@@ -1,13 +1,16 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.user.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.error.RequestError;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component
 @Slf4j
 public class UserRepositoryInMemory implements UserRepository {
@@ -29,23 +32,21 @@ public class UserRepositoryInMemory implements UserRepository {
     }
 
     @Override
-    public User updateUser(User user) {
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
+    public User updateUser(User user, Long userId) {
+        if (users.containsKey(userId)) {
+            users.put(userId, user);
             return user;
         } else {
-            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь с ID " + user.getId() + " не найден");
+            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь с ID " + userId + " не найден");
         }
     }
 
-    // Заготовка для работы с БД
     @Override
-    public Optional<User> getUserById(Long userId) {
-        try {
-            Optional<User> user = Optional.ofNullable(users.get(userId));
-            return user.stream().findAny();
-        } catch (NullPointerException e) {
-            return Optional.empty();
+    public User getUserById(Long userId) {
+        if (users.containsKey(userId)) {
+            return users.get(userId);
+        } else {
+            throw new RequestError(HttpStatus.NOT_FOUND, "Пользователь с ID " + userId + " не найден");
         }
     }
 

@@ -1,30 +1,29 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.user.repository;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.Optional;
+
 @Repository
-public class UserDBRepository implements UserRepository{
+public class UserDBRepository implements UserRepository {
     @Override
     public User addUser(User user) {
         return null;
     }
 
     @Override
-    public User updateUser(User user) {
+    public User updateUser(User user, Long userId) {
         return null;
     }
 
     @Override
-    public Optional<User> getUserById(Long userId) {
-        return Optional.empty();
+    public User getUserById(Long userId) {
+        return null;
     }
 
     @Override
     public void deleteUserById(Long userId) {
-
     }
 
     @Override
