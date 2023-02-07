@@ -2,33 +2,37 @@ package ru.practicum.shareit.user.model;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Value;
-import lombok.With;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * TODO Sprint add-controllers.
  */
-@Value
-@Builder
+@Data
 public class User {
-    @With
-    Long id;
+    private Long id;
     @NotNull
     @Email(regexp = "^[a-zA-Z0-9.]+[^._]@[^.\\-_]+[a-zA-Z0-9.]+[a-zA-Z0-9]$", message = "Email введен некорректно")
-    String email;
+    private String email;
     @NotNull
     @NotBlank(message = "Поле Name не должно быть пустым")
-    String name;
-    @With
+    private String name;
     @Builder.Default
-    List<Item> itemsUser = Collections.emptyList();
+    private List<Item> itemsUser = Collections.emptyList();
+
+    public User(Long id, String email, String name) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+    }
+
+    public User(String email, String name) {
+        this.email = email;
+        this.name = name;
+    }
 }
