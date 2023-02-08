@@ -4,10 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.dto.MapperUser;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,21 +23,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(User user) {
-        log.info("Получен запрос на добавление пользователя " + user.getEmail());
-        return userRepository.addUser(user);
+    public UserDto addUser(UserDto userDto) {
+        log.info("Получен запрос на добавление пользователя " + userDto.getEmail());
+        User user = MapperUser.dtoToUser(userDto);
+        return MapperUser.userToDto(userRepository.addUser(user));
     }
 
     @Override
-    public User updateUser(User user, Long userId) {
-        log.info("Получен запрос на обновление пользователя " + user.getId());
-        return userRepository.updateUser(user, userId);
+    public UserDto updateUser(UserDto userDto, Long userId) {
+        log.info("Получен запрос на обновление пользователя " + userId);
+        User user = MapperUser.dtoToUser(userDto);
+        return MapperUser.userToDto(userRepository.updateUser(user, userId));
     }
 
     @Override
-    public User getUserById(Long userId) {
+    public UserDto getUserById(Long userId) {
         log.info("Получен запрос на поиск пользователя по ID" + userId);
-        return userRepository.getUserById(userId);
+        return MapperUser.userToDto(userRepository.getUserById(userId));
     }
 
     @Override
@@ -44,8 +49,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         log.info("Получен запрос на получение списка всех пользователей");
-        return userRepository.getAllUsers();
+        return userRepository.getAllUsers().stream().map(MapperUser::userToDto).collect(Collectors.toList());
     }
 }
