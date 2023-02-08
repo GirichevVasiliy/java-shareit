@@ -23,9 +23,8 @@ public class ItemDto {
     @BooleanFlag
     @NotNull
     private Boolean available; // статус о том, доступна или нет вещь для аренды;
-    @NotNull
-    @NotBlank
-    private User owner; // владелец вещи;
+    private User owner; // владелец вещи - надо скрыть
+    private int counterRental;
     private Long requestId; // если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка на соответствующий запрос.
 
     public ItemDto(String name, String description, Boolean available, Long requestId) {
@@ -34,5 +33,4 @@ public class ItemDto {
         this.available = available;
         this.requestId = requestId;
     }
-
 }

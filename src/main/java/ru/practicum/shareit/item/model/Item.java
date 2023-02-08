@@ -24,7 +24,6 @@ public class Item {
     @BooleanFlag
     @NotNull
     private Boolean available;
-    @NotBlank
     private User owner;
     private ItemRequest request;
 
