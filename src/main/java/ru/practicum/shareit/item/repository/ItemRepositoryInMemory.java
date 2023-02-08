@@ -56,7 +56,8 @@ public class ItemRepositoryInMemory implements ItemRepository {
                 items.put(itemId, item);
                 return items.get(itemId);
             } else {
-                throw new RequestError(HttpStatus.FORBIDDEN, "Пользователь ID " + userId + " пытался обновить вещь " + itemId + " данная вещь ему не принадлежит");
+                throw new RequestError(HttpStatus.FORBIDDEN, "Пользователь ID " + userId + " пытался обновить вещь "
+                        + itemId + " данная вещь ему не принадлежит");
             }
         } else {
             throw new RequestError(HttpStatus.NOT_FOUND, "Вещь с ID " + itemId + " не найдена");
@@ -68,7 +69,8 @@ public class ItemRepositoryInMemory implements ItemRepository {
         if (items.containsKey(itemId)) {
             return items.get(itemId);
         } else {
-            throw new RequestError(HttpStatus.NOT_FOUND, "Вещь с ID " + itemId + " не найдена, по запросу пользователя с ID " + userId);
+            throw new RequestError(HttpStatus.NOT_FOUND, "Вещь с ID " + itemId + " не найдена, по запросу " +
+                    "пользователя с ID " + userId);
         }
     }
 
@@ -79,7 +81,12 @@ public class ItemRepositoryInMemory implements ItemRepository {
 
     @Override
     public List<Item> getAvailableItems(Long userId, String text) {
-        return items.values().stream().filter(i -> i.getName().contains(text) || i.getDescription().contains(text)).collect(Collectors.toList());
+        if (!text.isEmpty()) {
+            return items.values().stream().filter(i -> (i.getName().toLowerCase().contains(text.toLowerCase())
+                    || i.getDescription().toLowerCase().contains(text.toLowerCase())) && i.getAvailable()).collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -88,7 +95,8 @@ public class ItemRepositoryInMemory implements ItemRepository {
             if (items.get(itemId).getOwner().getId() == userId) {
                 items.remove(itemId);
             } else {
-                throw new RequestError(HttpStatus.FORBIDDEN, "Пользователь ID " + userId + " пытался удалить вещь " + itemId + " данная вещь ему не принадлежит");
+                throw new RequestError(HttpStatus.FORBIDDEN, "Пользователь ID " + userId +
+                        " пытался удалить вещь " + itemId + " данная вещь ему не принадлежит");
             }
         } else {
             throw new RequestError(HttpStatus.NOT_FOUND, "Вещь с ID " + itemId + " не найдена");

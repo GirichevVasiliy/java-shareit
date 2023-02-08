@@ -5,7 +5,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-
+// Загатовка для БД
 @Repository
 public class ItemDBRepository implements ItemRepository{
     @Override

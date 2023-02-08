@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-
+// Загатовка для БД
 @Repository
 public class UserDBRepository implements UserRepository {
     @Override

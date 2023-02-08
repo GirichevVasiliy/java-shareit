@@ -17,7 +17,7 @@ public class MapperItem {
         return new Item(itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-               // что то не хватает со стороны запроса itemDto.getRequestId() != null ?  :null
+               // что то не хватает со стороны запроса .....itemDto.getRequestId() != null ?  :null
                 null);
     }
 }
