@@ -14,18 +14,20 @@ import javax.validation.constraints.Size;
 @Data
 public class ItemDto {
     private Long id;
-    @NotNull
+    // @NotNull
     @NotBlank(message = "Поле \"Название\" должно быть заполнено")
     private String name;
-    @NotNull
-    @Size(max = 200, message = "Максимальное кол-во символов для описания: 200")
+    // @NotNull
+    @NotBlank(message = "Поле \"Описание\" должно быть заполнено")
     private String description;
+    User owner;
     @BooleanFlag
     @NotNull
     private Boolean available; // статус о том, доступна или нет вещь для аренды;
     private Long requestId; // если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка на соответствующий запрос.
 
-    public ItemDto(String name, String description, Boolean available, Long requestId) {
+    public ItemDto(Long id, String name, String description, Boolean available, Long requestId) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;

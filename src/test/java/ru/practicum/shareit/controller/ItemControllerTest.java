@@ -36,11 +36,11 @@ class ItemControllerTest {
 
     @BeforeEach
     private void initItemDto() {
-        item1 = new ItemDto("Дрель", "Дрель перфоратор + набор сверл", true, null);
-        item2 = new ItemDto("Шуруповерт", "Шуруповерт + аккумулятор", true, null);
-        item3 = new ItemDto("Шурик", "Шуруповерт аккумуляторный", true, null);
-        item4 = new ItemDto("Шлифовальная машина", "Шлифовальная машина аккумуляторный", true, null);
-        item5 = new ItemDto("Штроборез", "Штроборез аккумуляторный", false, null);
+        item1 = new ItemDto(1L,"Дрель", "Дрель перфоратор + набор сверл", true, null);
+        item2 = new ItemDto(2L,"Шуруповерт", "Шуруповерт + аккумулятор", true, null);
+        item3 = new ItemDto(3L,"Шурик", "Шуруповерт аккумуляторный", true, null);
+        item4 = new ItemDto(4L,"Шлифовальная машина", "Шлифовальная машина аккумуляторный", true, null);
+        item5 = new ItemDto(5L,"Штроборез", "Штроборез аккумуляторный", false, null);
     }
 
     @BeforeEach
@@ -54,13 +54,14 @@ class ItemControllerTest {
     }
 
     private void addItems() {
-        final Long idUser1 = 1L;
-        item2 = itemController.addItem(idUser1, item2);
-        item3 = itemController.addItem(idUser1, item3);
-        item4 = itemController.addItem(idUser1, item4);
-        item5 = itemController.addItem(idUser1, item5);
         final Long idUser2 = 2L;
-        item1 = itemController.addItem(idUser2, item1);
+        itemController.addItem(idUser2, item1);
+        final Long idUser1 = 1L;
+        itemController.addItem(idUser1, item2);
+        itemController.addItem(idUser1, item3);
+        itemController.addItem(idUser1, item4);
+        itemController.addItem(idUser1, item5);
+
     }
 
     @Test
@@ -68,7 +69,6 @@ class ItemControllerTest {
     void addItemTest() {
         final Long id = 1L;
         ItemDto newItemDto = itemController.addItem(id, item1);
-        item1.setId(id);
         assertThat(item1).isEqualTo(newItemDto);
     }
 
@@ -79,7 +79,6 @@ class ItemControllerTest {
         itemController.addItem(id, item1);
         item1.setName("Новая дрель");
         ItemDto newItemDto = itemController.updateItem(id, item1, id);
-        item1.setId(id);
         assertThat(item1).isEqualTo(newItemDto);
     }
 
@@ -90,7 +89,6 @@ class ItemControllerTest {
         itemController.addItem(id, item1);
         item1.setDescription("Сломана вилка");
         ItemDto newItemDto = itemController.updateItem(id, item1, id);
-        item1.setId(id);
         assertThat(item1).isEqualTo(newItemDto);
     }
 
@@ -109,7 +107,6 @@ class ItemControllerTest {
     void getItemByIdTest() {
         final Long id = 1L;
         itemController.addItem(id, item1);
-        item1.setId(id);
         assertThat(itemController.getItemById(id, id)).isEqualTo(item1);
     }
 
