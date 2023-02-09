@@ -37,7 +37,7 @@ public class UserRepositoryInMemory implements UserRepository {
 
     @Override
     public User updateUser(User user, Long userId) {
-        if (!users.values().stream().filter(u -> u.getId() != userId).map(User::getEmail).anyMatch(e -> e.equals(user.getEmail()))) {
+        if (!users.values().stream().filter(u -> !u.getId().equals(userId)).map(User::getEmail).anyMatch(e -> e.equals(user.getEmail()))) {
             if (users.containsKey(userId)) {
                 user.setId(userId);
                 if (user.getName() == null) {

@@ -37,13 +37,13 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Стандартный тест добавления пользователя")
-    void addUser() {
+    void addUserTest() {
         assertThat(userDto1).isEqualTo(userController.addUser(userDto1));
     }
 
     @Test
     @DisplayName("Тест дубликата добавления пользователя")
-    void addUserDuplicate() {
+    void addUserDuplicateTest() {
         assertThat(userDto1).isEqualTo(userController.addUser(userDto1));
         assertThrows(RequestError.class, () -> userController.addUser(userDto1));
         try {
@@ -55,7 +55,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Тест обновления имени пользователя")
-    void updateNameUser() {
+    void updateNameUserTest() {
         userController.addUser(userDto1);
         userDto1.setName("user1-new-name");
         assertThat(userDto1).isEqualTo(userController.updateUser(1L, userDto1));
@@ -63,14 +63,14 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Тест обновления имени пользователя = null")
-    void updateNameUserEqualsNull() {
+    void updateNameUserEqualsNullTest() {
         userController.addUser(userDto1);
         assertThat(userDto1).isEqualTo(userController.updateUser(1L, new UserDto(1L, "user1@email.mail", null)));
     }
 
     @Test
     @DisplayName("Тест обновления почты пользователя")
-    void updateEmailUser() {
+    void updateEmailUserTest() {
         userController.addUser(userDto1);
         userDto1.setEmail("g-user1@email.com");
         assertThat(userDto1).isEqualTo(userController.updateUser(1L, userDto1));
@@ -78,14 +78,14 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Тест обновления почты пользователя = null")
-    void updateEmaiUserEqualsNull() {
+    void updateEmaiUserEqualsNullTest() {
         userController.addUser(userDto1);
         assertThat(userDto1).isEqualTo(userController.updateUser(1L, new UserDto(1L, null, "user1-name")));
     }
 
     @Test
     @DisplayName("Тест получения списка пользователей")
-    void getUsers() {
+    void getUsersTest() {
         final int size = 3;
         userController.addUser(userDto1);
         userController.addUser(userDto2);
@@ -98,13 +98,13 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Тест получения пустого списка пользователей")
-    void getIsEmptyListUsers() {
+    void getIsEmptyListUsersTest() {
         assertThat(userController.getUsers().isEmpty()).isTrue();
     }
 
     @Test
     @DisplayName("Тест получения пользователя по ID")
-    void getUserById() {
+    void getUserByIdTest() {
         final Long id = 1L;
         userController.addUser(userDto1);
         assertThat(userDto1).isEqualTo(userController.getUserById(id));
@@ -112,7 +112,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Тест получения пользователя по неверному ID")
-    void getUserByIdBadId() {
+    void getUserByIdBadIdTest() {
         final Long id = 999L;
         assertThrows(RequestError.class, () -> userController.getUserById(id));
         try {
@@ -124,7 +124,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Тест удаления пользователя по ID")
-    void deleteUser() {
+    void deleteUserTest() {
         final Long id = 1L;
         userController.addUser(userDto1);
         assertThat(userDto1).isEqualTo(userController.getUserById(id));
@@ -138,7 +138,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Тест удаления пользователя по неверному ID")
-    void deleteUserBadID() {
+    void deleteUserBadIDTest() {
         final Long id = 999L;
         assertThrows(RequestError.class, () -> userController.deleteUser(id));
         try {

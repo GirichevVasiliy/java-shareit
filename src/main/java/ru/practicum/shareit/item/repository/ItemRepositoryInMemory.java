@@ -35,7 +35,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
     @Override
     public Item updateItem(Long itemId, Item item, Long userId) {
         if (items.containsKey(itemId)) {
-            if (items.get(itemId).getOwner().getId() == userId) {
+            if (items.get(itemId).getOwner().getId().equals(userId)) {
                 Item oldItem = items.get(itemId);
                 if (item.getName() == null) {
                     item.setName(oldItem.getName());
@@ -76,7 +76,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
 
     @Override
     public List<Item> getItemsByUser(Long userId) {
-        return items.values().stream().filter(i -> i.getOwner().getId() == userId).collect(Collectors.toList());
+        return items.values().stream().filter(i -> i.getOwner().getId().equals(userId)).collect(Collectors.toList());
     }
 
     @Override
@@ -92,7 +92,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
     @Override
     public void deleteItemById(Long itemId, Long userId) {
         if (items.containsKey(itemId)) {
-            if (items.get(itemId).getOwner().getId() == userId) {
+            if (items.get(itemId).getOwner().getId().equals(userId)) {
                 items.remove(itemId);
             } else {
                 throw new RequestError(HttpStatus.FORBIDDEN, "Пользователь ID " + userId +

@@ -27,7 +27,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(ItemDto itemDto, UserDto userDto) {
-        log.info("Получен запрос на добавление вещи "+ itemDto.getName() + " от пользователя " + userDto.getEmail());
+        log.info("Получен запрос на добавление вещи " + itemDto.getName() + " от пользователя " + userDto.getEmail());
         User user = MapperUser.dtoToUser(userDto);
         Item item = MapperItem.toItem(itemDto);
         return MapperItem.toItemDto(itemRepository.addItem(item, user));
@@ -35,14 +35,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long userId) {
-        log.info("Получен запрос на обновление вещи с ID "+ itemId + " от пользователя с ID " + userId);
+        log.info("Получен запрос на обновление вещи с ID " + itemId + " от пользователя с ID " + userId);
         Item item = MapperItem.toItem(itemDto);
         return MapperItem.toItemDto(itemRepository.updateItem(itemId, item, userId));
     }
 
     @Override
     public ItemDto getItemById(Long itemId, Long userId) {
-        log.info("Получен запрос на поиск вещи с ID "+ itemId + " от пользователя с ID " + userId);
+        log.info("Получен запрос на поиск вещи с ID " + itemId + " от пользователя с ID " + userId);
         return MapperItem.toItemDto(itemRepository.getItemById(itemId, userId));
     }
 
@@ -54,13 +54,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAvailableItems(Long userId, String text) {
-        log.info("Получен запрос на поиск вещи: "+ text + " от пользователя с ID " + userId);
+        log.info("Получен запрос на поиск вещи: " + text + " от пользователя с ID " + userId);
         return itemRepository.getAvailableItems(userId, text).stream().map(MapperItem::toItemDto).collect(Collectors.toList());
     }
 
     @Override
     public void deleteItemById(Long itemId, Long userId) {
-        log.info("Получен запрос на удаление вещи с ID "+ itemId + " от пользователя с ID " + userId);
+        log.info("Получен запрос на удаление вещи с ID " + itemId + " от пользователя с ID " + userId);
         itemRepository.deleteItemById(itemId, userId);
     }
 
