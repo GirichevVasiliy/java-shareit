@@ -17,19 +17,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ItemRepositoryInMemory implements ItemRepository {
     private final Map<Long, Item> items = new HashMap<>();
-    private Long ItemId = 1L;
+    private Long id = 1L;
 
     private Long getNextId() {
-        return ItemId++;
+        return id++;
     }
 
     @Override
     public Item addItem(Item item, User user) {
-        Long id = getNextId();
-        item.setId(id);
+        Long idItem = getNextId();
+        item.setId(idItem);
         item.setOwner(user);
-        items.put(id, item);
-        return items.get(id);
+        items.put(idItem, item);
+        return items.get(idItem);
     }
 
     @Override

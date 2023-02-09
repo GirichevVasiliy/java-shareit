@@ -16,20 +16,20 @@ import java.util.Map;
 public class UserRepositoryInMemory implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
 
-    private Long userId = 1L;
+    private Long id = 1L;
 
     private Long getNextId() {
-        return userId++;
+        return id++;
     }
 
     @Override
     public User addUser(User user) {
         if (!checkEmailDuplicate(user)) {
-            Long id = getNextId();
-            user.setId(id);
+            Long idUser = getNextId();
+            user.setId(idUser);
             users.put(user.getId(), user);
             log.info("Пользователь с ID " + user.getId() + " добавлен");
-            return users.get(id);
+            return users.get(idUser);
         } else {
             throw new RequestError(HttpStatus.CONFLICT, "Пользователь с Email " + user.getEmail() + " не может быть добавлен");
         }
