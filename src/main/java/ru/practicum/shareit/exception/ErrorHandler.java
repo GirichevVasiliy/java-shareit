@@ -4,10 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.ForbiddenResourceException;
-import ru.practicum.shareit.exception.InvalidOwnerException;
-import ru.practicum.shareit.exception.ResourceNotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 
 @RestControllerAdvice
 public class ErrorHandler {
@@ -43,6 +39,7 @@ public class ErrorHandler {
                 e.getMessage()
         );
     }
+
     private class ErrorResponse {
         private final String error;
 
