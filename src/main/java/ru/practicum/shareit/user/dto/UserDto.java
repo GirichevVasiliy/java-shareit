@@ -8,13 +8,13 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class UserDto {
-    private Long id;
+    private final Long id;
     @NotNull
     @Email(regexp = "^[a-zA-Z0-9.]+[^._]@[^.\\-_]+[a-zA-Z0-9.]+[a-zA-Z0-9]$", message = "Email введен некорректно")
-    private String email;
+    private final String email;
     @NotNull
     @NotBlank(message = "Поле Name не должно быть пустым")
-    private String name;
+    private final String name;
 
     public UserDto(Long id, String email, String name) {
         this.id = id;

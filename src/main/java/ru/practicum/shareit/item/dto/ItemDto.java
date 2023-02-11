@@ -12,16 +12,16 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class ItemDto {
-    private Long id;
+    private final Long id;
     @NotBlank(message = "Поле \"Название\" должно быть заполнено")
-    private String name;
+    private final String name;
     @NotBlank(message = "Поле \"Описание\" должно быть заполнено")
-    private String description;
-    User owner;
+    private final String description;
     @BooleanFlag
     @NotNull
-    private Boolean available; // статус о том, доступна или нет вещь для аренды;
-    private Long requestId; // если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка на соответствующий запрос.
+    private final Boolean available; // статус о том, доступна или нет вещь для аренды;
+    private final Long requestId; // если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка на соответствующий запрос.
+    User owner;
 
     public ItemDto(Long id, String name, String description, Boolean available, Long requestId) {
         this.id = id;

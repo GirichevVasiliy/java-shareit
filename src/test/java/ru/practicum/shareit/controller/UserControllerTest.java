@@ -4,7 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.error.RequestError;
+import ru.practicum.shareit.exception.InvalidOwnerException;
+import ru.practicum.shareit.exception.ResourceNotFoundException;
 import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.repository.UserRepositoryInMemory;
@@ -17,15 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayName("Тест пользователя")
 class UserControllerTest {
     private UserController userController;
+    private UserDto userDto1;
+    private UserDto userDto2;
+    private UserDto userDto3;
 
     @BeforeEach
     private void init() {
         userController = new UserController(new UserServiceImpl(new UserRepositoryInMemory()));
     }
-
-    private UserDto userDto1;
-    private UserDto userDto2;
-    private UserDto userDto3;
 
     @BeforeEach
     private void initUserDto() {
@@ -45,20 +45,15 @@ class UserControllerTest {
     @DisplayName("Тест дубликата добавления пользователя")
     void addUserDuplicateTest() {
         assertThat(userDto1).isEqualTo(userController.addUser(userDto1));
-        assertThrows(RequestError.class, () -> userController.addUser(userDto1));
-        try {
-            userController.addUser(userDto1);
-        } catch (RequestError e) {
-            assertThat(e.getStatus().is4xxClientError()).isTrue();
-        }
+        assertThrows(InvalidOwnerException.class, () -> userController.addUser(userDto1));
     }
 
     @Test
     @DisplayName("Тест обновления имени пользователя")
     void updateNameUserTest() {
         userController.addUser(userDto1);
-        userDto1.setName("user1-new-name");
-        assertThat(userDto1).isEqualTo(userController.updateUser(1L, userDto1));
+        UserDto userDtoUpdateName = new UserDto(1L, "user1@email.mail", "user1-name-NEW");
+        assertThat(userDtoUpdateName).isEqualTo(userController.updateUser(1L, userDtoUpdateName));
     }
 
     @Test
@@ -72,8 +67,8 @@ class UserControllerTest {
     @DisplayName("Тест обновления почты пользователя")
     void updateEmailUserTest() {
         userController.addUser(userDto1);
-        userDto1.setEmail("g-user1@email.com");
-        assertThat(userDto1).isEqualTo(userController.updateUser(1L, userDto1));
+        UserDto userDtoUpdateEmail = new UserDto(1L, "g-user1@email.com", "user1-name");
+        assertThat(userDtoUpdateEmail).isEqualTo(userController.updateUser(1L, userDtoUpdateEmail));
     }
 
     @Test
@@ -114,12 +109,7 @@ class UserControllerTest {
     @DisplayName("Тест получения пользователя по неверному ID")
     void getUserByIdBadIdTest() {
         final Long id = 999L;
-        assertThrows(RequestError.class, () -> userController.getUserById(id));
-        try {
-            userController.getUserById(id);
-        } catch (RequestError e) {
-            assertThat(e.getStatus().is4xxClientError()).isTrue();
-        }
+        assertThrows(ResourceNotFoundException.class, () -> userController.getUserById(id));
     }
 
     @Test
@@ -129,22 +119,12 @@ class UserControllerTest {
         userController.addUser(userDto1);
         assertThat(userDto1).isEqualTo(userController.getUserById(id));
         userController.deleteUser(id);
-        try {
-            userController.getUserById(id);
-        } catch (RequestError e) {
-            assertThat(e.getStatus().is4xxClientError()).isTrue();
-        }
     }
 
     @Test
     @DisplayName("Тест удаления пользователя по неверному ID")
     void deleteUserBadIDTest() {
         final Long id = 999L;
-        assertThrows(RequestError.class, () -> userController.deleteUser(id));
-        try {
-            userController.getUserById(id);
-        } catch (RequestError e) {
-            assertThat(e.getStatus().is4xxClientError()).isTrue();
-        }
+        assertThrows(ResourceNotFoundException.class, () -> userController.deleteUser(id));
     }
 }
