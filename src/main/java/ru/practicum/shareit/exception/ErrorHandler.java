@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.exceptions.ForbiddenResourceException;
 import ru.practicum.shareit.exception.exceptions.InvalidOwnerException;
 import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
-import ru.practicum.shareit.exception.exceptions.ValidationException;
 
 @RestControllerAdvice
 public class ErrorHandler {
@@ -15,14 +14,6 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ErrorResponse handleResourceNotFoundException(final ResourceNotFoundException e) {
-        return new ErrorResponse(
-                e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final ValidationException e) {
         return new ErrorResponse(
                 e.getMessage()
         );

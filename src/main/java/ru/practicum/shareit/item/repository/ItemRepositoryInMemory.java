@@ -24,7 +24,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
         item.setId(idItem);
         item.setOwner(user);
         items.put(idItem, item);
-        return items.get(idItem);
+        return item;
     }
 
     @Override
