@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.repository;
+package ru.practicum.shareit.item.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class ItemRepositoryInMemory implements ItemRepository {
+public class ItemStorageImp implements ItemStorage {
     private final Map<Long, Item> items = new HashMap<>();
     private Long id = 1L;
 

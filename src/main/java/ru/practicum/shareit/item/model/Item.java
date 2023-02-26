@@ -1,52 +1,41 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.comment.Comment;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "items", schema = "public")
+@Table(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(name = "name")
     private String name;
-    @Column
+    @Column(name = "description")
     private String description;
     @Column(name = "is_available")
     private Boolean available;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "request_id")
     private ItemRequest request;
-
-    @OneToMany()
-    @JoinColumn(name = "item_id")
-    List<Booking> bookings;
-
-    @OneToMany()
-    @JoinColumn(name = "item_id")
-    List<Comment> comments;
-
-    public Item(String name, String description, Boolean available, ItemRequest request) {
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.request = request;
-    }
-
-    public Item() {
-    }
+public Item(String name, String description, Boolean available, ItemRequest request) {
+    this.name = name;
+    this.description = description;
+    this.available = available;
+    this.request = request;
+}
 }

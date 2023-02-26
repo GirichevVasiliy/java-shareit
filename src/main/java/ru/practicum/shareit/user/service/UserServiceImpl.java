@@ -9,7 +9,7 @@ import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
+    private final UserStorage userRepository;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("userRepositoryInMemory") UserRepository repository) {
+    public UserServiceImpl(@Qualifier("userStorageImp") UserStorage repository) {
         this.userRepository = repository;
     }
 

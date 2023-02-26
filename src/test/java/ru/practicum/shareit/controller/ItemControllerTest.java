@@ -7,10 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.repository.ItemRepositoryInMemory;
+import ru.practicum.shareit.item.storage.ItemStorageImp;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.repository.UserRepositoryInMemory;
+import ru.practicum.shareit.user.storage.UserStorageImp;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
@@ -30,8 +30,8 @@ class ItemControllerTest {
 
     @BeforeEach
     private void init() {
-        userService = new UserServiceImpl(new UserRepositoryInMemory());
-        itemController = new ItemController(new ItemServiceImpl(new ItemRepositoryInMemory()), userService);
+        userService = new UserServiceImpl(new UserStorageImp());
+        itemController = new ItemController(new ItemServiceImpl(new ItemStorageImp()), userService);
     }
 
     @BeforeEach

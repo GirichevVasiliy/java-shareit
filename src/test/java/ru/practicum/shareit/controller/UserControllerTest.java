@@ -8,7 +8,7 @@ import ru.practicum.shareit.exception.exceptions.InvalidOwnerException;
 import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.repository.UserRepositoryInMemory;
+import ru.practicum.shareit.user.storage.UserStorageImp;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +24,7 @@ class UserControllerTest {
 
     @BeforeEach
     private void init() {
-        userController = new UserController(new UserServiceImpl(new UserRepositoryInMemory()));
+        userController = new UserController(new UserServiceImpl(new UserStorageImp()));
     }
 
     @BeforeEach

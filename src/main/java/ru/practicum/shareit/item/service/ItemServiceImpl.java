@@ -9,7 +9,7 @@ import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ItemServiceImpl implements ItemService {
-    private final ItemRepository itemRepository;
+    private final ItemStorage itemRepository;
 
     @Autowired
-    public ItemServiceImpl(@Qualifier("itemRepositoryInMemory") ItemRepository itemRepository) {
+    public ItemServiceImpl(@Qualifier("itemStorageImp") ItemStorage itemRepository) {
         this.itemRepository = itemRepository;
     }
 

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.repository;
+package ru.practicum.shareit.item.storage;
 
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface ItemRepository {
+public interface ItemStorage {
     Item addItem(Item item, User user);
 
     Item updateItem(Long itemId, Item item, Long userId);
