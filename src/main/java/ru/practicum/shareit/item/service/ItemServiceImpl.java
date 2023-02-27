@@ -96,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getAvailableItems(Long userId, String text) {
         log.info("Получен запрос на поиск вещи: " + text + " от пользователя с ID " + userId);
         if (!text.isEmpty()) {
-            return itemRepository.findByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+            return itemRepository.findAllByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
         } else {
             return new ArrayList<>();
         }
