@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByOwnerId(Long Id);
+
     @Query("select i from Item i " +
             "where upper(i.name) like upper(concat('%', ?1, '%')) " +
             "   or upper(i.description) like upper(concat('%', ?1, '%')) and i.available = true")
     List<Item> getAvailableItems(String text);
-   // List<Item> findAllByNameContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndAvailableIsTrue(String textName, String textDescription);
 }
