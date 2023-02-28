@@ -71,7 +71,6 @@ public class BookingServiceImpl implements BookingService {
             }
            return  BookingMapper.bookingToDto(bookingRepository.save(booking.get()));
         }
-
     }
 
     @Override

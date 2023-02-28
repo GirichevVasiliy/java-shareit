@@ -25,6 +25,7 @@ public class BookingController {
     private final ItemService itemService;
     private final UserService userService;
     private final BookingService bookingService;
+
     @Autowired
     public BookingController(ItemService itemService, UserService userService, BookingService bookingService) {
         this.itemService = itemService;
@@ -36,13 +37,19 @@ public class BookingController {
     public BookingDto addBooking(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId, @Valid @RequestBody InputBookingDto inputBookingDto) {
         return bookingService.addBooking(inputBookingDto, userId);
     }
+
     @PatchMapping("/{bookingId}")
-    public BookingDto updateApprove( @PathVariable Long bookingId,
-                                     @RequestParam @NotNull Boolean approved,
-                                     @RequestHeader("X-Sharer-User-Id") @NotNull Long userId){
+    public BookingDto updateApprove(@PathVariable Long bookingId,
+                                    @RequestParam @NotNull Boolean approved,
+                                    @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
         return bookingService.updateApprove(bookingId, approved, userId);
     }
 
+    @GetMapping("/{bookingId}")
+    public BookingDto getBookingById(@PathVariable Long bookingId,
+                                     @RequestHeader("X-Sharer-User-Id") @NotNull Long userId){
+        return bookingService.getBookingById(bookingId, userId);
+    }
 
 
 
@@ -51,15 +58,13 @@ public class BookingController {
 
     /*
 
-    BookingDto updateApprove(Long bookingId, Boolean approved, Long userId);
+
 
     BookingDto getBookingById(Long bookingId, Long userId);
 
     List<BookingDto> getAllBookings(Long bookingId, StatusBooking statusBooking);
 
     List<BookingDto> getAllBookingsForOwner(Long ownerId, StatusBooking statusBooking);*/
-
-
 
 
 }
