@@ -4,17 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
+import ru.practicum.shareit.booking.model.enam.StateBooking;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * TODO Sprint add-bookings.
@@ -47,10 +44,15 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public BookingDto getBookingById(@PathVariable Long bookingId,
-                                     @RequestHeader("X-Sharer-User-Id") @NotNull Long userId){
+                                     @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
         return bookingService.getBookingById(bookingId, userId);
     }
-
+    @GetMapping
+    public List<BookingDto> getAllBookings(
+            @RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+            @RequestParam(defaultValue = "ALL", required = false) StateBooking state) {
+        return bookingService.getAllBookings(userId, state);
+    }
 
 
 
@@ -60,7 +62,7 @@ public class BookingController {
 
 
 
-    BookingDto getBookingById(Long bookingId, Long userId);
+
 
     List<BookingDto> getAllBookings(Long bookingId, StatusBooking statusBooking);
 

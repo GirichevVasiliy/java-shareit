@@ -9,9 +9,11 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.enam.StateBooking;
 import ru.practicum.shareit.booking.model.enam.StatusBooking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
+import ru.practicum.shareit.exception.exceptions.ValidationDateException;
 import ru.practicum.shareit.exception.exceptions.ValidationOwnerException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -19,8 +21,10 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import javax.xml.bind.ValidationException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,13 +47,17 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto addBooking(InputBookingDto inputBookingDto, Long userId) {
-        log.info("Получен запрос на бронирование вещи от пользователя с Id" + userId);
-        Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
-        Optional<Item> item = Optional.ofNullable(itemRepository.findById(inputBookingDto.getItemId()).orElseThrow(
-                () -> new ResourceNotFoundException(" Вещь с " + inputBookingDto.getItemId() + " не найдена")));
-        Booking booking = BookingMapper.createNewBooking(inputBookingDto, user.get(), item.get());
-        return BookingMapper.bookingToDto(bookingRepository.save(booking));
+        if (checkdate(inputBookingDto.getStart(), inputBookingDto.getEnd())) {
+            log.info("Получен запрос на бронирование вещи от пользователя с Id" + userId);
+            Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
+                    () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
+            Optional<Item> item = Optional.ofNullable(itemRepository.findById(inputBookingDto.getItemId()).orElseThrow(
+                    () -> new ResourceNotFoundException(" Вещь с " + inputBookingDto.getItemId() + " не найдена")));
+            Booking booking = BookingMapper.createNewBooking(inputBookingDto, user.get(), item.get());
+            return BookingMapper.bookingToDto(bookingRepository.save(booking));
+        } else {
+            throw new ValidationDateException(" Пользователь с id " + userId + " задал не верное время бронирования");
+        }
     }
 
     @Transactional
@@ -75,16 +83,57 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getBookingById(Long bookingId, Long userId) {
-        return null;
+        Optional<Booking> booking = Optional.ofNullable(bookingRepository.findById(bookingId).orElseThrow(
+                () -> new ResourceNotFoundException(" Бронирование с " + bookingId + " не найдено")));
+        Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
+        if (!user.get().getId().equals(booking.get().getItem().getOwner().getId()) ||
+        !user.get().getId().equals(booking.get().getBooker().getId())) {
+            throw new ValidationOwnerException(" Пользователь с id " + userId + " не владелец вещи или не автор брони");
+        } else {
+            return BookingMapper.bookingToDto(booking.get());
+        }
     }
 
     @Override
-    public List<BookingDto> getAllBookings(Long bookingId, StatusBooking statusBooking) {
+    public List<BookingDto> getAllBookings(Long userId, StateBooking stateBooking) {
+        Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
+
+        switch (stateBooking){
+            case ALL:
+              return bookingRepository.findAll().stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
+            case CURRENT:
+
+
+            case FUTURE:
+
+
+
+            case WAITING:
+
+
+
+            case REJECTED:
+
+
+            default:
+
+        }
+
         return null;
     }
 
     @Override
     public List<BookingDto> getAllBookingsForOwner(Long ownerId, StatusBooking statusBooking) {
         return null;
+    }
+
+    private boolean checkdate(LocalDateTime startBooking, LocalDateTime endBooking){
+        if(startBooking.isBefore(LocalDateTime.now()) || endBooking.isBefore(LocalDateTime.now()) ||
+                endBooking.isBefore(startBooking) || startBooking.isEqual(endBooking)){
+            return false;
+        }
+        return true;
     }
 }

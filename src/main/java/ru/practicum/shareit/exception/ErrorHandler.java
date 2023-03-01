@@ -4,10 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.exceptions.ForbiddenResourceException;
-import ru.practicum.shareit.exception.exceptions.InvalidOwnerException;
-import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
-import ru.practicum.shareit.exception.exceptions.ValidationOwnerException;
+import ru.practicum.shareit.exception.exceptions.*;
 
 @RestControllerAdvice
 public class ErrorHandler {
@@ -39,6 +36,13 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ErrorResponse handleValidationOwnerException(final ValidationOwnerException e) {
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
+    @ExceptionHandler
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationDateException(final ValidationDateException e) {
         return new ErrorResponse(
                 e.getMessage()
         );
