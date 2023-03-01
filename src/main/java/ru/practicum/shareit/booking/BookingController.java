@@ -54,19 +54,11 @@ public class BookingController {
         return bookingService.getAllBookings(userId, state);
     }
 
-
-
-
-
-    /*
-
-
-
-
-
-    List<BookingDto> getAllBookings(Long bookingId, StatusBooking statusBooking);
-
-    List<BookingDto> getAllBookingsForOwner(Long ownerId, StatusBooking statusBooking);*/
-
+    @GetMapping("owner")
+    public List<BookingDto> getAllBookingsForOwner(
+            @RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+            @RequestParam(defaultValue = "ALL", required = false) StateBooking state) {
+        return bookingService.getAllBookingsForOwner(userId, state);
+    }
 
 }
