@@ -68,7 +68,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto updateApprove(Long bookingId, Boolean approved, Long userId) {
-        log.info("Получен запрос подтверждение или отклонение запроса на бронирование " + bookingId
+        log.info("Получен запрос подтверждение или отклонение запроса на бронирование Id " + bookingId
                 + " от пользователя с Id " + userId);
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
@@ -99,7 +99,7 @@ public class BookingServiceImpl implements BookingService {
                 () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         User owner = booking.get().getItem().getOwner();
         User booker = booking.get().getBooker();
-        if (!(owner.equals(user) || booker.equals(user))) {
+        if (!(owner.getId().equals(user.get().getId()) || booker.getId().equals(user.get().getId()))) {
             throw new ValidationOwnerException("Просмотр бронирования доспупен владельцу вещи или бронирующему");
         }
         return BookingMapper.bookingToDto(booking.get());
