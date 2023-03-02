@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.exceptions.*;
 
+import java.util.Map;
+
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
@@ -57,6 +59,13 @@ public class ErrorHandler {
         return new ErrorResponse(
                 e.getMessage()
         );
+    }
+    @ExceptionHandler
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationStateException(final ValidationStateException e) {
+        Map<String, String> error = Map.of("error", e.getMessage());
+        log.warn(e.getMessage());
+        return error;
     }
 
     private class ErrorResponse {
