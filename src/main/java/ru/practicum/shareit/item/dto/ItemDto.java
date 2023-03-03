@@ -28,6 +28,6 @@ public class ItemDto {
     private final Long requestId; // если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка на соответствующий запрос.
     User owner;
     private List<CommentDto> comments;
-    private DateBookingDto lastBooking;
-    private DateBookingDto nextBooking;
+    DateBookingDto lastBooking;
+    DateBookingDto nextBooking;
 }

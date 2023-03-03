@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public class ItemMapper {
-    public static ItemDto toItemDto(Item item) {
+    public static ItemDto toItemDtoSingl(Item item) {
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -26,7 +26,7 @@ public class ItemMapper {
                 .owner(itemDto.getOwner())
                 .build();
     }
-    public static ItemDto toItemDto(Item item, List<CommentDto> comments, DateBookingDto lastBooking, DateBookingDto nextBooking) {
+    public static ItemDto toItemDtoFull(Item item, List<CommentDto> comments, DateBookingDto lastBooking, DateBookingDto nextBooking) {
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -38,7 +38,7 @@ public class ItemMapper {
                 .nextBooking(nextBooking)
                 .build();
     }
-    public static ItemDto toItemDto(Item item, List<CommentDto> comments) {
+    public static ItemDto toItemDtoList(Item item, List<CommentDto> comments) {
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
