@@ -1,13 +1,17 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.comment.dto.CommentDto;
+import ru.practicum.shareit.item.comment.service.CommentService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -18,11 +22,13 @@ import java.util.List;
 public class ItemController {
     private final ItemService itemService;
     private final UserService userService;
+    private final CommentService commentService;
 
     @Autowired
-    public ItemController(ItemService itemService, UserService userService) {
+    public ItemController(ItemService itemService, UserService userService, CommentService commentService) {
         this.itemService = itemService;
         this.userService = userService;
+        this.commentService = commentService;
     }
 
     /**
@@ -66,5 +72,11 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> getAvailableItems(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestParam String text) {
         return itemService.getAvailableItems(userId, text);
+    }
+    @PostMapping("/{itemId}/comment")
+    public CommentDto postComment(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") @NotNull Long authorId,
+            @Validated @RequestBody CommentDto commentDto
+    ) {
+        return commentService.addComment(itemId, authorId, commentDto);
     }
 }

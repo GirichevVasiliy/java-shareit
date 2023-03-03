@@ -25,5 +25,13 @@ public class BookingMapper {
                 .status(StatusBooking.WAITING)
                 .build();
     }
+    public static DateBookingDto toDateBookingDto(Booking booking){
+        return DateBookingDto.builder()
+                .id(booking.getId())
+                .bookerId(booking.getBooker().getId())
+                .start(booking.getStart())
+                .end(booking.getEnd())
+                .build();
+    }
 }
 

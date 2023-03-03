@@ -47,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto addBooking(InputBookingDto inputBookingDto, Long userId) {
         log.info("Получен запрос на бронирование вещи от пользователя с Id" + userId);
-        if (checkdate(inputBookingDto.getStart(), inputBookingDto.getEnd())) {
+        if (checkDate(inputBookingDto.getStart(), inputBookingDto.getEnd())) {
             Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
                     () -> new ResourceNotFoundException(" Пользователь с Id " + userId + " не найден")));
             Optional<Item> item = Optional.ofNullable(itemRepository.findById(inputBookingDto.getItemId()).orElseThrow(
@@ -180,7 +180,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private boolean checkdate(LocalDateTime startBooking, LocalDateTime endBooking) {
+    private boolean checkDate(LocalDateTime startBooking, LocalDateTime endBooking) {
         if (startBooking.isBefore(LocalDateTime.now()) || endBooking.isBefore(LocalDateTime.now()) ||
                 endBooking.isBefore(startBooking)) {
             return false;
