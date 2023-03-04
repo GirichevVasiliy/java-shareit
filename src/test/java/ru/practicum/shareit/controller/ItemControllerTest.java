@@ -1,25 +1,27 @@
 /*
+
 package ru.practicum.shareit.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.storage.ItemStorageImp;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.storage.UserStorageImp;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@DisplayName("Тест вещей")
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemControllerTest {
     private ItemController itemController;
     private UserService userService;
@@ -29,19 +31,40 @@ class ItemControllerTest {
     private ItemDto item4;
     private ItemDto item5;
 
-    @BeforeEach
-    private void init() {
-        userService = new UserServiceImpl(new UserStorageImp());
-        itemController = new ItemController(new ItemServiceImpl(new ItemStorageImp()), userService);
-    }
-
+    @Sql(value = {"classpath:dataSQLTest.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"classpath:schema.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @BeforeEach
     private void initItemDto() {
-        item1 = new ItemDto(1L, "Дрель", "Дрель перфоратор + набор сверл", true, null);
-        item2 = new ItemDto(2L, "Шуруповерт", "Шуруповерт + аккумулятор", true, null);
-        item3 = new ItemDto(3L, "Шурик", "Шуруповерт аккумуляторный", true, null);
-        item4 = new ItemDto(4L, "Шлифовальная машина", "Шлифовальная машина аккумуляторный", true, null);
-        item5 = new ItemDto(5L, "Штроборез", "Штроборез аккумуляторный", false, null);
+        item1 = ItemDto.builder()
+                .id(1L)
+                .name("Дрель")
+                .description("Дрель перфоратор + набор сверл")
+                .available(true)
+                .build();
+        item2 = ItemDto.builder()
+                .id(2L)
+                .name("Шуруповерт")
+                .description("Шуруповерт + аккумулятор")
+                .available(true)
+                .build();
+        item3 = ItemDto.builder()
+                .id(3L)
+                .name("Шурик")
+                .description("Шуруповерт аккумуляторный")
+                .available(true)
+                .build();
+        item4 = ItemDto.builder()
+                .id(4L)
+                .name("Шлифовальная машина")
+                .description("Шлифовальная машина аккумуляторный")
+                .available(true)
+                .build();
+        item5 = ItemDto.builder()
+                .id(5L)
+                .name("Штроборез")
+                .description("Штроборез аккумуляторный")
+                .available(false)
+                .build();
     }
 
     @BeforeEach
@@ -78,7 +101,12 @@ class ItemControllerTest {
     void updateItemNameTest() {
         final Long id = 1L;
         itemController.addItem(id, item1);
-        ItemDto itemNew = new ItemDto(1L, "Новая дрель", "Дрель перфоратор + набор сверл", true, null);
+        ItemDto itemNew = ItemDto.builder()
+                .id(1L)
+                .name("Новая дрель")
+                .description("Дрель перфоратор + набор сверл")
+                .available(true)
+                .build();
         ItemDto newItemDto = itemController.updateItem(id, itemNew, id);
         assertThat(itemNew).isEqualTo(newItemDto);
     }
@@ -88,7 +116,12 @@ class ItemControllerTest {
     void updateItemDescriptionTest() {
         final Long id = 1L;
         itemController.addItem(id, item1);
-        ItemDto itemNew = new ItemDto(1L, "Новая дрель", "Сломана вилка", true, null);
+        ItemDto itemNew = ItemDto.builder()
+                .id(1L)
+                .name("Новая дрель")
+                .description("Сломана вилка")
+                .available(true)
+                .build();
         ItemDto newItemDto = itemController.updateItem(id, itemNew, id);
         assertThat(itemNew).isEqualTo(newItemDto);
     }
@@ -98,7 +131,12 @@ class ItemControllerTest {
     void updateItemAvailableTest() {
         final Long id = 1L;
         itemController.addItem(id, item1);
-        ItemDto itemNew = new ItemDto(1L, "Дрель", "Дрель перфоратор + набор сверл", false, null);
+        ItemDto itemNew = ItemDto.builder()
+                .id(1L)
+                .name("Дрель")
+                .description("Дрель перфоратор + набор сверл")
+                .available(false)
+                .build();
         ItemDto newItemDto = itemController.updateItem(id, itemNew, id);
         assertThat(newItemDto.getAvailable()).isFalse();
     }
@@ -158,4 +196,5 @@ class ItemControllerTest {
         final String text = "станок";
         assertThat(itemController.getAvailableItems(userID, text).isEmpty()).isTrue();
     }
-}*/
+}
+*/

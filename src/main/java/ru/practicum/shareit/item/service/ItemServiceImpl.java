@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.DateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.enam.StatusBooking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.exceptions.ForbiddenResourceException;
 import ru.practicum.shareit.exception.exceptions.InvalidOwnerException;
@@ -195,7 +196,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
             return null;
         }
         List<Booking> bookings = bookingRepository.findByItemAndStartIsAfter(item, LocalDateTime.now()).stream()
-                .sorted(Comparator.comparing(Booking::getStart)).collect(Collectors.toList());;
+                .sorted(Comparator.comparing(Booking::getStart)).filter(b->!b.getStatus().equals(StatusBooking.REJECTED)).collect(Collectors.toList());;
         if (bookings.isEmpty()) {
             return null;
         }
