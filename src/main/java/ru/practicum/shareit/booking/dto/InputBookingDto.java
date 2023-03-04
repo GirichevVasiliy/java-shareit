@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 @Data
 public class InputBookingDto {
     @NotNull
-    private Long ItemId;
+    private Long itemId;
     @NotNull
     private LocalDateTime start;
     @NotNull
     private LocalDateTime end;
 
     public InputBookingDto(Long itemId, LocalDateTime start, LocalDateTime end) {
-        ItemId = itemId;
+        this.itemId = itemId;
         this.start = start;
         this.end = end;
     }
