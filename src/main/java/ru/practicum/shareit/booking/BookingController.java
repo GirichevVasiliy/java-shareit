@@ -47,6 +47,7 @@ public class BookingController {
                                      @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
         return bookingService.getBookingById(bookingId, userId);
     }
+
     @GetMapping
     public List<BookingDto> getAllBookings(
             @RequestHeader("X-Sharer-User-Id") @NotNull Long userId,

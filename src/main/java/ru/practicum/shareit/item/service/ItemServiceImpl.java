@@ -196,7 +196,8 @@ public class ItemServiceImpl implements ItemService, CommentService {
             return null;
         }
         List<Booking> bookings = bookingRepository.findByItemAndStartIsAfter(item, LocalDateTime.now()).stream()
-                .sorted(Comparator.comparing(Booking::getStart)).filter(b->!b.getStatus().equals(StatusBooking.REJECTED)).collect(Collectors.toList());;
+                .sorted(Comparator.comparing(Booking::getStart)).filter(b -> !b.getStatus().equals(StatusBooking.REJECTED)).collect(Collectors.toList());
+        ;
         if (bookings.isEmpty()) {
             return null;
         }

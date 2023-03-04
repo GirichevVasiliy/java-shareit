@@ -26,6 +26,7 @@ public class ItemMapper {
                 .owner(itemDto.getOwner())
                 .build();
     }
+
     public static ItemDto toItemDtoFull(Item item, List<CommentDto> comments, DateBookingDto lastBooking, DateBookingDto nextBooking) {
         return ItemDto.builder()
                 .id(item.getId())
@@ -38,6 +39,7 @@ public class ItemMapper {
                 .nextBooking(nextBooking)
                 .build();
     }
+
     public static ItemDto toItemDtoList(Item item, List<CommentDto> comments) {
         return ItemDto.builder()
                 .id(item.getId())

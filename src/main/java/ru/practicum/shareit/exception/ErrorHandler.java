@@ -60,6 +60,7 @@ public class ErrorHandler {
                 e.getMessage()
         );
     }
+
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationStateException(final ValidationStateException e) {

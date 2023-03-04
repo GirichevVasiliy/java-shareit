@@ -36,6 +36,7 @@ public class BookingDto {
         this.booker = booker;
         this.status = status;
     }
+
     public BookingDto(LocalDateTime start, LocalDateTime end, Item item, User booker) {
         this.start = start;
         this.end = end;

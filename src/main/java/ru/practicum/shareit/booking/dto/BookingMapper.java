@@ -16,7 +16,7 @@ public class BookingMapper {
                 booking.getEnd(), booking.getItem(), booking.getBooker(), booking.getStatus());
     }
 
-    public static Booking createNewBooking(InputBookingDto inputBookingDto, User user, Item item){
+    public static Booking createNewBooking(InputBookingDto inputBookingDto, User user, Item item) {
         return Booking.builder()
                 .start(inputBookingDto.getStart())
                 .end(inputBookingDto.getEnd())
@@ -25,7 +25,8 @@ public class BookingMapper {
                 .status(StatusBooking.WAITING)
                 .build();
     }
-    public static DateBookingDto toDateBookingDto(Booking booking){
+
+    public static DateBookingDto toDateBookingDto(Booking booking) {
         return DateBookingDto.builder()
                 .id(booking.getId())
                 .bookerId(booking.getBooker().getId())

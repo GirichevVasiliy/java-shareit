@@ -1,13 +1,9 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.model.Item;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
@@ -20,12 +16,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
     @Column(name = "name")
     private String name;
 
-       public User(Long id, String email, String name) {
+    public User(Long id, String email, String name) {
         this.id = id;
         this.email = email;
         this.name = name;
