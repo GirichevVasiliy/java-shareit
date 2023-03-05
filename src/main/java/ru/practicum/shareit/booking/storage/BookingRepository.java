@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -31,9 +32,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItemAndEndIsBeforeOrderByStartDesc(Item item, LocalDateTime end);
 
-    List<Booking> findByItemAndEndIsBeforeOrderByStart(Item item, LocalDateTime end);
-
-    List<Booking> findByItemAndStartIsAfterOrderByStart(Item item, LocalDateTime start);
+    Optional<Booking> findByItemAndEndIsBeforeOrderByStart(Item item, LocalDateTime end);
+    //select * from bookings as b where item_id = 2 and b.start_date > '2023-03-04 15:00:00.000000 ' and b.status != 'REJECTED' ORDER BY b.start_date LIMIT 1;
+   // @Query(value = "select * from bookings AS b where b.item = ?1 and b.start > ?2 and b.status != ?3 order by b.start limit 1", nativeQuery = true)
+    List<Booking> findByItemAndStartIsAfterAndStatusIsNotOrderByStart(Item item, LocalDateTime start, StatusBooking status);
 
     List<Booking> findByItemAndStartIsAfterOrderByStartDesc(Item item, LocalDateTime start);
 
