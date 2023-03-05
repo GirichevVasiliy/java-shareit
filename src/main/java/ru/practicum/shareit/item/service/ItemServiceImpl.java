@@ -100,14 +100,16 @@ public class ItemServiceImpl implements ItemService, CommentService {
     @Override
     public ItemDto getItemById(Long itemId, Long userId) {
         log.info("Получен запрос на поиск вещи с ID " + itemId + " от пользователя с ID " + userId);
-        Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()){
+            throw new ResourceNotFoundException(" Пользователь с " + userId + " не найден");
+        }
         Optional<Item> itemOptional = itemRepository.findById(itemId);
         if (itemOptional.isPresent()) {
             return ItemMapper.toItemDtoFull(itemOptional.get(),
-                    getCommentsForItem(itemId),
+                    (itemOptional.get().getComments().stream().map(CommentMapper::toCommentDto).collect(Collectors.toList())),
                     getLastBooking(itemOptional.get(), userId),
-                    getNextBooking(itemOptional.get(), userId));//ItemMapper.toItemDto(itemOptional.get());
+                    getNextBooking(itemOptional.get(), userId));
         } else {
             throw new ResourceNotFoundException("Вещь с ID " + itemId + " не найдена, по запросу " +
                     "пользователя с ID " + userId);
@@ -117,8 +119,8 @@ public class ItemServiceImpl implements ItemService, CommentService {
     @Override
     public List<ItemDto> getItemsByUser(Long userId) {
         log.info("Получен запрос на получение списка вещей пользователя с ID " + userId);
-        return itemRepository.findByOwnerId(userId).stream().map(item -> addCommentsAndDataTimeInItemDto(item, userId))
-                .sorted(Comparator.comparing(ItemDto::getId)).collect(Collectors.toList());
+        return itemRepository.findByOwnerIdOrderById(userId).stream().map(item -> addCommentsAndDataTimeInItemDto(item, userId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -127,8 +129,8 @@ public class ItemServiceImpl implements ItemService, CommentService {
         if (!text.isEmpty()) {
             return itemRepository.getAvailableItems(text.toLowerCase()).stream()
                     .filter(Item::getAvailable)
-                    .map(item -> ItemMapper.toItemDtoList(item, getCommentsForItem(item.getId())))
-                    .collect(Collectors.toList());//itemRepository.getAvailableItems(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+                    .map(item -> ItemMapper.toItemDtoList(item,  item.getComments().stream().map(CommentMapper::toCommentDto).collect(Collectors.toList())))
+                    .collect(Collectors.toList());
         } else {
             return new ArrayList<>();
         }
@@ -169,16 +171,10 @@ public class ItemServiceImpl implements ItemService, CommentService {
 
     private ItemDto addCommentsAndDataTimeInItemDto(Item item, Long userId) {
         return ItemMapper.toItemDtoFull(item,
-                getCommentsForItem(item.getId()),
+                (item.getComments().stream().map(CommentMapper::toCommentDto).collect(Collectors.toList())),
                 getLastBooking(item, userId),
                 getNextBooking(item, userId));
     }
-
-    private List<CommentDto> getCommentsForItem(Long itemId) {
-        return commentRepository.findByItemId(itemId).stream().map(CommentMapper::toCommentDto)
-                .collect(Collectors.toList());
-    }
-
     private DateBookingDto getLastBooking(Item item, Long userId) {
         if (!item.getOwner().getId().equals(userId)) {
             return null;
@@ -196,7 +192,6 @@ public class ItemServiceImpl implements ItemService, CommentService {
         }
         List<Booking> bookings = bookingRepository.findByItemAndStartIsAfterOrderByStart(item, LocalDateTime.now()).stream()
                 .filter(b -> !b.getStatus().equals(StatusBooking.REJECTED)).collect(Collectors.toList());
-        ;
         if (bookings.isEmpty()) {
             return null;
         }

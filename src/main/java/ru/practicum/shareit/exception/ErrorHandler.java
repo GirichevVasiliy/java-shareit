@@ -14,7 +14,7 @@ import java.util.Map;
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    //@ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ErrorResponse handleResourceNotFoundException(final ResourceNotFoundException e) {
         return new ErrorResponse(
                 e.getMessage()
@@ -22,7 +22,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.CONFLICT)
+    //@ResponseStatus(code = HttpStatus.CONFLICT)
     public ErrorResponse handleInvalidOwnerException(final InvalidOwnerException e) {
         return new ErrorResponse(
                 e.getMessage()
@@ -30,7 +30,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.FORBIDDEN)
+    //@ResponseStatus(code = HttpStatus.FORBIDDEN)
     public ErrorResponse handleForbiddenResourceException(final ForbiddenResourceException e) {
         return new ErrorResponse(
                 e.getMessage()
@@ -38,7 +38,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    //@ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ErrorResponse handleValidationOwnerException(final ValidationOwnerException e) {
         return new ErrorResponse(
                 e.getMessage()
@@ -46,7 +46,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    //@ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationDateException(final ValidationDateException e) {
         return new ErrorResponse(
                 e.getMessage()
@@ -54,7 +54,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    //@ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationAvailableException(final ValidationAvailableException e) {
         return new ErrorResponse(
                 e.getMessage()
@@ -62,7 +62,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+   @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationStateException(final ValidationStateException e) {
         Map<String, String> error = Map.of("error", e.getMessage());
         log.warn(e.getMessage());
