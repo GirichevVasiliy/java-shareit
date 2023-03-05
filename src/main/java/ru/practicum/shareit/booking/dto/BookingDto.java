@@ -1,9 +1,11 @@
 package ru.practicum.shareit.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.model.enam.StatusBooking;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.booking.model.StatusBooking;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -11,37 +13,23 @@ import java.time.LocalDateTime;
  * TODO Sprint add-bookings.
  */
 @Data
+@Builder
 public class BookingDto {
-    private Long id;
-    private LocalDateTime start;
-    private LocalDateTime end;
-    private Item item;
-    private User booker;
-    private StatusBooking status;
+    private final Long id;
+    @JsonFormat
+    private final LocalDateTime start;
+    @JsonFormat
+    private final LocalDateTime end;
+    private final ItemDto item;
+    private final UserDto booker;
+    private final StatusBooking status;
 
-    public BookingDto(Long id, LocalDateTime start, LocalDateTime end, Item item, User booker) {
+    public BookingDto(Long id, LocalDateTime start, LocalDateTime end, ItemDto itemDto, UserDto bookerDto, StatusBooking status) {
         this.id = id;
         this.start = start;
         this.end = end;
-        this.item = item;
-        this.booker = booker;
-        this.status = StatusBooking.WAITING;
-    }
-
-    public BookingDto(Long id, LocalDateTime start, LocalDateTime end, Item item, User booker, StatusBooking status) {
-        this.id = id;
-        this.start = start;
-        this.end = end;
-        this.item = item;
-        this.booker = booker;
+        this.item = itemDto;
+        this.booker = bookerDto;
         this.status = status;
-    }
-
-    public BookingDto(LocalDateTime start, LocalDateTime end, Item item, User booker) {
-        this.start = start;
-        this.end = end;
-        this.item = item;
-        this.booker = booker;
-        this.status = StatusBooking.WAITING;
     }
 }

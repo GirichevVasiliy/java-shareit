@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.dto.DateBookingDto;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
@@ -26,8 +27,8 @@ public class ItemDto {
     @NotNull
     private final Boolean available; // статус о том, доступна или нет вещь для аренды;
     private final Long requestId; // если вещь была создана по запросу другого пользователя, то в этом поле будет храниться ссылка на соответствующий запрос.
-    User owner;
-    private List<CommentDto> comments;
-    DateBookingDto lastBooking;
-    DateBookingDto nextBooking;
+    private final UserDto owner;
+    private final List<CommentDto> comments;
+    private final DateBookingDto lastBooking;
+    private final DateBookingDto nextBooking;
 }

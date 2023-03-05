@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.dto;
 import ru.practicum.shareit.booking.dto.DateBookingDto;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .owner(item.getOwner())
+                .owner(UserMapper.userToDto(item.getOwner()))
                 .build();
     }
 
@@ -23,7 +24,6 @@ public class ItemMapper {
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
-                .owner(itemDto.getOwner())
                 .build();
     }
 
@@ -33,7 +33,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .owner(item.getOwner())
+                .owner(UserMapper.userToDto(item.getOwner()))
                 .comments(comments)
                 .lastBooking(lastBooking)
                 .nextBooking(nextBooking)
@@ -46,7 +46,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .owner(item.getOwner())
+                .owner(UserMapper.userToDto(item.getOwner()))
                 .comments(comments)
                 .build();
     }

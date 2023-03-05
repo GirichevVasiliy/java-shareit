@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
-import ru.practicum.shareit.booking.model.enam.StateBooking;
+import ru.practicum.shareit.booking.service.StateBooking;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
@@ -19,14 +19,10 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/bookings")
 public class BookingController {
-    private final ItemService itemService;
-    private final UserService userService;
     private final BookingService bookingService;
 
     @Autowired
     public BookingController(ItemService itemService, UserService userService, BookingService bookingService) {
-        this.itemService = itemService;
-        this.userService = userService;
         this.bookingService = bookingService;
     }
 

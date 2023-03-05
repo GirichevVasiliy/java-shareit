@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +16,6 @@ public class CommentDto {
     @NotBlank
     private String text;
     private String authorName;
+    @JsonFormat
     private LocalDateTime created;
 }
