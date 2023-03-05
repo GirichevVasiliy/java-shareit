@@ -13,16 +13,16 @@ import java.util.List;
 
 @Repository
 public interface  BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findAllByBookerAndStatus(User booker, StatusBooking status);
+    List<Booking> findAllByBookerAndStatusOrderByStartDesc(User booker, StatusBooking status);
 
-    List<Booking> findByBooker(User booker);
+    List<Booking> findByBookerOrderByStartDesc(User booker);
 
     @Query("select b from Booking b where b.booker = :booker and b.start <= current_timestamp and b.end >= current_timestamp")
-    List<Booking> findCurrentByBooker(User booker);
+    List<Booking> findCurrentByBookerOrderByStartDesc(User booker);
 
-    List<Booking> findAllByBookerAndStartIsAfter(User booker, LocalDateTime localDateTimeNow);
+    List<Booking> findAllByBookerAndStartIsAfterOrderByStartDesc(User booker, LocalDateTime localDateTimeNow);
 
-    List<Booking> findAllByBookerAndEndIsBefore(User booker, LocalDateTime localDateTimeNow);
+    List<Booking> findAllByBookerAndEndIsBeforeOrderByStartDesc(User booker, LocalDateTime localDateTimeNow);
 
     List<Booking> findByItem(Item item);
 

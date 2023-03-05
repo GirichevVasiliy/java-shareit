@@ -205,7 +205,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
     }
 
     private void isBooker(Item item, User user) {
-        boolean isBooker = bookingRepository.findByBooker(user).stream()
+        boolean isBooker = bookingRepository.findByBookerOrderByStartDesc(user).stream()
                 .anyMatch(booking -> booking.getItem().equals(item));
         if (!isBooker) {
             throw new InvalidOwnerException("Пользователь с id " + user.getId() + "никогда ее не бронировал вещь c Id " +

@@ -110,29 +110,24 @@ public class BookingServiceImpl implements BookingService {
                 () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         switch (stateBooking) {
             case ALL:
-                return bookingRepository.findByBooker(user.get()).stream().map(BookingMapper::bookingToDto)
-                        .sorted(comparing(BookingDto::getStart).reversed()).collect(Collectors.toList());
+                return bookingRepository.findByBookerOrderByStartDesc(user.get()).stream().map(BookingMapper::bookingToDto)
+                       .collect(Collectors.toList());
             case CURRENT:
-                return bookingRepository.findCurrentByBooker(user.get())
-                        .stream().map(BookingMapper::bookingToDto).sorted(comparing(BookingDto::getStart).reversed())
-                        .collect(Collectors.toList());
+                return bookingRepository.findCurrentByBookerOrderByStartDesc(user.get())
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
 
             case PAST:
-                return bookingRepository.findAllByBookerAndEndIsBefore(user.get(), LocalDateTime.now())
-                        .stream().map(BookingMapper::bookingToDto).sorted(comparing(BookingDto::getStart).reversed())
-                        .collect(Collectors.toList());
+                return bookingRepository.findAllByBookerAndEndIsBeforeOrderByStartDesc(user.get(), LocalDateTime.now())
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case WAITING:
-                return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.WAITING)
-                        .stream().map(BookingMapper::bookingToDto).sorted(comparing(BookingDto::getStart).reversed())
-                        .collect(Collectors.toList());
+                return bookingRepository.findAllByBookerAndStatusOrderByStartDesc(user.get(), StatusBooking.WAITING)
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findAllByBookerAndStartIsAfter(user.get(), LocalDateTime.now())
-                        .stream().map(BookingMapper::bookingToDto).sorted(comparing(BookingDto::getStart).reversed())
-                        .collect(Collectors.toList());
+                return bookingRepository.findAllByBookerAndStartIsAfterOrderByStartDesc(user.get(), LocalDateTime.now())
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case REJECTED:
-                return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.REJECTED)
-                        .stream().map(BookingMapper::bookingToDto).sorted(comparing(BookingDto::getStart).reversed())
-                        .collect(Collectors.toList());
+                return bookingRepository.findAllByBookerAndStatusOrderByStartDesc(user.get(), StatusBooking.REJECTED)
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             default:
                 throw new ValidationStateException("Unknown state: UNSUPPORTED_STATUS");
         }
