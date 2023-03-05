@@ -183,8 +183,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
         if (!item.getOwner().getId().equals(userId)) {
             return null;
         }
-        List<Booking> bookings = bookingRepository.findByItemAndEndIsBefore(item, LocalDateTime.now()).stream()
-                .sorted(Comparator.comparing(Booking::getStart)).collect(Collectors.toList());
+        List<Booking> bookings = bookingRepository.findByItemAndEndIsBeforeOrderByStart(item, LocalDateTime.now());
         if (bookings.isEmpty()) {
             return null;
         }
@@ -195,8 +194,8 @@ public class ItemServiceImpl implements ItemService, CommentService {
         if (!item.getOwner().getId().equals(userId)) {
             return null;
         }
-        List<Booking> bookings = bookingRepository.findByItemAndStartIsAfter(item, LocalDateTime.now()).stream()
-                .sorted(Comparator.comparing(Booking::getStart)).filter(b -> !b.getStatus().equals(StatusBooking.REJECTED)).collect(Collectors.toList());
+        List<Booking> bookings = bookingRepository.findByItemAndStartIsAfterOrderByStart(item, LocalDateTime.now()).stream()
+                .filter(b -> !b.getStatus().equals(StatusBooking.REJECTED)).collect(Collectors.toList());
         ;
         if (bookings.isEmpty()) {
             return null;

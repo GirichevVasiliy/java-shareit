@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface  BookingRepository extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerAndStatusOrderByStartDesc(User booker, StatusBooking status);
 
     List<Booking> findByBookerOrderByStartDesc(User booker);
@@ -24,16 +24,20 @@ public interface  BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByBookerAndEndIsBeforeOrderByStartDesc(User booker, LocalDateTime localDateTimeNow);
 
-    List<Booking> findByItem(Item item);
+    List<Booking> findByItemOrderByStartDesc(Item item);
 
     @Query("select b from Booking b where b.item = :item and b.start <= current_timestamp and b.end >= current_timestamp")
-    List<Booking> findCurrentByItem(Item item);
+    List<Booking> findCurrentByItemOrderByStartDesc(Item item);
 
-    List<Booking> findByItemAndEndIsBefore(Item item, LocalDateTime end);
+    List<Booking> findByItemAndEndIsBeforeOrderByStartDesc(Item item, LocalDateTime end);
 
-    List<Booking> findByItemAndStartIsAfter(Item item, LocalDateTime start);
+    List<Booking> findByItemAndEndIsBeforeOrderByStart(Item item, LocalDateTime end);
 
-    List<Booking> findByItemAndStatus(Item item, StatusBooking status);
+    List<Booking> findByItemAndStartIsAfterOrderByStart(Item item, LocalDateTime start);
+
+    List<Booking> findByItemAndStartIsAfterOrderByStartDesc(Item item, LocalDateTime start);
+
+    List<Booking> findByItemAndStatusOrderByStartDesc(Item item, StatusBooking status);
 
     List<Booking> findByBookerAndItem(User booker, Item item);
 
