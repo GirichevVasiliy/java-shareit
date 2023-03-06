@@ -29,7 +29,6 @@ import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -190,12 +189,12 @@ public class ItemServiceImpl implements ItemService, CommentService {
         if (!item.getOwner().getId().equals(userId)) {
             return null;
         }
-        List<Booking> bookings = bookingRepository.findByItemAndStartIsAfterAndStatusIsNotOrderByStart(item,
-                LocalDateTime.now(), StatusBooking.REJECTED);
+        Optional<Booking> bookings = bookingRepository.findByItemAndStartIsAfterAndStatusIsNotOrderByStar(item.getId(),
+                LocalDateTime.now(), StatusBooking.REJECTED.name());
         if (bookings.isEmpty()) {
             return null;
         }
-        return BookingMapper.toDateBookingDto(bookings.get(0));
+        return BookingMapper.toDateBookingDto(bookings.get());
     }
 
     private void isBooker(Item item, User user) {

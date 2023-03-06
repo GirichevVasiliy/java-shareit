@@ -33,9 +33,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItemAndEndIsBeforeOrderByStartDesc(Item item, LocalDateTime end);
 
     Optional<Booking> findByItemAndEndIsBeforeOrderByStart(Item item, LocalDateTime end);
-    //select * from bookings as b where item_id = 2 and b.start_date > '2023-03-04 15:00:00.000000 ' and b.status != 'REJECTED' ORDER BY b.start_date LIMIT 1;
-   // @Query(value = "select * from bookings AS b where b.item = ?1 and b.start > ?2 and b.status != ?3 order by b.start limit 1", nativeQuery = true)
-    List<Booking> findByItemAndStartIsAfterAndStatusIsNotOrderByStart(Item item, LocalDateTime start, StatusBooking status);
+
+    @Query(value = "SELECT * FROM bookings b JOIN items i ON i.id = b.item_id WHERE b.item_id = :itemId AND " +
+            "b.start_date > :currentTime AND b.status != :status ORDER BY b.start_date ASC LIMIT 1", nativeQuery = true)
+    Optional<Booking> findByItemAndStartIsAfterAndStatusIsNotOrderByStar(Long itemId, LocalDateTime currentTime, String status);
 
     List<Booking> findByItemAndStartIsAfterOrderByStartDesc(Item item, LocalDateTime start);
 
