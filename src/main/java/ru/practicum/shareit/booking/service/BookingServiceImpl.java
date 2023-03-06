@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparing;
-
 @Service
 @Slf4j
 @Transactional(readOnly = true)
@@ -111,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
         switch (stateBooking) {
             case ALL:
                 return bookingRepository.findByBookerOrderByStartDesc(user.get()).stream().map(BookingMapper::bookingToDto)
-                       .collect(Collectors.toList());
+                        .collect(Collectors.toList());
             case CURRENT:
                 return bookingRepository.findCurrentByBookerOrderByStartDesc(user.get())
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
