@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exception.exceptions;
+package ru.practicum.shareit.exception;
 
 public class ValidationOwnerException extends RuntimeException {
     public ValidationOwnerException(String message) {

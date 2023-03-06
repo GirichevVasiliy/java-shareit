@@ -42,35 +42,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItemAndStatusOrderByStartDesc(Item item, StatusBooking status);
 
-    List<Booking> findByBookerAndItem(User booker, Item item);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   /* @Query("select b from Booking b where b.item.id in (select i.id from Item i where i.owner = ?5)")
-    List<Booking> findAllBookingsByOwner(User owner);
-
-    @Query("select b from Booking b where b.item.id in (select i.id from Item i where i.owner = ?5) and b.status = ?6")
-    List<Booking> findAllBookingsByOwnerStatus(User owner, StatusBooking status);
-
-    @Query("select b from Booking b where b.item.id in (select i.id from Item i where i.owner = ?5) and b.start <= current_timestamp and b.end >= current_timestamp")
-    List<Booking> findAllByBookerIsCurrentItem(User booker, LocalDateTime localDateTimeNow);
-
-    @Query("select b from Booking b where b.item.id in (select i.id from Item i where i.owner = ?5) and b.start >= current_timestamp")
-    List<Booking> findAllByBookerAndStartIsAfterForItems(User booker, LocalDateTime localDateTimeNow);
-
-    @Query("select b from Booking b where b.item.id in (select i.id from Item i where i.owner = ?5) and b.end <= current_timestamp")
-    List<Booking> findAllByBookerAndStartIsBeforeForItems(User booker, LocalDateTime localDateTimeNow);*/
+    @Query(value = "SELECT * FROM bookings b JOIN items i ON i.id = b.item_id WHERE b.item_id = :itemId AND b.booker_id = :bookerId AND b.end_date < :currentTime AND  b.status != 'REJECTED'", nativeQuery = true)
+    Optional<Booking> findByBookerAndItem(Long itemId, Long bookerId, LocalDateTime currentTime);
 }

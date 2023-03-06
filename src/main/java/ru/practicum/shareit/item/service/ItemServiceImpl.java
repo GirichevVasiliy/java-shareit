@@ -9,10 +9,10 @@ import ru.practicum.shareit.booking.dto.DateBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exception.exceptions.ForbiddenResourceException;
-import ru.practicum.shareit.exception.exceptions.InvalidOwnerException;
-import ru.practicum.shareit.exception.exceptions.ResourceNotFoundException;
-import ru.practicum.shareit.exception.exceptions.ValidationDateException;
+import ru.practicum.shareit.exception.ForbiddenResourceException;
+import ru.practicum.shareit.exception.InvalidOwnerException;
+import ru.practicum.shareit.exception.ResourceNotFoundException;
+import ru.practicum.shareit.exception.ValidationDateBookingException;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.dto.CommentMapper;
 import ru.practicum.shareit.item.comment.model.Comment;
@@ -100,7 +100,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
     public ItemDto getItemById(Long itemId, Long userId) {
         log.info("Получен запрос на поиск вещи с ID " + itemId + " от пользователя с ID " + userId);
         Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()){
+        if (user.isEmpty()) {
             throw new ResourceNotFoundException(" Пользователь с " + userId + " не найден");
         }
         Optional<Item> itemOptional = itemRepository.findById(itemId);
@@ -128,7 +128,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
         if (!text.isEmpty()) {
             return itemRepository.getAvailableItems(text.toLowerCase()).stream()
                     .filter(Item::getAvailable)
-                    .map(item -> ItemMapper.toItemDtoList(item,  item.getComments().stream().map(CommentMapper::toCommentDto).collect(Collectors.toList())))
+                    .map(item -> ItemMapper.toItemDtoList(item, item.getComments().stream().map(CommentMapper::toCommentDto).collect(Collectors.toList())))
                     .collect(Collectors.toList());
         } else {
             return new ArrayList<>();
@@ -174,6 +174,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
                 getLastBooking(item, userId),
                 getNextBooking(item, userId));
     }
+
     private DateBookingDto getLastBooking(Item item, Long userId) {
         if (!item.getOwner().getId().equals(userId)) {
             return null;
@@ -207,10 +208,10 @@ public class ItemServiceImpl implements ItemService, CommentService {
     }
 
     private void isTheBookingEnd(Item item, User user) {
-        boolean isEnd = bookingRepository.findByBookerAndItem(user, item).stream()
-                .anyMatch((booking) -> booking.getEnd().isBefore(LocalDateTime.now()));
+        Optional<Booking> bookingNotEnd = bookingRepository.findByBookerAndItem(item.getId(), user.getId(), LocalDateTime.now());
+        boolean isEnd = bookingNotEnd.isPresent();
         if (!isEnd) {
-            throw new ValidationDateException("Невозможно оставить коммент. Бронирование не завершено");
+            throw new ValidationDateBookingException("Невозможно оставить коммент. Бронирование не завершено");
         }
     }
 

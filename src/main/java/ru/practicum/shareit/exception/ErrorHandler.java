@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.exceptions.*;
 
 import java.util.Map;
 
@@ -55,5 +54,11 @@ public class ErrorHandler {
         Map<String, String> error = Map.of("error", e.getMessage());
         log.warn(e.getMessage());
         return error;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationDateBookingException(final ValidationDateBookingException e) {
+        return Map.of("400", e.getMessage());
     }
 }
