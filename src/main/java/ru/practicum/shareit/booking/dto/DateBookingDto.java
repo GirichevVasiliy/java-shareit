@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class DateBookingDto {
     private final Long id;
     private final Long bookerId;
-    @JsonFormat
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final LocalDateTime start;
-    @JsonFormat
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final LocalDateTime end;
 }

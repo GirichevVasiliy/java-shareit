@@ -16,15 +16,15 @@ import java.time.LocalDateTime;
 @Builder
 public class BookingDto {
     private final Long id;
-    @JsonFormat
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final LocalDateTime start;
-    @JsonFormat
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final LocalDateTime end;
     private final ItemDto item;
     private final UserDto booker;
-    private final StatusBooking status;
+    private final String status;
 
-    public BookingDto(Long id, LocalDateTime start, LocalDateTime end, ItemDto itemDto, UserDto bookerDto, StatusBooking status) {
+    public BookingDto(Long id, LocalDateTime start, LocalDateTime end, ItemDto itemDto, UserDto bookerDto, String status) {
         this.id = id;
         this.start = start;
         this.end = end;

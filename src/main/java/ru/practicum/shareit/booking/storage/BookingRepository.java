@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.storage;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,8 +18,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerAndStatusOrderByStartDesc(User booker, StatusBooking status);
 
     List<Booking> findByBookerOrderByStartDesc(User booker);
+    @Query(value = "SELECT * FROM bookings b JOIN items i ON i.id = b.item_id WHERE b.booker_id = :bookerId AND b.item_id = :itemId LIMIT :lim", nativeQuery = true)
+   Optional<Booking> bookingСonfirmation(Long bookerId, Long itemId, Integer lim);
 
-    @Query("select b from Booking b where b.booker = :booker and b.start <= current_timestamp and b.end >= current_timestamp")
+    @Query("select b from Booking b where b.booker = :booker and b.start <= current_timestamp and b.end >= current_timestamp ORDER BY b.start DESC")
     List<Booking> findCurrentByBookerOrderByStartDesc(User booker);
 
     List<Booking> findAllByBookerAndStartIsAfterOrderByStartDesc(User booker, LocalDateTime localDateTimeNow);
@@ -42,6 +45,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItemAndStatusOrderByStartDesc(Item item, StatusBooking status);
 
-    @Query(value = "SELECT * FROM bookings b JOIN items i ON i.id = b.item_id WHERE b.item_id = :itemId AND b.booker_id = :bookerId AND b.end_date < :currentTime AND  b.status != 'REJECTED'", nativeQuery = true)
+    @Query(value = "SELECT * FROM bookings b JOIN items i ON i.id = b.item_id WHERE b.item_id = :itemId AND b.booker_id = :bookerId AND b.end_date < :currentTime AND  b.status != 'REJECTED' LIMIT 1", nativeQuery = true)
     Optional<Booking> findByBookerAndItem(Long itemId, Long bookerId, LocalDateTime currentTime);
 }

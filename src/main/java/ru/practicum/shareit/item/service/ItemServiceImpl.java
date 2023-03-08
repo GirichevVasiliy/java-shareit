@@ -162,7 +162,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
         Optional<Item> item = Optional.ofNullable(itemRepository.findById(itemId).orElseThrow(
                 () -> new ResourceNotFoundException(" Вещь с " + itemId + " не найдена")));
         isBooker(item.get(), author.get());
-        isTheBookingEnd(item.get(), author.get());
+        theBookingEnd(item.get(), author.get());
         commentDto.setCreated(LocalDateTime.now());
         Comment comment = CommentMapper.toComment(commentDto, author.get(), item.get());
         return CommentMapper.toCommentDto(commentRepository.save(comment));
@@ -199,15 +199,15 @@ public class ItemServiceImpl implements ItemService, CommentService {
     }
 
     private void isBooker(Item item, User user) {
-        boolean isBooker = bookingRepository.findByBookerOrderByStartDesc(user).stream()
-                .anyMatch(booking -> booking.getItem().equals(item));
+        final int limit = 1;
+        boolean isBooker = bookingRepository.bookingСonfirmation(user.getId(), item.getId(), limit).isPresent();
         if (!isBooker) {
             throw new InvalidOwnerException("Пользователь с id " + user.getId() + "никогда ее не бронировал вещь c Id " +
                     item.getId() + " комментарии не доступны.");
         }
     }
 
-    private void isTheBookingEnd(Item item, User user) {
+    private void theBookingEnd(Item item, User user) {
         Optional<Booking> bookingNotEnd = bookingRepository.findByBookerAndItem(item.getId(), user.getId(), LocalDateTime.now());
         boolean isEnd = bookingNotEnd.isPresent();
         if (!isEnd) {

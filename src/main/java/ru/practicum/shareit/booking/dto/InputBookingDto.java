@@ -11,10 +11,10 @@ public class InputBookingDto {
     @NotNull
     private Long itemId;
     @NotNull
-    @JsonFormat
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime start;
     @NotNull
-    @JsonFormat
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
 
     public InputBookingDto(Long itemId, LocalDateTime start, LocalDateTime end) {
