@@ -127,8 +127,8 @@ public class ItemServiceImpl implements ItemService, CommentService {
         log.info("Получен запрос на поиск вещи: " + text + " от пользователя с ID " + userId);
         if (!text.isEmpty()) {
             return itemRepository.getAvailableItems(text.toLowerCase()).stream()
-                    .filter(Item::getAvailable)
-                    .map(item -> ItemMapper.toItemDtoList(item, item.getComments().stream().map(CommentMapper::toCommentDto).collect(Collectors.toList())))
+                    .map(item -> ItemMapper.toItemDtoList(item, item.getComments().stream().map(CommentMapper::toCommentDto)
+                            .collect(Collectors.toList())))
                     .collect(Collectors.toList());
         } else {
             return new ArrayList<>();
@@ -161,8 +161,8 @@ public class ItemServiceImpl implements ItemService, CommentService {
                 () -> new ResourceNotFoundException(" Пользователь с " + authorId + " не найден")));
         Optional<Item> item = Optional.ofNullable(itemRepository.findById(itemId).orElseThrow(
                 () -> new ResourceNotFoundException(" Вещь с " + itemId + " не найдена")));
-        isBooker(item.get(), author.get());
-        theBookingEnd(item.get(), author.get());
+        checkBooker(item.get(), author.get());
+        checkIfBookingCompleted(item.get(), author.get());
         commentDto.setCreated(LocalDateTime.now());
         Comment comment = CommentMapper.toComment(commentDto, author.get(), item.get());
         return CommentMapper.toCommentDto(commentRepository.save(comment));
@@ -179,7 +179,9 @@ public class ItemServiceImpl implements ItemService, CommentService {
         if (!item.getOwner().getId().equals(userId)) {
             return null;
         }
-        Optional<Booking> bookings = bookingRepository.findByItemAndEndIsBeforeOrderByStart(item, LocalDateTime.now());
+        final int limit = 1;
+        Optional<Booking> bookings = bookingRepository.findByItemAndEndIsBefore(item.getId(), LocalDateTime.now(),
+                StatusBooking.REJECTED.name(), limit);
         if (bookings.isEmpty()) {
             return null;
         }
@@ -187,18 +189,19 @@ public class ItemServiceImpl implements ItemService, CommentService {
     }
 
     private DateBookingDto getNextBooking(Item item, Long userId) {
+        final int limit = 1;
         if (!item.getOwner().getId().equals(userId)) {
             return null;
         }
-        Optional<Booking> bookings = bookingRepository.findByItemAndStartIsAfterAndStatusIsNotOrderByStar(item.getId(),
-                LocalDateTime.now(), StatusBooking.REJECTED.name());
+        Optional<Booking> bookings = bookingRepository.findByItemAndStartIsAfter(item.getId(),
+                LocalDateTime.now(), StatusBooking.REJECTED.name(), limit);
         if (bookings.isEmpty()) {
             return null;
         }
         return BookingMapper.toDateBookingDto(bookings.get());
     }
 
-    private void isBooker(Item item, User user) {
+    private void checkBooker(Item item, User user) {
         final int limit = 1;
         boolean isBooker = bookingRepository.bookingСonfirmation(user.getId(), item.getId(), limit).isPresent();
         if (!isBooker) {
@@ -207,12 +210,12 @@ public class ItemServiceImpl implements ItemService, CommentService {
         }
     }
 
-    private void theBookingEnd(Item item, User user) {
-        Optional<Booking> bookingNotEnd = bookingRepository.findByBookerAndItem(item.getId(), user.getId(), LocalDateTime.now());
+    private void checkIfBookingCompleted(Item item, User user) {
+        final int limit = 1;
+        Optional<Booking> bookingNotEnd = bookingRepository.findByBookerAndItem(item.getId(), user.getId(), LocalDateTime.now(), StatusBooking.REJECTED.name(), limit);
         boolean isEnd = bookingNotEnd.isPresent();
         if (!isEnd) {
             throw new ValidationDateBookingException("Невозможно оставить коммент. Бронирование не завершено");
         }
     }
-
 }
