@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
