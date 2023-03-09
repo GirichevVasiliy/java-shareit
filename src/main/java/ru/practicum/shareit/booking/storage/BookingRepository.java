@@ -28,6 +28,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByBookerAndEndIsBeforeOrderByStartDesc(User booker, LocalDateTime localDateTimeNow);
 
+    List<Booking> findAllByItemIdAndStatus(Long itemId, StatusBooking status);
+
     @Query(value = "SELECT * FROM bookings b JOIN items i ON i.id = b.item_id WHERE b.item_id = :itemId AND " +
             "b.end_date < :currentTime AND b.status != :status ORDER BY b.start_date ASC LIMIT :limit", nativeQuery = true)
     Optional<Booking> findByItemAndEndIsBefore(Long itemId, LocalDateTime currentTime, String status, Integer limit);
@@ -42,4 +44,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b INNER JOIN Item i ON i.id = b.item.id WHERE i.owner.id = :ownerId ORDER BY b.start DESC")
     List<Booking> findAllByOwner(Long ownerId);
+
+    List<Booking> findAllByItemIdInAndStatus(List<Long> ids, StatusBooking status);
 }

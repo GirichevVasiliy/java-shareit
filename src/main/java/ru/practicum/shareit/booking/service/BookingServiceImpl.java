@@ -39,7 +39,6 @@ public class BookingServiceImpl implements BookingService {
         this.itemRepository = itemRepository;
     }
 
-
     @Transactional
     @Override
     public BookingDto addBooking(InputBookingDto inputBookingDto, Long userId) {
@@ -130,40 +129,6 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    /*  @Override
-      public List<BookingDto> getAllBookingsForOwner(Long ownerId, StateBooking stateBooking) {
-          Optional<User> owner = Optional.ofNullable(userRepository.findById(ownerId).orElseThrow(
-                  () -> new ResourceNotFoundException(" Пользователь с " + ownerId + " не найден")));
-          List<Item> items = itemRepository.findByOwnerId(owner.get().getId());
-          return items.stream()
-                  .flatMap((item) -> getAllBookingsForOwnerState(item, stateBooking).stream())
-                  .collect(Collectors.toList());
-      }
-
-      private List<BookingDto> getAllBookingsForOwnerState(Item item, StateBooking stateBooking) {
-          switch (stateBooking) {
-              case ALL:
-                  return bookingRepository.findByItemOrderByStartDesc(item).stream().map(BookingMapper::bookingToDto)
-                          .collect(Collectors.toList());
-              case CURRENT:
-                  return bookingRepository.findCurrentByItem(item)
-                          .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
-              case PAST:
-                  return bookingRepository.findByItemAndEndIsBeforeOrderByStartDesc(item, LocalDateTime.now())
-                          .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
-              case WAITING:
-                  return bookingRepository.findByItemAndStatusOrderByStartDesc(item, StatusBooking.WAITING)
-                          .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
-              case FUTURE:
-                  return bookingRepository.findByItemAndStartIsAfterOrderByStartDesc(item, LocalDateTime.now())
-                          .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
-              case REJECTED:
-                  return bookingRepository.findByItemAndStatusOrderByStartDesc(item, StatusBooking.REJECTED)
-                          .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
-              default:
-                  throw new ValidationStateException("Unknown state: UNSUPPORTED_STATUS");
-          }
-      }*/
     @Override
     public List<BookingDto> getAllBookingsForOwner(Long ownerId, StateBooking stateBooking) {
         Optional<User> owner = Optional.ofNullable(userRepository.findById(ownerId).orElseThrow(
