@@ -1,14 +1,14 @@
-package ru.practicum.shareit.user.repository;
+package ru.practicum.shareit.user.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
-@Component
+@Repository
 @Slf4j
-public class UserRepositoryInMemory implements UserRepository {
+public class UserStorageImp implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
 
     private Long id = 1L;
