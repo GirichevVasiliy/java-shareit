@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 
 import javax.validation.Valid;
@@ -27,8 +28,8 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestDto addItemRequest(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
-                                         @Valid @RequestBody String description) {
-        return itemRequestService.addItemRequest(description, userId);
+                                         @Valid @RequestBody ItemRequestDto itemRequestDto) {
+        return itemRequestService.addItemRequest(ItemRequestMapper.itemRequestDtoCreate(itemRequestDto), userId);
     }
 
     @GetMapping

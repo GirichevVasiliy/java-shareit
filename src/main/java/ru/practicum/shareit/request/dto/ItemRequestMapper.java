@@ -4,6 +4,7 @@ import ru.practicum.shareit.request.model.Answer;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,9 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ItemRequestMapper {
-    public static ItemRequestDto descriptionToDto(String description){
+    public static ItemRequestDto itemRequestDtoCreate(ItemRequestDto itemRequestDto){
         return ItemRequestDto.builder()
-                .description(description)
+                .description(itemRequestDto.getDescription())
                 .created(LocalDateTime.now())
                 .build();
     }
@@ -35,11 +36,18 @@ public class ItemRequestMapper {
                 .answers(new ArrayList<>())
                 .build();
     }
-    public static ItemRequest dtoToitemRequest(ItemRequestDto itemRequestDto, UserDto userDto){
+    public static ItemRequest dtoToItemRequestUserDto(ItemRequestDto itemRequestDto, UserDto userDto){
         return ItemRequest.builder()
                 .description(itemRequestDto.getDescription())
                 .created(itemRequestDto.getCreated())
                 .requestor(UserMapper.dtoToUser(userDto))
+                .build();
+    }
+    public static ItemRequest itemRequestCreate(ItemRequestDto itemRequestDto, User user){
+        return ItemRequest.builder()
+                .description(itemRequestDto.getDescription())
+                .created(itemRequestDto.getCreated())
+                .requestor(user)
                 .build();
     }
 }
