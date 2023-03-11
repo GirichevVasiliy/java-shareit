@@ -1,7 +1,16 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * TODO Sprint add-item-requests.
@@ -9,4 +18,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
+    private final ItemRequestServiceImpl itemRequestService;
+
+    @Autowired
+    public ItemRequestController(ItemRequestServiceImpl itemRequestService) {
+        this.itemRequestService = itemRequestService;
+    }
+
+    @PostMapping
+    public ItemRequestDto addItemRequest(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+                                         @Valid @RequestBody String description) {
+        return itemRequestService.addItemRequest(description, userId);
+    }
+
+    @GetMapping
+    public List<ItemRequestDto> getAllItemRequestsUser(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+        return itemRequestService.getAllItemRequestsUser(userId);
+    }
+
+    @GetMapping("/all")
+    public Page<ItemRequestDto> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+                                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                   @RequestParam(defaultValue = "10") @Min(10) Integer size) {
+        return itemRequestService.getAllItemRequests(userId, PageRequest.of(from, size));
+    }
+
+    @GetMapping("/{requestId}")
+    public ItemRequestDto getItemRequestById(@PathVariable @NotNull Long requestId,
+                                             @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+        return itemRequestService.getItemRequestById(requestId, userId);
+    }
 }
