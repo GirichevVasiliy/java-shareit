@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.dto;
 import ru.practicum.shareit.booking.dto.DateBookingDto;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.Answer;
 import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.util.List;
@@ -48,6 +49,13 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .owner(UserMapper.userToDto(item.getOwner()))
                 .comments(comments)
+                .build();
+    }
+    public static Answer answerCreateForItem(Item item){
+        return Answer.builder()
+                .itemId(item.getId())
+                .itemName(item.getName())
+                .ownerId(item.getOwner().getId())
                 .build();
     }
 }

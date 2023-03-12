@@ -7,6 +7,6 @@ import lombok.Data;
 @Builder
 public class AnswerDto {
     private final Long itemId;
-    private final String description;
+    private final String itemName;
     private final Long ownerId;
 }

@@ -50,4 +50,5 @@ CREATE TABLE IF NOT EXISTS comments(
                         CONSTRAINT fk_comments_author_id FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE INDEX bookings_start_end_date ON bookings (start_date, end_date);
+CREATE INDEX requests_created_date ON requests (created);
 
