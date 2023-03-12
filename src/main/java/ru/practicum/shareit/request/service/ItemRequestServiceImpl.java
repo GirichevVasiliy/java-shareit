@@ -37,7 +37,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
     }
-@Transactional
+
+    @Transactional
     @Override
     public ItemRequestDto addItemRequest(ItemRequestDto itemRequestDto, Long userId) {
         log.info("Получен запрос на создание запроса от пользователя с Id = " + userId);
@@ -51,36 +52,50 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> getAllItemRequestsUser(Long userId) {
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
-
-        List<ItemRequest> itemRequestsForUser = getItemRequest(userId);
+        List<ItemRequest> itemRequestsForUser = getItemRequest(user.get().getId());
         Map<Long, List<Answer>> answersForItemRequest = getAnswers(itemRequestsForUser);
         return creatingItemRequestDtoWithAnswers(answersForItemRequest, itemRequestsForUser);
     }
 
     @Override
     public Page<ItemRequestDto> getAllItemRequests(Long userId, Pageable pageable) {
-        return null;
+        Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
+        Page<ItemRequest> itemRequests = itemRequestRepository.findAll(pageable);
+        return itemRequests.map(ItemRequestMapper::itemRequestToDto);
     }
 
     @Override
     public ItemRequestDto getItemRequestById(Long itemRequestId, Long userId) {
-        return null;
+        Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
+        Optional<ItemRequest> itemRequest = Optional.ofNullable(itemRequestRepository.findById(itemRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException(" Запрос с " + itemRequestId + " не найден")));;
+        List<Answer> itemToAnswerList = new ArrayList<>();
+        if (itemRequest.isPresent()){
+            itemToAnswerList = itemRepository.findAllByRequest(itemRequest.get())
+                    .stream().map(ItemMapper::answerCreateForItem).collect(Collectors.toList());;
+        }
+        return ItemRequestMapper.itemRequestAndListAnswersToDto(itemRequest.get(),itemToAnswerList);
     }
-    private List<ItemRequest> getItemRequest(Long userId){
+
+    private List<ItemRequest> getItemRequest(Long userId) {
         return itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId);
     }
+
     private Map<Long, List<Answer>> getAnswers(List<ItemRequest> itemRequest) {
         Map<Long, List<Item>> answers = itemRepository.findAllByRequestIn(itemRequest).stream()
-                .collect(Collectors.groupingBy(i->i.getRequest().getId()));
+                .collect(Collectors.groupingBy(i -> i.getRequest().getId()));
         Map<Long, List<Answer>> answerList = new HashMap<>();
-       for(Long i: answers.keySet()){
-           List<Answer> itemToAnswerList = answers.get(i).stream().map(ItemMapper::answerCreateForItem).collect(Collectors.toList());
-           answerList.put(i, itemToAnswerList);
-       }
+        for (Long i : answers.keySet()) {
+            List<Answer> itemToAnswerList = answers.get(i).stream().map(ItemMapper::answerCreateForItem).collect(Collectors.toList());
+            answerList.put(i, itemToAnswerList);
+        }
         return answerList;
     }
-    private  List<ItemRequestDto> creatingItemRequestDtoWithAnswers(Map<Long, List<Answer>> answersForItemRequest,
-                                                                    List<ItemRequest> itemRequestsForUser){
+
+    private List<ItemRequestDto> creatingItemRequestDtoWithAnswers(Map<Long, List<Answer>> answersForItemRequest,
+                                                                   List<ItemRequest> itemRequestsForUser) {
         List<ItemRequestDto> itemRequestDtos = new ArrayList<>();
         if (!answersForItemRequest.isEmpty()) {
             for (ItemRequest itemRequest : itemRequestsForUser) {
@@ -91,7 +106,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         } else {
             for (ItemRequest itemRequest : itemRequestsForUser) {
                 ItemRequestDto ItemRequestDto = ItemRequestMapper
-                        .itemRequestAndListAnswersToDto(itemRequest, new ArrayList<>());
+                        .itemRequestToDto(itemRequest);
                 itemRequestDtos.add(ItemRequestDto);
             }
         }
