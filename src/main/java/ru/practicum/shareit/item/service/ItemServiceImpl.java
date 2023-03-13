@@ -22,6 +22,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -39,14 +41,17 @@ public class ItemServiceImpl implements ItemService, CommentService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Autowired
     public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository,
-                           CommentRepository commentRepository, BookingRepository bookingRepository) {
+                           CommentRepository commentRepository, BookingRepository bookingRepository,
+                           ItemRequestRepository itemRequestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
         this.bookingRepository = bookingRepository;
+        this.itemRequestRepository = itemRequestRepository;
     }
 
     @Transactional
@@ -56,8 +61,13 @@ public class ItemServiceImpl implements ItemService, CommentService {
         User user = UserMapper.dtoToUser(userDto);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
-        return ItemMapper.toItemDtoSingl(itemRepository.save(item));
+        if (itemDto.getRequestId() != null){
+            item.setRequest(getItemRequest(itemDto.getRequestId()));
+        }
+            return ItemMapper.toItemDtoSingl(itemRepository.save(item));
     }
+
+
 
     @Transactional
     @Override
@@ -220,5 +230,9 @@ public class ItemServiceImpl implements ItemService, CommentService {
         if (!isEnd) {
             throw new ValidationDateBookingException("Невозможно оставить коммент. Бронирование не завершено");
         }
+    }
+    private ItemRequest getItemRequest(Long requestId) {
+        Optional<ItemRequest> itemRequest = itemRequestRepository.findById(requestId);
+        return itemRequest.get();
     }
 }

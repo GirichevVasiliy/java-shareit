@@ -58,11 +58,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public Page<ItemRequestDto> getAllItemRequests(Long userId, Pageable pageable) {
+    public List<ItemRequestDto> getAllItemRequests(Long userId, Pageable pageable) {
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         Page<ItemRequest> itemRequests = itemRequestRepository.findAll(pageable);
-        return itemRequests.map(ItemRequestMapper::itemRequestToDto);
+        itemRequests.getContent();
+        return itemRequests.getContent().stream().map(ItemRequestMapper::itemRequestToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -70,7 +71,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         Optional<ItemRequest> itemRequest = Optional.ofNullable(itemRequestRepository.findById(itemRequestId)
-                .orElseThrow(() -> new ResourceNotFoundException(" Запрос с " + itemRequestId + " не найден")));;
+                .orElseThrow(() -> new ResourceNotFoundException(" Запрос с " + itemRequestId + " не найден")));
         List<Answer> itemToAnswerList = new ArrayList<>();
         if (itemRequest.isPresent()){
             itemToAnswerList = itemRepository.findAllByRequest(itemRequest.get())

@@ -3,12 +3,14 @@ package ru.practicum.shareit.request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -38,10 +40,10 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public Page<ItemRequestDto> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+    public List<ItemRequestDto> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
                                                    @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                                   @RequestParam(defaultValue = "10") @Min(10) Integer size) {
-        return itemRequestService.getAllItemRequests(userId, PageRequest.of(from, size));
+                                                   @RequestParam(defaultValue = "10") @Min(1)  Integer size) {
+        return itemRequestService.getAllItemRequests(userId, PageRequest.of(from, size, Sort.by("created").descending()));
     }
 
     @GetMapping("/{requestId}")

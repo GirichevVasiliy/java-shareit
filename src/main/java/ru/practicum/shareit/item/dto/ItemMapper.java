@@ -4,17 +4,21 @@ import ru.practicum.shareit.booking.dto.DateBookingDto;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.Answer;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.util.List;
 
 public class ItemMapper {
     public static ItemDto toItemDtoSingl(Item item) {
+        ItemRequest request = item.getRequest();
+        Long requestId = request != null ? request.getId() : null;
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(requestId)
                 .owner(UserMapper.userToDto(item.getOwner()))
                 .build();
     }
