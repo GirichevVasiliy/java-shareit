@@ -15,6 +15,8 @@ public class AnswerMapper {
                 .itemId(answer.getItemId())
                 .itemName(answer.getItemName())
                 .ownerId(answer.getOwnerId())
+                .available(answer.getAvailable())
+                .description(answer.getDescription())
                 .build();
     }
 }

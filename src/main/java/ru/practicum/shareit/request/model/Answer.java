@@ -9,5 +9,7 @@ public class Answer {
     private final Long itemId;
     private final String itemName;
     private final Long ownerId;
+    private final Boolean available;
+    private final String description;
 
 }

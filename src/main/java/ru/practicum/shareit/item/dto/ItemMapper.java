@@ -33,11 +33,14 @@ public class ItemMapper {
     }
 
     public static ItemDto toItemDtoFull(Item item, List<CommentDto> comments, DateBookingDto lastBooking, DateBookingDto nextBooking) {
+        ItemRequest request = item.getRequest();
+        Long requestId = request != null ? request.getId() : null;
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(requestId)
                 .owner(UserMapper.userToDto(item.getOwner()))
                 .comments(comments)
                 .lastBooking(lastBooking)
@@ -46,11 +49,14 @@ public class ItemMapper {
     }
 
     public static ItemDto toItemDtoList(Item item, List<CommentDto> comments) {
+        ItemRequest request = item.getRequest();
+        Long requestId = request != null ? request.getId() : null;
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(requestId)
                 .owner(UserMapper.userToDto(item.getOwner()))
                 .comments(comments)
                 .build();
@@ -60,6 +66,8 @@ public class ItemMapper {
                 .itemId(item.getId())
                 .itemName(item.getName())
                 .ownerId(item.getOwner().getId())
+                .available(item.getAvailable())
+                .description(item.getDescription())
                 .build();
     }
 }

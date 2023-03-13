@@ -50,6 +50,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getAllItemRequestsUser(Long userId) {
+        log.info("Получен запрос на получение списка запросов созданных пользователем с Id = " + userId);
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         List<ItemRequest> itemRequestsForUser = getItemRequest(user.get().getId());
@@ -59,6 +60,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getAllItemRequests(Long userId, Pageable pageable) {
+        log.info("Получен запрос на получение списка всез запросов, от пользователем с Id = " + userId);
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         Page<ItemRequest> itemRequests = itemRequestRepository.findAll(pageable);
@@ -68,6 +70,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto getItemRequestById(Long itemRequestId, Long userId) {
+        log.info("Получен запрос на получение запроса с Id = " + itemRequestId + ", от пользователем с Id = " + userId);
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         Optional<ItemRequest> itemRequest = Optional.ofNullable(itemRequestRepository.findById(itemRequestId)

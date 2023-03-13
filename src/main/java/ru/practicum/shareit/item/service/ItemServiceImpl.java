@@ -74,6 +74,9 @@ public class ItemServiceImpl implements ItemService, CommentService {
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long userId) {
         log.info("Получен запрос на обновление вещи с ID " + itemId + " от пользователя с ID " + userId);
         Item item = ItemMapper.toItem(itemDto);
+        if (itemDto.getRequestId() != null){
+            item.setRequest(getItemRequest(itemDto.getRequestId()));
+        }
         Optional<Item> itemFromBase = itemRepository.findById(itemId);
         if (itemFromBase.isPresent()) {
             if (itemFromBase.get().getOwner().getId().equals(userId)) {
