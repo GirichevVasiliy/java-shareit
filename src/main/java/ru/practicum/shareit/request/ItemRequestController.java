@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +9,6 @@ import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;

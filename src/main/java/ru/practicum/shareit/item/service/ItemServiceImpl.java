@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -61,12 +62,11 @@ public class ItemServiceImpl implements ItemService, CommentService {
         User user = UserMapper.dtoToUser(userDto);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
-        if (itemDto.getRequestId() != null){
+        if (itemDto.getRequestId() != null) {
             item.setRequest(getItemRequest(itemDto.getRequestId()));
         }
-            return ItemMapper.toItemDtoSingl(itemRepository.save(item));
+        return ItemMapper.toItemDtoSingl(itemRepository.save(item));
     }
-
 
 
     @Transactional
@@ -74,7 +74,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long userId) {
         log.info("Получен запрос на обновление вещи с ID " + itemId + " от пользователя с ID " + userId);
         Item item = ItemMapper.toItem(itemDto);
-        if (itemDto.getRequestId() != null){
+        if (itemDto.getRequestId() != null) {
             item.setRequest(getItemRequest(itemDto.getRequestId()));
         }
         Optional<Item> itemFromBase = itemRepository.findById(itemId);
@@ -128,11 +128,11 @@ public class ItemServiceImpl implements ItemService, CommentService {
     }
 
     @Override
-    public List<ItemDto> getItemsByUser(Long userId) {
+    public List<ItemDto> getItemsByUser(Long userId, Pageable pageable) {
         log.info("Получен запрос на получение списка вещей пользователя с ID " + userId);
-        List<Item> items = itemRepository.findByOwnerIdOrderById(userId);
+        List<Item> items = itemRepository.findByOwnerIdOrderById(userId, pageable).getContent();
         List<Booking> allBookings = bookingRepository.findAllByItemIdInAndStatus(items.stream().map(Item::getId)
-                .collect(Collectors.toList()), StatusBooking.APPROVED);
+                .collect(Collectors.toList()), StatusBooking.APPROVED, pageable).getContent();
         Map<Long, List<Booking>> byItemIdList = allBookings.stream().collect(Collectors.groupingBy(b -> b.getItem().getId()));
         List<ItemDto> result = new LinkedList<>();
         for (Item item : items) {
@@ -146,10 +146,10 @@ public class ItemServiceImpl implements ItemService, CommentService {
     }
 
     @Override
-    public List<ItemDto> getAvailableItems(Long userId, String text) {
+    public List<ItemDto> getAvailableItems(Long userId, String text, Pageable pageable) {
         log.info("Получен запрос на поиск вещи: " + text + " от пользователя с ID " + userId);
         if (!text.isEmpty()) {
-            return itemRepository.getAvailableItems(text.toLowerCase()).stream()
+            return itemRepository.getAvailableItems(text.toLowerCase(), pageable).getContent().stream()
                     .map(item -> ItemMapper.toItemDtoList(item, item.getComments().stream().map(CommentMapper::toCommentDto)
                             .collect(Collectors.toList())))
                     .collect(Collectors.toList());
@@ -234,6 +234,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
             throw new ValidationDateBookingException("Невозможно оставить коммент. Бронирование не завершено");
         }
     }
+
     private ItemRequest getItemRequest(Long requestId) {
         Optional<ItemRequest> itemRequest = itemRequestRepository.findById(requestId);
         return itemRequest.get();

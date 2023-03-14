@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
@@ -10,6 +12,8 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -22,7 +26,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @Autowired
-    public BookingController(ItemService itemService, UserService userService, BookingService bookingService) {
+    public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
     }
 
@@ -47,15 +51,19 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllBookings(
             @RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
-            @RequestParam(defaultValue = "ALL", required = false) StateBooking state) {
-        return bookingService.getAllBookings(userId, state);
+            @RequestParam(defaultValue = "ALL", required = false) StateBooking state,
+            @RequestParam(defaultValue = "0") @Min(0) Integer from,
+            @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        return bookingService.getAllBookings(userId, state, PageRequest.of(from, size, Sort.by("start").descending()));
     }
 
     @GetMapping("owner")
     public List<BookingDto> getAllBookingsForOwner(
             @RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
-            @RequestParam(defaultValue = "ALL", required = false) StateBooking state) {
-        return bookingService.getAllBookingsForOwner(userId, state);
+            @RequestParam(defaultValue = "ALL", required = false) StateBooking state,
+            @RequestParam(defaultValue = "0") @Min(0) Integer from,
+            @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        return bookingService.getAllBookingsForOwner(userId, state, PageRequest.of(from, size));
     }
 
 }

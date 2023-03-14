@@ -2,7 +2,6 @@ package ru.practicum.shareit.request.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +62,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         log.info("Получен запрос на получение списка всез запросов, от пользователем с Id = " + userId);
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
-        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorNot(user.get(), pageable);
+        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorNot(user.get(), pageable).getContent();
         Map<Long, List<Answer>> answersForItemRequest = getAnswers(itemRequests);
         return creatingItemRequestDtoWithAnswers(answersForItemRequest, itemRequests);
     }
@@ -76,11 +75,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Optional<ItemRequest> itemRequest = Optional.ofNullable(itemRequestRepository.findById(itemRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Запрос с " + itemRequestId + " не найден")));
         List<Answer> itemToAnswerList = new ArrayList<>();
-        if (itemRequest.isPresent()){
+        if (itemRequest.isPresent()) {
             itemToAnswerList = itemRepository.findAllByRequest(itemRequest.get())
-                    .stream().map(ItemMapper::answerCreateForItem).collect(Collectors.toList());;
+                    .stream().map(ItemMapper::answerCreateForItem).collect(Collectors.toList());
+            ;
         }
-        return ItemRequestMapper.itemRequestAndListAnswersToDto(itemRequest.get(),itemToAnswerList);
+        return ItemRequestMapper.itemRequestAndListAnswersToDto(itemRequest.get(), itemToAnswerList);
     }
 
     private List<ItemRequest> getItemRequest(Long userId) {

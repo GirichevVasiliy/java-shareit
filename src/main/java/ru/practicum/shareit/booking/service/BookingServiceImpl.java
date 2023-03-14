@@ -3,6 +3,10 @@ package ru.practicum.shareit.booking.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -102,38 +106,46 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookings(Long userId, StateBooking stateBooking) {
+    public List<BookingDto> getAllBookings(Long userId, StateBooking stateBooking, Pageable pageable) {
+        Pageable pageableNew = checkPageable(pageable);
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         switch (stateBooking) {
             case ALL:
-                return bookingRepository.findByBookerOrderByStartDesc(user.get()).stream().map(BookingMapper::bookingToDto)
-                        .collect(Collectors.toList());
+                return bookingRepository.findAllByBooker(user.get(), pageableNew).getContent().stream()
+                        .map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case CURRENT:
-                return bookingRepository.findCurrent(user.get())
+                return bookingRepository.findCurrent(user.get(), pageableNew).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findAllByBookerAndEndIsBeforeOrderByStartDesc(user.get(), LocalDateTime.now())
+                return bookingRepository.findAllByBookerAndEndIsBefore(user.get(), LocalDateTime.now(), pageableNew).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case WAITING:
-                return bookingRepository.findAllByBookerAndStatusOrderByStartDesc(user.get(), StatusBooking.WAITING)
+                return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.WAITING, pageableNew).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findAllByBookerAndStartIsAfterOrderByStartDesc(user.get(), LocalDateTime.now())
+                return bookingRepository.findAllByBookerAndStartIsAfter(user.get(), LocalDateTime.now(), pageableNew).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case REJECTED:
-                return bookingRepository.findAllByBookerAndStatusOrderByStartDesc(user.get(), StatusBooking.REJECTED)
+                return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.REJECTED, pageableNew).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             default:
                 throw new ValidationStateException("Unknown state: UNSUPPORTED_STATUS");
         }
     }
+    private Pageable checkPageable(Pageable pageable){
+        if (pageable.getPageNumber()==(pageable.getPageSize())){
+            Integer i = (pageable.getPageNumber())/pageable.getPageSize();
+            return  PageRequest.of(i, pageable.getPageSize(), Sort.by("start").descending());
+        }
+        return pageable;
+    }
 
     @Override
-    public List<BookingDto> getAllBookingsForOwner(Long ownerId, StateBooking stateBooking) {
+    public List<BookingDto> getAllBookingsForOwner(Long ownerId, StateBooking stateBooking, Pageable pageable) {
         Optional<User> owner = Optional.ofNullable(userRepository.findById(ownerId).orElseThrow(
                 () -> new ResourceNotFoundException(" Пользователь с " + ownerId + " не найден")));
-        List<Booking> bookings = bookingRepository.findAllByOwner(ownerId);
+        List<Booking> bookings = bookingRepository.findAllByOwner(ownerId, pageable);
         return getAllBookingsForOwnerState(bookings, stateBooking);
     }
 

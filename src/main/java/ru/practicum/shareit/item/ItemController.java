@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
@@ -11,6 +13,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -59,8 +62,10 @@ public class ItemController {
 
     //Просмотр владельцем списка всех его вещей с указанием названия и описания для каждой. Эндпойнт GET /items.
     @GetMapping
-    public List<ItemDto> getItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getItemsByUser(userId);
+    public List<ItemDto> getItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                        @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                        @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        return itemService.getItemsByUser(userId, PageRequest.of(from, size));
     }
 
     /**
@@ -70,8 +75,11 @@ public class ItemController {
      * Проверьте, что поиск возвращает только доступные для аренды вещи.
      */
     @GetMapping("/search")
-    public List<ItemDto> getAvailableItems(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestParam String text) {
-        return itemService.getAvailableItems(userId, text);
+    public List<ItemDto> getAvailableItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                           @RequestParam String text,
+                                           @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                           @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        return itemService.getAvailableItems(userId, text, PageRequest.of(from, size));
     }
 
     @PostMapping("/{itemId}/comment")
