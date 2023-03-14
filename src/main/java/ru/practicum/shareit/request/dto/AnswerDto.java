@@ -6,9 +6,11 @@ import lombok.Data;
 @Data
 @Builder
 public class AnswerDto {
-    private final Long itemId;
-    private final String itemName;
-    private final Long ownerId;
-    private final Boolean available;
+    private final Long id;
+    private final String name;
+   // private final Long ownerId;
+
     private final String description;
+    private final Boolean available;
+    private final Long requestId;
 }

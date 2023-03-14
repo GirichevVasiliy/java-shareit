@@ -62,12 +62,15 @@ public class ItemMapper {
                 .build();
     }
     public static Answer answerCreateForItem(Item item){
+        ItemRequest request = item.getRequest();
+        Long requestId = request != null ? request.getId() : null;
         return Answer.builder()
                 .itemId(item.getId())
                 .itemName(item.getName())
-                .ownerId(item.getOwner().getId())
+                //.ownerId(item.getOwner().getId())
                 .available(item.getAvailable())
                 .description(item.getDescription())
+                .requestId(requestId)
                 .build();
     }
 }

@@ -63,9 +63,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         log.info("Получен запрос на получение списка всез запросов, от пользователем с Id = " + userId);
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
-        Page<ItemRequest> itemRequests = itemRequestRepository.findAll(pageable);
-        itemRequests.getContent();
-        return itemRequests.getContent().stream().map(ItemRequestMapper::itemRequestToDto).collect(Collectors.toList());
+        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorNot(user.get(), pageable);
+        Map<Long, List<Answer>> answersForItemRequest = getAnswers(itemRequests);
+        return creatingItemRequestDtoWithAnswers(answersForItemRequest, itemRequests);
     }
 
     @Override

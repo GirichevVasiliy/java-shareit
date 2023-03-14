@@ -19,7 +19,7 @@ public class ItemRequestDto {
     private final String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final LocalDateTime created;
-    private final Long requestorId;
+    //private final Long requestorId;
     private final List<AnswerDto> items;
 
 }

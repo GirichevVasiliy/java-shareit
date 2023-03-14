@@ -23,7 +23,7 @@ public class ItemRequestMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated())
-                .requestorId(itemRequest.getRequestor().getId())
+                //.requestorId(itemRequest.getRequestor().getId())
                 .items(answers.stream().map(AnswerMapper::answerToDto).collect(Collectors.toList()))
                 .build();
     }
@@ -32,7 +32,7 @@ public class ItemRequestMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated())
-                .requestorId(itemRequest.getRequestor().getId())
+                //.requestorId(itemRequest.getRequestor().getId())
                 .items(new ArrayList<>())
                 .build();
     }

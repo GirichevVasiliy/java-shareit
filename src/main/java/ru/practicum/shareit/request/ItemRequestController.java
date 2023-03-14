@@ -42,7 +42,7 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDto> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
                                                    @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                                   @RequestParam(defaultValue = "10") @Min(1)  Integer size) {
+                                                   @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         return itemRequestService.getAllItemRequests(userId, PageRequest.of(from, size, Sort.by("created").descending()));
     }
 

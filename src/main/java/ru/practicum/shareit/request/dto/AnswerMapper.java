@@ -5,18 +5,19 @@ import ru.practicum.shareit.request.model.Answer;
 public class AnswerMapper {
     public static Answer dtoToAnswer(AnswerDto answerDto){
         return Answer.builder()
-                .itemId(answerDto.getItemId())
-                .itemName(answerDto.getItemName())
-                .ownerId(answerDto.getOwnerId())
+                .itemId(answerDto.getId())
+                .itemName(answerDto.getName())
+                //.ownerId(answerDto.getOwnerId())
                 .build();
     }
     public static AnswerDto answerToDto(Answer answer){
         return AnswerDto.builder()
-                .itemId(answer.getItemId())
-                .itemName(answer.getItemName())
-                .ownerId(answer.getOwnerId())
+                .id(answer.getItemId())
+                .name(answer.getItemName())
+                //.ownerId(answer.getOwnerId())
                 .available(answer.getAvailable())
                 .description(answer.getDescription())
+                .requestId(answer.getRequestId())
                 .build();
     }
 }
