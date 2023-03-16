@@ -362,6 +362,33 @@ class ItemControllerTest {
         verify(itemService, times(1)).getAvailableItems(userId, "text", pageable);
         assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
+    @Test
+    @SneakyThrows
+    void getAvailableItemsTest_whenEmptyTextSearch_thenReturnOk() {
+        List<ItemDto> itemDtoList = Arrays.asList(itemDto);
+        when(itemService.getAvailableItems(userId, "", pageable)).thenReturn(itemDtoList);
+        String result = mockMvc.perform(get("/items/search")
+                        .param("from", "0")
+                        .param("size", "2")
+                        .param("text", "")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(itemService, times(1)).getAvailableItems(userId, "", pageable);
+        assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAvailableItemsTest_whenNotTextForSearch_thenClientError() {
+       mockMvc.perform(get("/items/search")
+                        .param("from", "0")
+                        .param("size", "2")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is4xxClientError());
+        verify(itemService, never()).getAvailableItems(userId, "", pageable);
+    }
 
     @Test
     void postComment() {
