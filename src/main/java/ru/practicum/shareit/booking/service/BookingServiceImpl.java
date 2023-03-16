@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -88,7 +87,6 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToDto(bookingRepository.save(booking.get()));
     }
 
-
     @Override
     public BookingDto getBookingById(Long bookingId, Long userId) {
         log.info("Получен запрос на просмотр бронирования с Id " + bookingId
@@ -133,13 +131,6 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationStateException("Unknown state: UNSUPPORTED_STATUS");
         }
     }
-    private Pageable checkPageable(Pageable pageable){
-        if (pageable.getPageNumber()==(pageable.getPageSize())){
-            Integer i = (pageable.getPageNumber())/pageable.getPageSize();
-            return  PageRequest.of(i, pageable.getPageSize(), Sort.by("start").descending());
-        }
-        return pageable;
-    }
 
     @Override
     public List<BookingDto> getAllBookingsForOwner(Long ownerId, StateBooking stateBooking, Pageable pageable) {
@@ -182,5 +173,13 @@ public class BookingServiceImpl implements BookingService {
             return false;
         }
         return true;
+    }
+
+    private Pageable checkPageable(Pageable pageable) {
+        if (pageable.getPageNumber() == (pageable.getPageSize())) {
+            Integer i = (pageable.getPageNumber()) / pageable.getPageSize();
+            return PageRequest.of(i, pageable.getPageSize(), Sort.by("start").descending());
+        }
+        return pageable;
     }
 }
