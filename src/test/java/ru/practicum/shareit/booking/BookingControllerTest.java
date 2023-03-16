@@ -205,17 +205,15 @@ class BookingControllerTest {
     void getBookingByIdTest_whenUserIdNotValid_thenReturnedClientError() {
         mockMvc.perform(get("/bookings/{bookingId}", bookingId))
                 .andExpect(status().is4xxClientError());
-
         verify(bookingService, never()).getBookingById(anyLong(), anyLong());
     }
 
     @Test
     @SneakyThrows
     void getBookingByIdTest_whenBookingIdNotValid_thenReturnedClientError() {
-        mockMvc.perform(get("/bookings/{bookingId}", "")
+        mockMvc.perform(get("/bookings/{bookingId}", "e")
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().is4xxClientError());
-
         verify(bookingService, never()).getBookingById(anyLong(), anyLong());
     }
 
@@ -418,7 +416,7 @@ class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    void getAllBookingsForOwner_whenBookingListStatusALL_thenReturnOk() {
+    void getAllBookingsForOwnerTest_whenBookingListStatusALL_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
         final Pageable pageableSize = PageRequest.of(0, 2);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
@@ -436,7 +434,7 @@ class BookingControllerTest {
     }
     @Test
     @SneakyThrows
-    void getAllBookingsForOwner_whenBookingListStatusWAITING_thenReturnOk() {
+    void getAllBookingsForOwnerTest_whenBookingListStatusWAITING_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
         final Pageable pageableSize = PageRequest.of(0, 2);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.WAITING, pageableSize)).thenReturn(bookingDtoList);
@@ -454,7 +452,7 @@ class BookingControllerTest {
     }
     @Test
     @SneakyThrows
-    void getAllBookingsForOwner_whenBookingListStatusREJECTED_thenReturnOk() {
+    void getAllBookingsForOwnerTest_whenBookingListStatusREJECTED_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
         final Pageable pageableSize = PageRequest.of(0, 2);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.REJECTED, pageableSize)).thenReturn(bookingDtoList);
@@ -468,6 +466,152 @@ class BookingControllerTest {
                 .getResponse()
                 .getContentAsString();
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.REJECTED, pageableSize);
+        assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingListStatusPAST_thenReturnOk() {
+        final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
+        final Pageable pageableSize = PageRequest.of(0, 2);
+        when(bookingService.getAllBookingsForOwner(userId, StateBooking.PAST, pageableSize)).thenReturn(bookingDtoList);
+        String result = mockMvc.perform(get("/bookings/owner")
+                        .param("state", "PAST")
+                        .param("from", "0")
+                        .param("size", "2")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.PAST, pageableSize);
+        assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingListStatusFUTURE_thenReturnOk() {
+        final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
+        final Pageable pageableSize = PageRequest.of(0, 2);
+        when(bookingService.getAllBookingsForOwner(userId, StateBooking.FUTURE, pageableSize)).thenReturn(bookingDtoList);
+        String result = mockMvc.perform(get("/bookings/owner")
+                        .param("state", "FUTURE")
+                        .param("from", "0")
+                        .param("size", "2")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.FUTURE, pageableSize);
+        assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingListStatusCURRENT_thenReturnOk() {
+        final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
+        final Pageable pageableSize = PageRequest.of(0, 2);
+        when(bookingService.getAllBookingsForOwner(userId, StateBooking.CURRENT, pageableSize)).thenReturn(bookingDtoList);
+        String result = mockMvc.perform(get("/bookings/owner")
+                        .param("state", "CURRENT")
+                        .param("from", "0")
+                        .param("size", "2")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.CURRENT, pageableSize);
+        assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingListStatusUNSUPPORTED_STATUS_thenReturnedClientError() {
+        final Pageable pageableSize = PageRequest.of(0, 2);
+        when(bookingService.getAllBookingsForOwner(userId, StateBooking.UNSUPPORTED_STATUS, pageableSize))
+                .thenThrow(new ValidationStateException("Unknown state: UNSUPPORTED_STATUS"));
+        mockMvc.perform(get("/bookings/owner")
+                .param("state", "UNSUPPORTED_STATUS")
+                .param("from", "0")
+                .param("size", "2")
+                .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.error", is("Unknown state: UNSUPPORTED_STATUS")));
+        verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.UNSUPPORTED_STATUS, pageableSize);
+    }
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingNotState_thenReturnedClientError() {
+        final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
+        final Pageable pageableSize = PageRequest.of(0, 2);
+        when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
+        String result = mockMvc.perform(get("/bookings/owner")
+                        .param("size", "2")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
+        assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingListUserIdNotValid_thenReturnedClientError() {
+        final Pageable pageableSize = PageRequest.of(0, 2);
+        mockMvc.perform(get("/bookings/owner")
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .param("size", "2"))
+                .andExpect(status().is4xxClientError());
+        verify(bookingService, never()).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
+    }
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingLisFromDefaultValue_thenReturnOk() {
+        final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
+        final Pageable pageableSize = PageRequest.of(0, 2);
+        when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
+        String result = mockMvc.perform(get("/bookings/owner")
+                        .param("state", "ALL")
+                        .param("size", "2")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
+        assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingLisSizeDefaultValue_thenReturnOk() {
+        final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
+        final Pageable pageableSize = PageRequest.of(0, 10);
+        when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
+        String result = mockMvc.perform(get("/bookings/owner")
+                        .param("state", "ALL")
+                        .param("from", "0")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
+        assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAllBookingsForOwnerTest_whenBookingLisSizeAndFromAndStateDefaultValue_thenReturnOk() {
+        final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
+        final Pageable pageableSize = PageRequest.of(0, 10);
+        when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
+        String result = mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
 }
