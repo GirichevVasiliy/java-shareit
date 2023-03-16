@@ -256,7 +256,7 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void getItemsByUser() {
+    void getItemsByUserTest_whenDataValid_thenReturnOk() {
         List<ItemDto> itemDtoList = Arrays.asList(itemDto);
         when(itemService.getItemsByUser(userId, pageable)).thenReturn(itemDtoList);
         String result = mockMvc.perform(get("/items")
@@ -270,9 +270,97 @@ class ItemControllerTest {
         verify(itemService, times(1)).getItemsByUser(any(), any());
         assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
+    @Test
+    @SneakyThrows
+    void getItemsByUserTest_whenUserIdNotValid_thenClientError() {
+        mockMvc.perform(get("/items")
+                        .param("from", "0")
+                        .param("size", "2"))
+                .andExpect(status().is4xxClientError());
+        verify(itemService, never()).getItemsByUser(any(), any());
+    }
+    @Test
+    @SneakyThrows
+    void getItemsByUserTest_whenFromDefaultValue_thenReturnOk() {
+        final Pageable pageableFrom = PageRequest.of(0, 2);
+        List<ItemDto> itemDtoList = Arrays.asList(itemDto);
+        when(itemService.getItemsByUser(userId, pageableFrom)).thenReturn(itemDtoList);
+        String result = mockMvc.perform(get("/items")
+                        .param("size", "2")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(itemService, times(1)).getItemsByUser(userId, pageableFrom);
+        assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getItemsByUserTest_whenSizeDefaultValue_thenReturnOk() {
+        final Pageable pageableFrom = PageRequest.of(0, 10);
+        List<ItemDto> itemDtoList = Arrays.asList(itemDto);
+        when(itemService.getItemsByUser(userId, pageableFrom)).thenReturn(itemDtoList);
+        String result = mockMvc.perform(get("/items")
+                        .param("from", "0")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(itemService, times(1)).getItemsByUser(userId, pageableFrom);
+        assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
+    }
 
     @Test
-    void getAvailableItems() {
+    @SneakyThrows
+    void getAvailableItemsTest_whenValidData_thenReturnOk() {
+        List<ItemDto> itemDtoList = Arrays.asList(itemDto);
+        when(itemService.getAvailableItems(userId, "text", pageable)).thenReturn(itemDtoList);
+        String result = mockMvc.perform(get("/items/search")
+                        .param("from", "0")
+                        .param("size", "2")
+                        .param("text", "text")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(itemService, times(1)).getAvailableItems(any(), any(), any());
+        assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAvailableItemsTest_whenSizeDefaultValue_thenReturnOk() {
+        final Pageable pageableFrom = PageRequest.of(0, 10);
+        List<ItemDto> itemDtoList = Arrays.asList(itemDto);
+        when(itemService.getAvailableItems(userId, "text", pageableFrom)).thenReturn(itemDtoList);
+        String result = mockMvc.perform(get("/items/search")
+                        .param("from", "0")
+                        .param("text", "text")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(itemService, times(1)).getAvailableItems(userId, "text", pageableFrom);
+        assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
+    }
+    @Test
+    @SneakyThrows
+    void getAvailableItemsTest_whenFromDefaultValue_thenReturnOk() {
+        List<ItemDto> itemDtoList = Arrays.asList(itemDto);
+        when(itemService.getAvailableItems(userId, "text", pageable)).thenReturn(itemDtoList);
+        String result = mockMvc.perform(get("/items/search")
+                        .param("size", "2")
+                        .param("text", "text")
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(itemService, times(1)).getAvailableItems(userId, "text", pageable);
+        assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
 
     @Test
