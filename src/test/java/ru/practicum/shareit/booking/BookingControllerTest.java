@@ -43,12 +43,7 @@ class BookingControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private BookingService bookingService;
-
-
     private BookingDto bookingDto;
-    private ItemDto itemDto;
-    private UserDto ownerDto;
-    private UserDto bookerDto;
     private InputBookingDto inputBookingDto;
     final Long userId = 1L;
     final Long bookingId = 1L;
@@ -56,19 +51,19 @@ class BookingControllerTest {
 
     @BeforeEach
     private void init() {
-        ownerDto = UserDto.builder()
+        UserDto ownerDto = UserDto.builder()
                 .id(1L)
                 .name("user1")
                 .email("y1@email.ru")
                 .build();
 
-        bookerDto = UserDto.builder()
+        UserDto bookerDto = UserDto.builder()
                 .id(2L)
                 .name("user2")
                 .email("y2@email.ru")
                 .build();
 
-        itemDto = ItemDto.builder()
+        ItemDto itemDto = ItemDto.builder()
                 .id(1L)
                 .name("item1")
                 .description("item1Desc")

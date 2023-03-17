@@ -1,0 +1,131 @@
+package ru.practicum.shareit.user;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.service.UserService;
+
+import static org.apache.tomcat.jni.File.putc;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(UserController.class)
+@AutoConfigureMockMvc
+class UserControllerTest {
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private UserService userService;
+    final Long userId = 1L;
+    private UserDto userDto;
+    private UserDto userDtoName;
+    private UserDto userDtoEmail;
+
+    @BeforeEach
+    private void init() {
+        userDto = UserDto.builder()
+                .id(1L)
+                .name("user1")
+                .email("y1@email.ru")
+                .build();
+        userDtoName = UserDto.builder()
+                .id(1L)
+                .name(null)
+                .email("y1@email.ru")
+                .build();
+        userDtoEmail = UserDto.builder()
+                .id(1L)
+                .name("user1")
+                .email(null)
+                .build();
+    }
+
+    @Test
+    @SneakyThrows
+    void addUserTest_whenValidUserDto_thenReturnOk() {
+        when(userService.addUser(userDto)).thenReturn(userDto);
+        String result = mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(userDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(userService, times(1)).addUser(any());
+        assertEquals(objectMapper.writeValueAsString(userDto), result);
+    }
+    @Test
+    @SneakyThrows
+    void addUserTest_whenUserDtoNameNotValid_thenClientError() {
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(userDtoName))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+        verify(userService, never()).addUser(any());
+    }
+    @Test
+    @SneakyThrows
+    void addUserTest_whenUserDtoEmailNotValid_thenClientError() {
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(userDtoEmail))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+        verify(userService, never()).addUser(any());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateUserTest_whenUserValid_thenReturnedOk() {
+        when(userService.updateUser(userDto, userId)).thenReturn(userDto);
+        String result = mockMvc.perform(patch("/users/{id}", userId)
+                        .content(objectMapper.writeValueAsString(userDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(userService, times(1)).updateUser(userDto, userId);
+        assertEquals(objectMapper.writeValueAsString(userDto), result);
+    }
+    @Test
+    @SneakyThrows
+    void updateUserTest_when_thenReturnedOk() {
+            when(userService.updateUser(userDtoEmail, userId)).thenReturn(userDto);
+            String result = mockMvc.perform(patch("/users/{id}", userId)
+                            .content(objectMapper.writeValueAsString(userDtoEmail))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().is2xxSuccessful())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+            verify(userService, times(1)).updateUser(userDtoEmail, userId);
+            assertEquals(objectMapper.writeValueAsString(userDto), result);
+    }
+
+    @Test
+    void getUsers() {
+    }
+
+    @Test
+    void getUserById() {
+    }
+
+    @Test
+    void deleteUser() {
+    }
+}

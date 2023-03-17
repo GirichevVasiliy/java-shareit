@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto) {
+    public UserDto updateUser(@PathVariable("id") @NotNull Long userId, @RequestBody UserDto userDto) {
         return userService.updateUser(userDto, userId);
     }
 
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable("id") Long id) {
+    public UserDto getUserById(@PathVariable("id") @NotNull Long id) {
         return userService.getUserById(id);
     }
 
