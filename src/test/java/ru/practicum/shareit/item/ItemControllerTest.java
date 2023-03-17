@@ -476,4 +476,32 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(commentService, never()).addComment(any(), any(), any());
     }
+    @Test
+    @SneakyThrows
+    void postCommentTest_whenTextCommentDtoNotValid_thenClientError() {
+        commentDto.setText(null);
+        mockMvc.perform(post("/items/{itemId}/comment", itemId)
+                        .content(objectMapper.writeValueAsString(commentDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is4xxClientError());
+        verify(commentService, never()).addComment(any(), any(), any());
+    }
+    @Test
+    @SneakyThrows
+    void postCommentTest_whenAuthorNameCommentDtoNotValid_thenReturnOk() {
+        when(commentService.addComment(itemId, userId, commentDto)).thenReturn(commentDto);
+        commentDto.setAuthorName(null);
+        String result = mockMvc.perform(post("/items/{itemId}/comment", itemId)
+                        .content(objectMapper.writeValueAsString(commentDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(commentService, times(1)).addComment(any(), any(), any());
+        assertEquals(objectMapper.writeValueAsString(commentDto), result);
+    }
+
 }
