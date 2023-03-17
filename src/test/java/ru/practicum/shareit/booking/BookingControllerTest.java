@@ -432,6 +432,7 @@ class BookingControllerTest {
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusWAITING_thenReturnOk() {
@@ -450,6 +451,7 @@ class BookingControllerTest {
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.WAITING, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusREJECTED_thenReturnOk() {
@@ -468,6 +470,7 @@ class BookingControllerTest {
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.REJECTED, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusPAST_thenReturnOk() {
@@ -486,6 +489,7 @@ class BookingControllerTest {
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.PAST, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusFUTURE_thenReturnOk() {
@@ -504,6 +508,7 @@ class BookingControllerTest {
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.FUTURE, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusCURRENT_thenReturnOk() {
@@ -522,6 +527,7 @@ class BookingControllerTest {
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.CURRENT, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusUNSUPPORTED_STATUS_thenReturnedClientError() {
@@ -529,14 +535,15 @@ class BookingControllerTest {
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.UNSUPPORTED_STATUS, pageableSize))
                 .thenThrow(new ValidationStateException("Unknown state: UNSUPPORTED_STATUS"));
         mockMvc.perform(get("/bookings/owner")
-                .param("state", "UNSUPPORTED_STATUS")
-                .param("from", "0")
-                .param("size", "2")
-                .header("X-Sharer-User-Id", userId))
+                        .param("state", "UNSUPPORTED_STATUS")
+                        .param("from", "0")
+                        .param("size", "2")
+                        .header("X-Sharer-User-Id", userId))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.error", is("Unknown state: UNSUPPORTED_STATUS")));
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.UNSUPPORTED_STATUS, pageableSize);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingNotState_thenReturnedClientError() {
@@ -565,6 +572,7 @@ class BookingControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(bookingService, never()).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingLisFromDefaultValue_thenReturnOk() {
@@ -582,6 +590,7 @@ class BookingControllerTest {
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingLisSizeDefaultValue_thenReturnOk() {
@@ -599,6 +608,7 @@ class BookingControllerTest {
         verify(bookingService, times(1)).getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize);
         assertEquals(objectMapper.writeValueAsString(bookingDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingLisSizeAndFromAndStateDefaultValue_thenReturnOk() {

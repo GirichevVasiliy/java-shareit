@@ -10,10 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.service.StateBooking;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.service.CommentService;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -85,7 +83,6 @@ class ItemControllerTest {
                 .build();
     }
 
-
     @Test
     @SneakyThrows
     void addItemTest_whenValidItem_thenReturnOk() {
@@ -101,6 +98,7 @@ class ItemControllerTest {
                 .getContentAsString();
         assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
+
     @Test
     @SneakyThrows
     void addItemTest_whenNotValidItem_thenClientError() {
@@ -113,6 +111,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).addItem(any(), any());
     }
+
     @Test
     @SneakyThrows
     void addItemTest_whenNotValidUserId_thenClientError() {
@@ -122,6 +121,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).addItem(any(), any());
     }
+
     @Test
     @SneakyThrows
     void addItemTest_whenNotValidUserIdAndItem_thenClientError() {
@@ -131,6 +131,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).addItem(any(), any());
     }
+
     @Test
     @SneakyThrows
     void addItemTest_whenNotValidNameItem_thenClientError() {
@@ -145,6 +146,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).addItem(any(), any());
     }
+
     @Test
     @SneakyThrows
     void addItemTest_whenNotValidDescriptionItem_thenClientError() {
@@ -159,6 +161,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).addItem(any(), any());
     }
+
     @Test
     @SneakyThrows
     void addItemTest_whenNotValidAvailableItem_thenClientError() {
@@ -188,6 +191,7 @@ class ItemControllerTest {
                 .getContentAsString();
         assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
+
     @Test
     @SneakyThrows
     void updateItemTest_whenNotValidItem_thenClientError() {
@@ -196,8 +200,9 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().is4xxClientError());
-      verify(itemService, never()).updateItem(any(), any(), any());
+        verify(itemService, never()).updateItem(any(), any(), any());
     }
+
     @Test
     @SneakyThrows
     void updateItemTest_whenNotUserId_thenClientError() {
@@ -207,6 +212,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).updateItem(any(), any(), any());
     }
+
     @Test
     @SneakyThrows
     void updateItemTest_whenNotValidItemId_thenClientError() {
@@ -231,14 +237,16 @@ class ItemControllerTest {
         verify(itemService, times(1)).getItemById(any(), any());
         assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
+
     @Test
     @SneakyThrows
     void getItemByIdTest_whenItemIdNotValid_thenClientError() {
-      mockMvc.perform(get("/items/{itemId}", "o")
+        mockMvc.perform(get("/items/{itemId}", "o")
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).getItemById(any(), any());
     }
+
     @Test
     @SneakyThrows
     void getItemByIdTest_whenUserIdNotValid_thenClientError() {
@@ -246,6 +254,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).getItemById(any(), any());
     }
+
     @Test
     @SneakyThrows
     void getItemByIdTest_whenItemIdAndUserIdNotValid_thenClientError() {
@@ -270,6 +279,7 @@ class ItemControllerTest {
         verify(itemService, times(1)).getItemsByUser(any(), any());
         assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getItemsByUserTest_whenUserIdNotValid_thenClientError() {
@@ -279,6 +289,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).getItemsByUser(any(), any());
     }
+
     @Test
     @SneakyThrows
     void getItemsByUserTest_whenFromDefaultValue_thenReturnOk() {
@@ -295,6 +306,7 @@ class ItemControllerTest {
         verify(itemService, times(1)).getItemsByUser(userId, pageableFrom);
         assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getItemsByUserTest_whenSizeDefaultValue_thenReturnOk() {
@@ -329,6 +341,7 @@ class ItemControllerTest {
         verify(itemService, times(1)).getAvailableItems(any(), any(), any());
         assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAvailableItemsTest_whenSizeDefaultValue_thenReturnOk() {
@@ -346,6 +359,7 @@ class ItemControllerTest {
         verify(itemService, times(1)).getAvailableItems(userId, "text", pageableFrom);
         assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAvailableItemsTest_whenFromDefaultValue_thenReturnOk() {
@@ -362,6 +376,7 @@ class ItemControllerTest {
         verify(itemService, times(1)).getAvailableItems(userId, "text", pageable);
         assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAvailableItemsTest_whenEmptyTextSearch_thenReturnOk() {
@@ -379,10 +394,11 @@ class ItemControllerTest {
         verify(itemService, times(1)).getAvailableItems(userId, "", pageable);
         assertEquals(objectMapper.writeValueAsString(itemDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAvailableItemsTest_whenNotTextForSearch_thenClientError() {
-       mockMvc.perform(get("/items/search")
+        mockMvc.perform(get("/items/search")
                         .param("from", "0")
                         .param("size", "2")
                         .header("X-Sharer-User-Id", userId))
@@ -391,6 +407,73 @@ class ItemControllerTest {
     }
 
     @Test
-    void postComment() {
+    @SneakyThrows
+    void postCommentTest_whenCommentValid_thenReturnOk() {
+        when(commentService.addComment(itemId, userId, commentDto)).thenReturn(commentDto);
+        String result = mockMvc.perform(post("/items/{itemId}/comment", itemId)
+                        .content(objectMapper.writeValueAsString(commentDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(commentService, times(1)).addComment(itemId, userId, commentDto);
+        assertEquals(objectMapper.writeValueAsString(commentDto), result);
+    }
+
+    @Test
+    @SneakyThrows
+    void postCommentTest_whenCommentNotValid_thenClientError() {
+        mockMvc.perform(post("/items/{itemId}/comment", itemId)
+                        .content(objectMapper.writeValueAsString(null))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is4xxClientError());
+        verify(commentService, never()).addComment(any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    void postCommentTest_whenItemIdNotValid_thenClientError() {
+        mockMvc.perform(post("/items/{itemId}/comment", "")
+                        .content(objectMapper.writeValueAsString(commentDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is4xxClientError());
+        verify(commentService, never()).addComment(any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    void postCommentTest_whenItemIdAndUserIdNotValid_thenClientError() {
+        mockMvc.perform(post("/items/{itemId}/comment", "")
+                        .content(objectMapper.writeValueAsString(commentDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", ""))
+                .andExpect(status().is4xxClientError());
+        verify(commentService, never()).addComment(any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    void postCommentTest_whenUserIdNotValid_thenClientError() {
+        mockMvc.perform(post("/items/{itemId}/comment", itemId)
+                        .content(objectMapper.writeValueAsString(commentDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", ""))
+                .andExpect(status().is4xxClientError());
+        verify(commentService, never()).addComment(any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    void postCommentTest_whenItemIdAndUserIdAndCommentDtoNotValid_thenClientError() {
+        mockMvc.perform(post("/items/{itemId}/comment", "")
+                        .content(objectMapper.writeValueAsString(null))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", ""))
+                .andExpect(status().is4xxClientError());
+        verify(commentService, never()).addComment(any(), any(), any());
     }
 }
