@@ -168,8 +168,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private boolean checkDate(LocalDateTime startBooking, LocalDateTime endBooking) {
-        if (startBooking.isBefore(LocalDateTime.now()) || endBooking.isBefore(LocalDateTime.now()) ||
-                endBooking.isBefore(startBooking)) {
+        if (endBooking.isBefore(startBooking)){
+            return false;
+        }
+        if (startBooking.isBefore(LocalDateTime.now()) || endBooking.isBefore(LocalDateTime.now())) {
             return false;
         }
         return true;
