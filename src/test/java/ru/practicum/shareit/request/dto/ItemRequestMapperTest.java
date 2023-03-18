@@ -19,7 +19,6 @@ class ItemRequestMapperTest {
     private ItemRequest itemRequest;
     private ItemRequestDto itemRequestDto;
     private AnswerDto answerDto;
-
     @BeforeEach
     private void init() {
         owner = User.builder()
