@@ -25,7 +25,6 @@ class ItemMapperTest {
     private ItemRequest itemRequest;
     private DateBookingDto last;
     private DateBookingDto next;
-
     private Item item;
 
     @BeforeEach
@@ -54,7 +53,6 @@ class ItemMapperTest {
                 .owner(ownerDto)
                 .requestId(1L)
                 .build();
-
         item = Item.builder()
                 .id(1L)
                 .name("item1")
