@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,20 +8,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.ResourceNotFoundException;
 import ru.practicum.shareit.exception.ValidationAvailableException;
 import ru.practicum.shareit.exception.ValidationDateException;
+import ru.practicum.shareit.exception.ValidationOwnerException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -54,12 +50,14 @@ class BookingServiceImplTest {
     private User user;
     private UserDto ownerDto;
     private InputBookingDto inputBookingDto;
-    final Long userId = 1L;
+    final Long userId1 = 1L;
+    final Long userId2 = 2L;
     final Long bookingId = 1L;
     private ItemRequest itemRequest;
     private Item item;
     private User onwer;
     final Pageable pageable = PageRequest.of(0, 2, Sort.by("start").descending());
+
     @BeforeEach
     private void init() {
         user = User.builder()
@@ -121,57 +119,84 @@ class BookingServiceImplTest {
                 .request(itemRequest)
                 .build();
     }
+
     @Test
     void addBooking_whenStartAndEndTimeIsOld_thenThrowException() {
         inputBookingDto.setStart(LocalDateTime.parse("2018-10-23T17:19:45"));
         inputBookingDto.setEnd(LocalDateTime.parse("2017-10-23T17:19:45"));
         assertThrows(
                 ValidationDateException.class,
-                () -> bookingService.addBooking(inputBookingDto, userId));
+                () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
+
     @Test
     void addBooking_whenStartTimeIsOld_thenThrowException() {
         inputBookingDto.setStart(LocalDateTime.parse("2016-10-23T17:19:45"));
         inputBookingDto.setEnd(LocalDateTime.parse("2023-10-23T17:19:45"));
         assertThrows(
                 ValidationDateException.class,
-                () -> bookingService.addBooking(inputBookingDto, userId));
+                () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
+
     @Test
     void addBooking_whenEndTimeIsBeforeStart_thenThrowException() {
         inputBookingDto.setStart(LocalDateTime.parse("2024-10-23T17:19:45"));
         inputBookingDto.setEnd(LocalDateTime.parse("2021-10-23T17:19:46"));
         assertThrows(
                 ValidationDateException.class,
-                () -> bookingService.addBooking(inputBookingDto, userId));
+                () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
+
     @Test
     void addBooking_whenUserNotFound_thenThrowException() {
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> bookingService.addBooking(inputBookingDto, userId));
+                () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
+
     @Test
     void addBooking_whenItemNotFound_thenThrowException() {
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> bookingService.addBooking(inputBookingDto, userId));
+                () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
+
     @Test
     void addBooking_whenAvailableFalse_thenThrowException() {
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
         item.setAvailable(false);
         assertThrows(
                 ValidationAvailableException.class,
-                () -> bookingService.addBooking(inputBookingDto, userId));
+                () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void addBooking_whenUserIdNotEquelsOwner_thenThrowException() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
+        item.setAvailable(true);
+        assertThrows(
+                ValidationOwnerException.class,
+                () -> bookingService.addBooking(inputBookingDto, userId2));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void addBooking_whenDataValid_thenThrowException() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
+        item.setAvailable(true);
+        when(bookingRepository.save(any())).thenReturn(any());
+        bookingService.addBooking(inputBookingDto, userId1);
+        verify(bookingRepository, times(1)).save(any());
     }
 
     @Test
