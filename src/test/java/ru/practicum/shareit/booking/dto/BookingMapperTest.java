@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BookingMapperTest {
     private BookingDto bookingDtoControl;
@@ -25,9 +23,9 @@ class BookingMapperTest {
     private User owner;
     private ItemDto itemDto;
     private UserDto ownerDto;
-   private ItemRequest itemRequest;
-   private Item item;
-   private DateBookingDto dateBookingDto;
+    private ItemRequest itemRequest;
+    private Item item;
+
     @BeforeEach
     private void init() {
         owner = User.builder()
@@ -62,7 +60,7 @@ class BookingMapperTest {
                 .id(1L)
                 .start(LocalDateTime.parse("2024-10-23T17:19:33"))
                 .end(LocalDateTime.parse("2024-10-23T17:19:45"))
-                .item(new Item(1L, "item1", "text", true, owner, itemRequest,new ArrayList<>()))
+                .item(new Item(1L, "item1", "text", true, owner, itemRequest, new ArrayList<>()))
                 .booker(owner)
                 .status(StatusBooking.APPROVED)
                 .build();
@@ -73,12 +71,6 @@ class BookingMapperTest {
                 .item(itemDto)
                 .booker(ownerDto)
                 .status(StatusBooking.APPROVED.name())
-                .build();
-        dateBookingDto = DateBookingDto.builder()
-                .id(1L)
-                .bookerId(1L)
-                .start(LocalDateTime.parse("2024-10-23T17:19:33"))
-                .end(LocalDateTime.parse("2024-10-23T17:19:45"))
                 .build();
         item = Item.builder()
                 .id(1L)
@@ -101,6 +93,7 @@ class BookingMapperTest {
         assertThat(bookingDtoNew.getBooker().equals(bookingDtoControl.getBooker())).isTrue();
         assertThat(bookingDtoNew.getItem().equals(bookingDtoControl.getItem())).isTrue();
     }
+
     @Test
     @DisplayName("Tест проверки обновления id, при переводе booking в bookingDto")
     void bookingToDtoTestNewId() {
@@ -113,6 +106,7 @@ class BookingMapperTest {
         assertThat(bookingDtoNew.getBooker().equals(bookingDtoControl.getBooker())).isTrue();
         assertThat(bookingDtoNew.getItem().equals(bookingDtoControl.getItem())).isTrue();
     }
+
     @Test
     @DisplayName("Tест проверки обновления StartTime, при переводе booking в bookingDto")
     void bookingToDtoTestNewStartTime() {
@@ -125,6 +119,7 @@ class BookingMapperTest {
         assertThat(bookingDtoNew.getBooker().equals(bookingDtoControl.getBooker())).isTrue();
         assertThat(bookingDtoNew.getItem().equals(bookingDtoControl.getItem())).isTrue();
     }
+
     @Test
     @DisplayName("Tест проверки обновления EndTime, при переводе booking в bookingDto")
     void bookingToDtoTestNewEndTime() {
@@ -137,6 +132,7 @@ class BookingMapperTest {
         assertThat(bookingDtoNew.getBooker().equals(bookingDtoControl.getBooker())).isTrue();
         assertThat(bookingDtoNew.getItem().equals(bookingDtoControl.getItem())).isTrue();
     }
+
     @Test
     @DisplayName("Tест проверки обновления User, при переводе booking в bookingDto")
     void bookingToDtoTestNewBooker() {
@@ -158,6 +154,7 @@ class BookingMapperTest {
         assertThat(bookingDtoNew.getBooker().equals(newUserDto)).isTrue();
         assertThat(bookingDtoNew.getItem().equals(bookingDtoControl.getItem())).isTrue();
     }
+
     @Test
     @DisplayName("Tест проверки обновления Item, при переводе booking в bookingDto")
     void bookingToDtoTestNewItem() {
@@ -165,7 +162,7 @@ class BookingMapperTest {
                 .id(1L)
                 .start(LocalDateTime.parse("2024-10-23T17:19:33"))
                 .end(LocalDateTime.parse("2024-10-23T17:19:45"))
-                .item(new Item(2L, "item2", "text2", false, owner, itemRequest,new ArrayList<>()))
+                .item(new Item(2L, "item2", "text2", false, owner, itemRequest, new ArrayList<>()))
                 .booker(owner)
                 .status(StatusBooking.APPROVED)
                 .build();
@@ -184,6 +181,7 @@ class BookingMapperTest {
         assertThat(bookingDtoNew.getBooker().equals(bookingDtoControl.getBooker())).isTrue();
         assertThat(bookingDtoNew.getItem().equals(itemDto)).isTrue();
     }
+
     @Test
     @DisplayName("Стандартный тест создани из bookingDto booking")
     void createNewBookingStandardTest() {
@@ -197,6 +195,10 @@ class BookingMapperTest {
 
     @Test
     void toDateBookingDto() {
-
+        DateBookingDto newDateBookingDto = BookingMapper.toDateBookingDto(booking);
+        assertThat(newDateBookingDto.getId().equals(booking.getId()));
+        assertThat(newDateBookingDto.getStart().equals(booking.getStart())).isTrue();
+        assertThat(newDateBookingDto.getEnd().equals(booking.getEnd())).isTrue();
+        assertThat(newDateBookingDto.getBookerId().equals(booking.getBooker().getId())).isTrue();
     }
 }
