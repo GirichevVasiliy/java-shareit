@@ -67,7 +67,6 @@ public class ItemMapper {
         return Answer.builder()
                 .itemId(item.getId())
                 .itemName(item.getName())
-                //.ownerId(item.getOwner().getId())
                 .available(item.getAvailable())
                 .description(item.getDescription())
                 .requestId(requestId)
