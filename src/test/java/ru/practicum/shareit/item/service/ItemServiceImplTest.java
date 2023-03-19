@@ -3,16 +3,12 @@ package ru.practicum.shareit.item.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.data.domain.*;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
@@ -58,11 +54,8 @@ class ItemServiceImplTest {
     private BookingRepository bookingRepository;
     @Mock
     private ItemRequestRepository itemRequestRepository;
-    @Captor
-    private ArgumentCaptor<Item> argumentCaptor;
     private User user;
     private UserDto ownerDto;
-    private InputBookingDto inputBookingDto;
     final Long userId1 = 1L;
     final Long userId2 = 2L;
     final Long itemId = 1L;
@@ -74,7 +67,6 @@ class ItemServiceImplTest {
     private ItemDto itemDto;
     private User onwer;
     private UserDto userDto;
-    private BookingDto bookingDto;
     final Pageable pageable = PageRequest.of(0, 2, Sort.by("start").descending());
     final int size = 0;
     private Page<Item> pageItems = new PageImpl<>(new ArrayList<>(), pageable, size);
@@ -117,19 +109,6 @@ class ItemServiceImplTest {
                 .owner(ownerDto)
                 .requestId(1L)
                 .build();
-        inputBookingDto = InputBookingDto.builder()
-                .itemId(1L)
-                .start(LocalDateTime.parse("2024-10-23T17:19:33"))
-                .end(LocalDateTime.parse("2024-10-23T17:19:45"))
-                .build();
-        bookingDto = BookingDto.builder()
-                .id(1L)
-                .start(LocalDateTime.parse("2024-10-23T17:19:33"))
-                .end(LocalDateTime.parse("2024-10-23T17:19:45"))
-                .item(itemDto)
-                .booker(userDto)
-                .status("APPROVED")
-                .build();
         itemRequest = ItemRequest.builder()
                 .id(1L)
                 .description("text")
@@ -169,7 +148,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void addItem_whenСorrect_thenReturnItemDto() {
+    void addItem_whenСorrectData_thenReturnItemDto() {
         when(itemRequestRepository.findById(requestId)).thenReturn(Optional.ofNullable(itemRequest));
         when(itemRepository.save(any())).thenReturn(item);
         ItemDto newItemDto = itemService.addItem(itemDto, userDto);
