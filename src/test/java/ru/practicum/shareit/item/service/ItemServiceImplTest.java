@@ -18,7 +18,11 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.ForbiddenResourceException;
+import ru.practicum.shareit.exception.InvalidOwnerException;
 import ru.practicum.shareit.exception.ResourceNotFoundException;
+import ru.practicum.shareit.exception.ValidationDateBookingException;
+import ru.practicum.shareit.item.comment.dto.CommentDto;
+import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.comment.storage.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -76,6 +80,8 @@ class ItemServiceImplTest {
     final int size = 0;
     private Page<Item> pageItems = new PageImpl<>(new ArrayList<>(), pageable, size);
     private Page<Booking> pageBookings = new PageImpl<>(new ArrayList<>(), pageable, size);
+    private CommentDto commentDto;
+    private Comment comment;
 
     @BeforeEach
     private void init() {
@@ -147,6 +153,19 @@ class ItemServiceImplTest {
                 .item(item)
                 .booker(user)
                 .status(StatusBooking.APPROVED)
+                .build();
+        commentDto = CommentDto.builder()
+                .id(1L)
+                .text("comment")
+                .authorName("Name")
+                .created(LocalDateTime.parse("2023-10-23T17:19:45"))
+                .build();
+        comment = Comment.builder()
+                .id(1L)
+                .text("comment")
+                .author(user)
+                .item(item)
+                .created(LocalDateTime.parse("2023-10-23T17:19:45"))
                 .build();
     }
     @Test
@@ -249,19 +268,68 @@ class ItemServiceImplTest {
         verify(bookingRepository).findAllByItemIdInAndStatus(any(), any(), any());
     }
     @Test
-    void getAvailableItems() {
+    void getAvailableItems_whenСorrectData_thenReturnListItemDto() {
+        when(itemRepository.getAvailableItems(any(), any())).thenReturn(pageItems);
+        List<ItemDto> newListItemDto = itemService.getAvailableItems(userId1, "text", pageable);
+        assertThat(newListItemDto.isEmpty());
+        verify(itemRepository).getAvailableItems(any(), any());
 
     }
-
     @Test
-    void deleteItemById() {
+    void deleteItemById_whenUserNotFound_thenThrowException() {
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> itemService.deleteItemById(itemId, userId1));
+        verify(itemRepository, never()).save(any());
     }
-
     @Test
-    void getAllItems() {
+    void deleteItemById_whenUserFound() {
+        when(itemRepository.findByOwnerId(userId1)).thenReturn(Arrays.asList(item));
+        itemService.deleteItemById(itemId, userId1);
+        verify(itemRepository, times(1)).findByOwnerId(any());
     }
-
+    @Test
+    void getAllItems_whenСorrectData_thenReturnListItemDto() {
+        List<ItemDto> itemDtoList = itemService.getAllItems();
+        assertThat(itemDtoList.isEmpty()).isTrue();
+    }
+    @Test
+    void addComment_whenUserNotBookingItem_thenThrowException() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        assertThrows(
+                InvalidOwnerException.class,
+                () -> itemService.addComment(itemId, userId1, commentDto));
+        verify(commentRepository, never()).save(any());
+    }
+    @Test
+    void addComment_whenBookingNotCompleted_thenThrowException() {
+        final int limit = 1;
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(bookingRepository.bookingСonfirmation(bookingId, itemId, limit)).thenReturn(Optional.of(booking));
+        assertThrows(
+                ValidationDateBookingException.class,
+                () -> itemService.addComment(itemId, userId1, commentDto));
+        verify(commentRepository, never()).save(any());
+    }
     @Test
     void addComment() {
+        booking = Booking.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2021-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2021-10-23T17:19:45"))
+                .item(item)
+                .booker(user)
+                .status(StatusBooking.REJECTED)
+                .build();
+        final int limit = 1;
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(bookingRepository.bookingСonfirmation(bookingId, itemId, limit)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findByBookerAndItem(any(), any(), any(), any(), any())).thenReturn(Optional.ofNullable(booking));
+        when(commentRepository.save(any())).thenReturn(comment);
+        CommentDto newCommentDto = itemService.addComment(itemId, userId1, commentDto);
+        verify(commentRepository, times(1)).save(any());
     }
 }
