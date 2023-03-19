@@ -223,7 +223,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateApproveUserIsNotOwnerItem_thenThrowException() {
+    void updateApprove_whenUserIsNotOwnerItem_thenThrowException() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         assertThrows(
@@ -233,7 +233,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateApproveTrue_thenReturnBookingDto() {
+    void updateApprove_whenTrue_thenReturnBookingDto() {
         booking.setStatus(StatusBooking.WAITING);
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
@@ -244,7 +244,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateApproveFalse_thenReturnBookingDto() {
+    void updateApprove_whenFalse_thenReturnBookingDto() {
         booking.setStatus(StatusBooking.WAITING);
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
@@ -255,7 +255,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateApproveStateIsNotWAITING_thenThrowException() {
+    void updateApprove_whenStateIsNotWAITING_thenThrowException() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         assertThrows(
@@ -265,7 +265,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingByIdСorrect_thenReturnBookingDto() {
+    void getBookingById_whenСorrect_thenReturnBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         BookingDto newBookingDto = bookingService.getBookingById(bookingId, userId1);
@@ -274,7 +274,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsStateBookingALL_thenReturnListBookingDto() {
+    void getAllBookings_whenStateBookingALL_thenReturnListBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByBooker(user, pageable)).thenReturn(page);
         List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.ALL, pageable);
@@ -283,7 +283,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsStateBookingCURRENT_thenReturnListBookingDto() {
+    void getAllBookings_whenStateBookingCURRENT_thenReturnListBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findCurrent(user, pageable)).thenReturn(page);
         List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.CURRENT, pageable);
@@ -292,7 +292,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsStateBookingPAST_thenReturnListBookingDto() {
+    void getAllBookings_whenStateBookingPAST_thenReturnListBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByBookerAndEndIsBefore(any(), any(), any())).thenReturn(page);
         List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.PAST, pageable);
@@ -301,7 +301,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsStateBookingFUTURE_thenReturnListBookingDto() {
+    void getAllBookings_whenStateBookingFUTURE_thenReturnListBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByBookerAndStartIsAfter(any(), any(), any())).thenReturn(page);
         List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.FUTURE, pageable);
@@ -310,7 +310,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsStateBookingWAITING_thenReturnListBookingDto() {
+    void getAllBookings_whenStateBookingWAITING_thenReturnListBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByBookerAndStatus(any(), any(), any())).thenReturn(page);
         List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.WAITING, pageable);
@@ -319,7 +319,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsStateBookingREJECTED_thenReturnListBookingDto() {
+    void getAllBookings_whenStateBookingREJECTED_thenReturnListBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByBookerAndStatus(any(), any(), any())).thenReturn(page);
         List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.REJECTED, pageable);
@@ -328,7 +328,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsForOwnerBookingALL_thenReturnListBookingDto() {
+    void getAllBookingsForOwner_whenBookingALL_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.ALL, pageable);
@@ -337,7 +337,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsForOwnerBookingREJECTED_thenReturnListBookingDto() {
+    void getAllBookingsForOwner_whenBookingREJECTED_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.REJECTED, pageable);
@@ -346,7 +346,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsForOwnerBookingWAITING_thenReturnListBookingDto() {
+    void getAllBookingsForOwner_whenBookingWAITING_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.WAITING, pageable);
@@ -355,7 +355,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsForOwnerBookingFUTURE_thenReturnListBookingDto() {
+    void getAllBookingsForOwner_whenBookingFUTURE_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.FUTURE, pageable);
@@ -364,7 +364,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsForOwnerBookingPAST_thenReturnListBookingDto() {
+    void getAllBookingsForOwner_whenBookingPAST_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.PAST, pageable);
