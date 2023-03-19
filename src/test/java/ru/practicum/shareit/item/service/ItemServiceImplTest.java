@@ -31,6 +31,8 @@ import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -72,7 +74,8 @@ class ItemServiceImplTest {
     private BookingDto bookingDto;
     final Pageable pageable = PageRequest.of(0, 2, Sort.by("start").descending());
     final int size = 0;
-    private Page<Booking> page = new PageImpl<>(new ArrayList<>(), pageable, size);
+    private Page<Item> pageItems = new PageImpl<>(new ArrayList<>(), pageable, size);
+    private Page<Booking> pageBookings = new PageImpl<>(new ArrayList<>(), pageable, size);
 
     @BeforeEach
     private void init() {
@@ -146,7 +149,6 @@ class ItemServiceImplTest {
                 .status(StatusBooking.APPROVED)
                 .build();
     }
-
     @Test
     void addItem_whenСorrect_thenReturnItemDto() {
         when(itemRequestRepository.findById(requestId)).thenReturn(Optional.ofNullable(itemRequest));
@@ -171,7 +173,6 @@ class ItemServiceImplTest {
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.getRequestId().equals(item.getRequest().getRequestor().getId())).isTrue();
     }
-
     @Test
     void updateItem_whenUserIsNotOwnerItem_thenThrowException() {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
@@ -189,18 +190,67 @@ class ItemServiceImplTest {
                 () -> itemService.updateItem(itemId, itemDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
-
-
     @Test
-    void getItemById() {
+    void updateItem_whenRequestIdIsNull_thenReturnItemDto() {
+        itemDto = ItemDto.builder()
+                .id(1L)
+                .name("item1")
+                .description("text")
+                .available(true)
+                .owner(ownerDto)
+                .requestId(null)
+                .build();
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRequestRepository.findById(requestId)).thenReturn(Optional.ofNullable(itemRequest));
+        when(itemRepository.save(any())).thenReturn(item);
+        ItemDto newItemDto = itemService.updateItem(itemId, itemDto, userId2);
+        verify(itemRepository, times(1)).save(any());
+        assertThat(newItemDto.getRequestId().equals(item.getRequest().getRequestor().getId())).isTrue();
     }
-
     @Test
-    void getItemsByUser() {
+    void updateItem_whenNameUpdate_thenReturnItemDto() {
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRequestRepository.findById(requestId)).thenReturn(Optional.ofNullable(itemRequest));
+        when(itemRepository.save(any())).thenReturn(item);
+        ItemDto newItemDto = itemService.updateItem(itemId, itemDto, userId2);
+        verify(itemRepository, times(1)).save(any());
+        assertThat(newItemDto.equals(itemDto)).isTrue();
     }
-
+    @Test
+    void getItemById_whenUserNotFound_thenThrowException() {
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> itemService.getItemById(itemId, userId1));
+        verify(itemRepository, never()).save(any());
+    }
+    @Test
+    void getItemById_whenItemNotFound_thenThrowException() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> itemService.getItemById(itemId, userId1));
+        verify(itemRepository, never()).save(any());
+    }
+    @Test
+    void getItemById_whenСorrectData_thenReturnItemDto() {
+        when(userRepository.findById(any())).thenReturn(Optional.of(onwer));
+        when(itemRepository.findById(any())).thenReturn(Optional.of(item));
+        ItemDto newItemDto = itemService.getItemById(itemId, userId2);
+        verify(itemRepository, times(1)).findById(any());
+        assertThat(newItemDto.equals(itemDto));
+    }
+    @Test
+    void getItemsByUser_whenСorrectData_thenReturnListItemDto() {
+        when(itemRepository.findByOwnerIdOrderById(any(), any())).thenReturn(pageItems);
+        when(bookingRepository.findAllByItemIdInAndStatus(any(), any(), any())).thenReturn(pageBookings);
+        List<ItemDto> newListItemDto = itemService.getItemsByUser(userId1, pageable);
+        assertThat(newListItemDto.isEmpty());
+        verify(itemRepository).findByOwnerIdOrderById(any(), any());
+        verify(bookingRepository).findAllByItemIdInAndStatus(any(), any(), any());
+    }
     @Test
     void getAvailableItems() {
+
     }
 
     @Test
