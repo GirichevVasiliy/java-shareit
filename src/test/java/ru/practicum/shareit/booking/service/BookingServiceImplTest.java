@@ -8,9 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -27,6 +25,7 @@ import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,12 +54,21 @@ class BookingServiceImplTest {
     private ItemRequest itemRequest;
     private Booking booking;
     private Item item;
+    private ItemDto itemDto;
     private User onwer;
+    private UserDto userDto;
     final Pageable pageable = PageRequest.of(0, 2, Sort.by("start").descending());
+    final int size = 0;
+    private Page<Booking> page = new PageImpl<>(new ArrayList<>(), pageable, size);
 
     @BeforeEach
     private void init() {
         user = User.builder()
+                .id(1L)
+                .name("user1")
+                .email("y1@email.ru")
+                .build();
+        userDto = UserDto.builder()
                 .id(1L)
                 .name("user1")
                 .email("y1@email.ru")
@@ -75,20 +83,18 @@ class BookingServiceImplTest {
                 .name("user2")
                 .email("y2@email.ru")
                 .build();
-
-        UserDto bookerDto = UserDto.builder()
+        UserDto bookerDto2 = UserDto.builder()
                 .id(2L)
                 .name("user2")
                 .email("y2@email.ru")
                 .build();
-
-        ItemDto itemDto = ItemDto.builder()
+        itemDto = ItemDto.builder()
                 .id(1L)
                 .name("item1")
-                .description("item1Desc")
+                .description("text")
                 .available(true)
                 .owner(ownerDto)
-                .requestId(2L)
+                .requestId(1L)
                 .build();
         inputBookingDto = InputBookingDto.builder()
                 .itemId(1L)
@@ -100,7 +106,7 @@ class BookingServiceImplTest {
                 .start(LocalDateTime.parse("2024-10-23T17:19:33"))
                 .end(LocalDateTime.parse("2024-10-23T17:19:45"))
                 .item(itemDto)
-                .booker(bookerDto)
+                .booker(userDto)
                 .status("APPROVED")
                 .build();
         itemRequest = ItemRequest.builder()
@@ -206,61 +212,163 @@ class BookingServiceImplTest {
         bookingService.addBooking(inputBookingDto, userId1);
         verify(bookingRepository, times(1)).save(any());
     }
+
     @Test
     void forAllTests_whenBookingNotFound_thenThrowException() {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> bookingService.updateApprove(bookingId,true, userId1));
+                () -> bookingService.updateApprove(bookingId, true, userId1));
         verify(bookingRepository, never()).save(any());
     }
+
     @Test
     void updateApproveUserIsNotOwnerItem_thenThrowException() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         assertThrows(
                 ValidationOwnerException.class,
-                () -> bookingService.updateApprove(bookingId,true, userId1));
+                () -> bookingService.updateApprove(bookingId, true, userId1));
         verify(bookingRepository, never()).save(any());
     }
+
     @Test
     void updateApproveTrue_thenReturnBookingDto() {
         booking.setStatus(StatusBooking.WAITING);
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any())).thenReturn(booking);
-        BookingDto newBooking = bookingService.updateApprove(bookingId,true, userId2);
+        BookingDto newBooking = bookingService.updateApprove(bookingId, true, userId2);
         assertThat(newBooking.getStatus().equals(StatusBooking.APPROVED.name())).isTrue();
         verify(bookingRepository, times(1)).save(any());
     }
+
     @Test
     void updateApproveFalse_thenReturnBookingDto() {
         booking.setStatus(StatusBooking.WAITING);
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any())).thenReturn(booking);
-        BookingDto newBooking = bookingService.updateApprove(bookingId,false, userId2);
+        BookingDto newBooking = bookingService.updateApprove(bookingId, false, userId2);
         assertThat(newBooking.getStatus().equals(StatusBooking.REJECTED.name())).isTrue();
         verify(bookingRepository, times(1)).save(any());
     }
+
     @Test
     void updateApproveStateIsNotWAITING_thenThrowException() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         assertThrows(
                 ValidationStateException.class,
-                () -> bookingService.updateApprove(bookingId,true, userId2));
+                () -> bookingService.updateApprove(bookingId, true, userId2));
         verify(bookingRepository, never()).save(any());
     }
+
     @Test
-    void getBookingById() {
+    void getBookingByIdСorrect_thenReturnBookingDto() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        BookingDto newBookingDto = bookingService.getBookingById(bookingId, userId1);
+        assertThat(newBookingDto.equals(bookingDto)).isTrue();
+        verify(bookingRepository, times(1)).findById(any());
     }
 
     @Test
-    void getAllBookings() {
+    void getAllBookingsStateBookingALL_thenReturnListBookingDto() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBooker(user, pageable)).thenReturn(page);
+        List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.ALL, pageable);
+        assertThat(bookingDtoList.isEmpty());
+        verify(bookingRepository).findAllByBooker(any(), any());
     }
 
     @Test
-    void getAllBookingsForOwner() {
+    void getAllBookingsStateBookingCURRENT_thenReturnListBookingDto() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findCurrent(user, pageable)).thenReturn(page);
+        List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.CURRENT, pageable);
+        assertThat(bookingDtoList.isEmpty());
+        verify(bookingRepository).findCurrent(any(), any());
+    }
+
+    @Test
+    void getAllBookingsStateBookingPAST_thenReturnListBookingDto() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerAndEndIsBefore(any(), any(), any())).thenReturn(page);
+        List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.PAST, pageable);
+        assertThat(bookingDtoList.isEmpty());
+        verify(bookingRepository).findAllByBookerAndEndIsBefore(any(), any(), any());
+    }
+
+    @Test
+    void getAllBookingsStateBookingFUTURE_thenReturnListBookingDto() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerAndStartIsAfter(any(), any(), any())).thenReturn(page);
+        List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.FUTURE, pageable);
+        assertThat(bookingDtoList.isEmpty());
+        verify(bookingRepository).findAllByBookerAndStartIsAfter(any(), any(), any());
+    }
+
+    @Test
+    void getAllBookingsStateBookingWAITING_thenReturnListBookingDto() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerAndStatus(any(), any(), any())).thenReturn(page);
+        List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.WAITING, pageable);
+        assertThat(bookingDtoList.isEmpty());
+        verify(bookingRepository).findAllByBookerAndStatus(any(), any(), any());
+    }
+
+    @Test
+    void getAllBookingsStateBookingREJECTED_thenReturnListBookingDto() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerAndStatus(any(), any(), any())).thenReturn(page);
+        List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.REJECTED, pageable);
+        assertThat(bookingDtoList.isEmpty());
+        verify(bookingRepository).findAllByBookerAndStatus(any(), any(), any());
+    }
+
+    @Test
+    void getAllBookingsForOwnerBookingALL_thenReturnListBookingDto() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.ALL, pageable);
+        assertThat(list.isEmpty());
+        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+    }
+
+    @Test
+    void getAllBookingsForOwnerBookingREJECTED_thenReturnListBookingDto() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.REJECTED, pageable);
+        assertThat(list.isEmpty());
+        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+    }
+
+    @Test
+    void getAllBookingsForOwnerBookingWAITING_thenReturnListBookingDto() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.WAITING, pageable);
+        assertThat(list.isEmpty());
+        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+    }
+
+    @Test
+    void getAllBookingsForOwnerBookingFUTURE_thenReturnListBookingDto() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.FUTURE, pageable);
+        assertThat(list.isEmpty());
+        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+    }
+
+    @Test
+    void getAllBookingsForOwnerBookingPAST_thenReturnListBookingDto() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.PAST, pageable);
+        assertThat(list.isEmpty());
+        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
     }
 }
