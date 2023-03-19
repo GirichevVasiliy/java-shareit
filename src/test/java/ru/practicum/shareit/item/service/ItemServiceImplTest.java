@@ -146,7 +146,6 @@ class ItemServiceImplTest {
                 .created(LocalDateTime.parse("2023-10-23T17:19:45"))
                 .build();
     }
-
     @Test
     void addItem_whenСorrectData_thenReturnItemDto() {
         when(itemRequestRepository.findById(requestId)).thenReturn(Optional.ofNullable(itemRequest));
@@ -155,7 +154,6 @@ class ItemServiceImplTest {
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.equals(itemDto)).isTrue();
     }
-
     @Test
     void addItem_whenRequestIdIsNull_thenReturnItemDto() {
         itemDto = ItemDto.builder()
@@ -172,7 +170,6 @@ class ItemServiceImplTest {
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.getRequestId().equals(item.getRequest().getRequestor().getId())).isTrue();
     }
-
     @Test
     void updateItem_whenUserIsNotOwnerItem_thenThrowException() {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
@@ -182,7 +179,6 @@ class ItemServiceImplTest {
                 () -> itemService.updateItem(itemId, itemDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
-
     @Test
     void updateItem_whenNotFoundItem_thenThrowException() {
         when(itemRequestRepository.findById(requestId)).thenReturn(Optional.ofNullable(itemRequest));
@@ -191,7 +187,6 @@ class ItemServiceImplTest {
                 () -> itemService.updateItem(itemId, itemDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
-
     @Test
     void updateItem_whenRequestIdIsNull_thenReturnItemDto() {
         itemDto = ItemDto.builder()
@@ -209,7 +204,6 @@ class ItemServiceImplTest {
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.getRequestId().equals(item.getRequest().getRequestor().getId())).isTrue();
     }
-
     @Test
     void updateItem_whenNameUpdate_thenReturnItemDto() {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
@@ -219,7 +213,6 @@ class ItemServiceImplTest {
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.equals(itemDto)).isTrue();
     }
-
     @Test
     void getItemById_whenUserNotFound_thenThrowException() {
         assertThrows(
@@ -227,7 +220,6 @@ class ItemServiceImplTest {
                 () -> itemService.getItemById(itemId, userId1));
         verify(itemRepository, never()).save(any());
     }
-
     @Test
     void getItemById_whenItemNotFound_thenThrowException() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
@@ -236,7 +228,6 @@ class ItemServiceImplTest {
                 () -> itemService.getItemById(itemId, userId1));
         verify(itemRepository, never()).save(any());
     }
-
     @Test
     void getItemById_whenСorrectData_thenReturnItemDto() {
         when(userRepository.findById(any())).thenReturn(Optional.of(onwer));
@@ -245,7 +236,6 @@ class ItemServiceImplTest {
         verify(itemRepository, times(1)).findById(any());
         assertThat(newItemDto.equals(itemDto));
     }
-
     @Test
     void getItemsByUser_whenСorrectData_thenReturnListItemDto() {
         when(itemRepository.findByOwnerIdOrderById(any(), any())).thenReturn(pageItems);
@@ -255,7 +245,6 @@ class ItemServiceImplTest {
         verify(itemRepository).findByOwnerIdOrderById(any(), any());
         verify(bookingRepository).findAllByItemIdInAndStatus(any(), any(), any());
     }
-
     @Test
     void getAvailableItems_whenСorrectData_thenReturnListItemDto() {
         when(itemRepository.getAvailableItems(any(), any())).thenReturn(pageItems);
@@ -264,7 +253,6 @@ class ItemServiceImplTest {
         verify(itemRepository).getAvailableItems(any(), any());
 
     }
-
     @Test
     void deleteItemById_whenUserNotFound_thenThrowException() {
         assertThrows(
@@ -272,20 +260,17 @@ class ItemServiceImplTest {
                 () -> itemService.deleteItemById(itemId, userId1));
         verify(itemRepository, never()).save(any());
     }
-
     @Test
     void deleteItemById_whenUserFound_void() {
         when(itemRepository.findByOwnerId(userId1)).thenReturn(Arrays.asList(item));
         itemService.deleteItemById(itemId, userId1);
         verify(itemRepository, times(1)).findByOwnerId(any());
     }
-
     @Test
     void getAllItems_whenСorrectData_thenReturnListItemDto() {
         List<ItemDto> itemDtoList = itemService.getAllItems();
         assertThat(itemDtoList.isEmpty()).isTrue();
     }
-
     @Test
     void addComment_whenUserNotBookingItem_thenThrowException() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
@@ -295,7 +280,6 @@ class ItemServiceImplTest {
                 () -> itemService.addComment(itemId, userId1, commentDto));
         verify(commentRepository, never()).save(any());
     }
-
     @Test
     void addComment_whenBookingNotCompleted_thenThrowException() {
         final int limit = 1;
@@ -307,7 +291,6 @@ class ItemServiceImplTest {
                 () -> itemService.addComment(itemId, userId1, commentDto));
         verify(commentRepository, never()).save(any());
     }
-
     @Test
     void addComment_whenСorrectData_thenReturnCommentDto() {
         booking = Booking.builder()
