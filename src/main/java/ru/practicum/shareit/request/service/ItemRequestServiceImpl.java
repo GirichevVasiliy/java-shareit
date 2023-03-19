@@ -78,7 +78,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (itemRequest.isPresent()) {
             itemToAnswerList = itemRepository.findAllByRequest(itemRequest.get())
                     .stream().map(ItemMapper::answerCreateForItem).collect(Collectors.toList());
-            ;
         }
         return ItemRequestMapper.itemRequestAndListAnswersToDto(itemRequest.get(), itemToAnswerList);
     }
