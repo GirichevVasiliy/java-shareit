@@ -14,11 +14,9 @@ import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exception.ResourceNotFoundException;
-import ru.practicum.shareit.exception.ValidationAvailableException;
-import ru.practicum.shareit.exception.ValidationDateException;
-import ru.practicum.shareit.exception.ValidationOwnerException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -31,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -54,6 +53,7 @@ class BookingServiceImplTest {
     final Long userId2 = 2L;
     final Long bookingId = 1L;
     private ItemRequest itemRequest;
+    private Booking booking;
     private Item item;
     private User onwer;
     final Pageable pageable = PageRequest.of(0, 2, Sort.by("start").descending());
@@ -118,6 +118,14 @@ class BookingServiceImplTest {
                 .comments(new ArrayList<>())
                 .request(itemRequest)
                 .build();
+        booking = Booking.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2024-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2024-10-23T17:19:45"))
+                .item(item)
+                .booker(user)
+                .status(StatusBooking.APPROVED)
+                .build();
     }
 
     @Test
@@ -151,7 +159,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBooking_whenUserNotFound_thenThrowException() {
+    void forAllTests_whenUserNotFound_thenThrowException() {
         assertThrows(
                 ResourceNotFoundException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
@@ -159,7 +167,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBooking_whenItemNotFound_thenThrowException() {
+    void forAllTests_whenItemNotFound_thenThrowException() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         assertThrows(
                 ResourceNotFoundException.class,
@@ -179,7 +187,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBooking_whenUserIdNotEquelsOwner_thenThrowException() {
+    void forAllTests_whenUserIsOwner_thenThrowException() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
         item.setAvailable(true);
@@ -190,19 +198,60 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBooking_whenDataValid_thenThrowException() {
+    void addBooking_whenBookingСorrect_thenReturnBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
         item.setAvailable(true);
-        when(bookingRepository.save(any())).thenReturn(any());
+        when(bookingRepository.save(any())).thenReturn(booking);
         bookingService.addBooking(inputBookingDto, userId1);
         verify(bookingRepository, times(1)).save(any());
     }
-
     @Test
-    void updateApprove() {
+    void forAllTests_whenBookingNotFound_thenThrowException() {
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> bookingService.updateApprove(bookingId,true, userId1));
+        verify(bookingRepository, never()).save(any());
     }
-
+    @Test
+    void updateApproveUserIsNotOwnerItem_thenThrowException() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        assertThrows(
+                ValidationOwnerException.class,
+                () -> bookingService.updateApprove(bookingId,true, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+    @Test
+    void updateApproveTrue_thenReturnBookingDto() {
+        booking.setStatus(StatusBooking.WAITING);
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        when(bookingRepository.save(any())).thenReturn(booking);
+        BookingDto newBooking = bookingService.updateApprove(bookingId,true, userId2);
+        assertThat(newBooking.getStatus().equals(StatusBooking.APPROVED.name())).isTrue();
+        verify(bookingRepository, times(1)).save(any());
+    }
+    @Test
+    void updateApproveFalse_thenReturnBookingDto() {
+        booking.setStatus(StatusBooking.WAITING);
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        when(bookingRepository.save(any())).thenReturn(booking);
+        BookingDto newBooking = bookingService.updateApprove(bookingId,false, userId2);
+        assertThat(newBooking.getStatus().equals(StatusBooking.REJECTED.name())).isTrue();
+        verify(bookingRepository, times(1)).save(any());
+    }
+    @Test
+    void updateApproveStateIsNotWAITING_thenThrowException() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        assertThrows(
+                ValidationStateException.class,
+                () -> bookingService.updateApprove(bookingId,true, userId2));
+        verify(bookingRepository, never()).save(any());
+    }
     @Test
     void getBookingById() {
     }
