@@ -26,9 +26,9 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -175,14 +175,13 @@ class ItemRequestServiceImplTest {
         assertThat(newItemRequest.equals(itemRequest)).isTrue();
     }
     @Test
-    void addItemRequest() {
-        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
-    }
-
-    @Test
     void getAllItemRequestsUser() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId1)).thenReturn(new ArrayList<ItemRequest>());
+        when( itemRepository.findAllByRequestIn(Arrays.asList(itemRequest))).thenReturn(new ArrayList<Item>());
+        List<ItemRequestDto> requestDtoList = itemRequestService.getAllItemRequestsUser(userId1);
+        assertThat(requestDtoList.isEmpty()).isTrue();
     }
-
     @Test
     void getAllItemRequests() {
     }
