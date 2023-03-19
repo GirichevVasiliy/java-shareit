@@ -13,6 +13,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -94,9 +95,15 @@ class UserServiceImplTest {
         verify(userRepository, never()).deleteById(userId1);
     }
     @Test
-    void getAllUsers() {
+    void getAllUsers_whenUserDtoListNotEmpty() {
         when(userRepository.findAll()).thenReturn(Arrays.asList(user));
         List<UserDto> userDtoList = userService.getAllUsers();
         assertThat(userDtoList.contains(userDto)).isTrue();
+    }
+    @Test
+    void getAllUsers_whenUserDtoListEmpty() {
+        when(userRepository.findAll()).thenReturn(new ArrayList<>());
+        List<UserDto> userDtoList = userService.getAllUsers();
+        assertThat(userDtoList.isEmpty()).isTrue();
     }
 }
