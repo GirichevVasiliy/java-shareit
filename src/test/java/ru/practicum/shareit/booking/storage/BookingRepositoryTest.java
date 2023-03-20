@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.*;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.item.comment.model.Comment;
@@ -46,6 +48,8 @@ public class BookingRepositoryTest {
     private ItemRequest secondItemRequest;
     private Booking firstBooking;
     private Booking secondBooking;
+    private Booking fourthBooking;
+    private Booking thirdBooking;
     private Item firstItem;
     private Item secondItem;
     private User onwer;
@@ -63,7 +67,7 @@ public class BookingRepositoryTest {
         onwer = userRepository.save(new User(2L, "user2", "y2@email.ru"));
         entityManager.persist(onwer);
 
-        secondUser = userRepository.save(new User(1L, "user1", "y1@email.ru"));
+        secondUser = userRepository.save(new User(3L, "user3", "y3@email.ru"));
         entityManager.persist(secondUser);
 
         firstItemRequest = itemRequestRepository.save(new ItemRequest(1L, "text", firstUser,
@@ -88,17 +92,24 @@ public class BookingRepositoryTest {
                 LocalDateTime.parse("2024-10-23T17:19:45"), firstItem, firstUser, StatusBooking.WAITING));
         entityManager.persist(firstBooking);
 
-        secondBooking = bookingRepository.save(new Booking(2L, LocalDateTime.parse("2025-10-23T17:11:33"),
-                LocalDateTime.parse("2025-10-23T17:12:45"), firstItem, secondUser, StatusBooking.APPROVED));
+        secondBooking = bookingRepository.save(new Booking(2L, LocalDateTime.parse("2025-10-23T17:11:23"),
+                LocalDateTime.parse("2025-10-23T17:12:45"), firstItem, firstUser, StatusBooking.APPROVED));
         entityManager.persist(secondBooking);
-
+        thirdBooking = bookingRepository.save(new Booking(3L, LocalDateTime.parse("2025-10-23T17:11:00"),
+                LocalDateTime.parse("2025-10-23T17:12:05"), firstItem, firstUser, StatusBooking.CANCELED));
+        entityManager.persist(secondBooking);
+        fourthBooking = bookingRepository.save(new Booking(4L, LocalDateTime.parse("2024-09-11T11:11:00"),
+                LocalDateTime.parse("2024-10-23T17:12:05"), firstItem, firstUser, StatusBooking.REJECTED));
+        entityManager.persist(secondBooking);
+        entityManager.getEntityManager().getTransaction().commit();
     }
     @AfterEach
     private void afterTest() {
-        bookingRepository.deleteAll();
         userRepository.deleteAll();
-        itemRequestRepository.deleteAll();
         itemRepository.deleteAll();
+        bookingRepository.deleteAll();
+        itemRequestRepository.deleteAll();
+        commentRepository.deleteAll();
     }
     @Test
     public void findAllByBookerAndStatus_whenFindFirstUserAndStatusWAITING_thenReturnFirstBooking() {
@@ -106,9 +117,39 @@ public class BookingRepositoryTest {
         assertThat(bookings.contains(firstBooking));
     }
     @Test
-    public void findAllByBookerAndStatus_whenSecondtUserAndStatusAPPROVED_thenReturnFirstBooking() {
+    public void findAllByBookerAndStatus_whenSecondtUserAndStatusAPPROVED_thenReturnSecondBooking() {
+        List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(firstUser, StatusBooking.APPROVED, pageable).getContent();
+        assertThat(bookings.contains(secondBooking));
+    }
+    @Test
+    public void findAllByBookerAndStatus_whenSecondtUserAndStatusCANCELED_thenReturnThirdBooking() {
+        List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(firstUser, StatusBooking.CANCELED, pageable).getContent();
+        assertThat(bookings.contains(thirdBooking));
+    }
+    @Test
+    public void findAllByBookerAndStatus_whenSecondtUserAndStatusREJECTED_thenReturnFourthBooking() {
+        List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(firstUser, StatusBooking.REJECTED, pageable).getContent();
+        assertThat(bookings.contains(fourthBooking));
+    }
+    @Test
+    public void findAllByBookerAndStatus_whenOnwertUserAndStatusREJECTED_thenReturnEmptyList() {
+        List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(onwer, StatusBooking.REJECTED, pageable).getContent();
+        assertThat(bookings.isEmpty()).isTrue();
+    }
+    @Test
+    public void findAllByBookerAndStatus_whenSecondUserAndStatusREJECTED_thenReturnEmptyList() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(secondUser, StatusBooking.APPROVED, pageable).getContent();
-        assertThat(bookings.contains(secondUser));
+        assertThat(bookings.isEmpty()).isTrue();
+    }
+    @Test
+    public void findAllByBookerAndStatus_whenSecondUserAndStatusCANCELED_thenReturnEmptyList() {
+        List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(secondUser, StatusBooking.CANCELED, pageable).getContent();
+        assertThat(bookings.isEmpty()).isTrue();
+    }
+    @Test
+    public void findAllByBookerAndStatus_whenSecondUserAndStatusWAITING_thenReturnEmptyList() {
+        List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(secondUser, StatusBooking.WAITING, pageable).getContent();
+        assertThat(bookings.isEmpty()).isTrue();
     }
 
 }
