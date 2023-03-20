@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.*;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.item.comment.model.Comment;
@@ -22,6 +20,7 @@ import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,6 +112,7 @@ public class BookingRepositoryTest {
         entityManager.persist(secondBooking);
         entityManager.getEntityManager().getTransaction().commit();
     }
+
     @AfterEach
     private void afterTest() {
         userRepository.deleteAll();
@@ -121,48 +121,57 @@ public class BookingRepositoryTest {
         itemRequestRepository.deleteAll();
         commentRepository.deleteAll();
     }
+
     @Test
     public void findAllByBookerAndStatus_whenFindFirstUserAndStatusWAITING_thenReturnFirstBooking() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(firstUser, StatusBooking.WAITING, pageable).getContent();
         assertThat(bookings.contains(firstBooking));
     }
+
     @Test
     public void findAllByBookerAndStatus_whenSecondtUserAndStatusAPPROVED_thenReturnSecondBooking() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(firstUser, StatusBooking.APPROVED, pageable).getContent();
         assertThat(bookings.contains(secondBooking));
     }
+
     @Test
     public void findAllByBookerAndStatus_whenSecondtUserAndStatusCANCELED_thenReturnThirdBooking() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(firstUser, StatusBooking.CANCELED, pageable).getContent();
         assertThat(bookings.contains(thirdBooking));
     }
+
     @Test
     public void findAllByBookerAndStatus_whenSecondtUserAndStatusREJECTED_thenReturnFourthBooking() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(firstUser, StatusBooking.REJECTED, pageable).getContent();
         assertThat(bookings.contains(fourthBooking));
     }
+
     @Test
     public void findAllByBookerAndStatus_whenOnwertUserAndStatusREJECTED_thenReturnEmptyList() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(onwer, StatusBooking.REJECTED, pageable).getContent();
         assertThat(bookings.isEmpty()).isTrue();
     }
+
     @Test
     public void findAllByBookerAndStatus_whenSecondUserAndStatusREJECTED_thenReturnEmptyList() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(secondUser, StatusBooking.APPROVED, pageable).getContent();
         assertThat(bookings.isEmpty()).isTrue();
     }
+
     @Test
     public void findAllByBookerAndStatus_whenSecondUserAndStatusCANCELED_thenReturnEmptyList() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(secondUser, StatusBooking.CANCELED, pageable).getContent();
         assertThat(bookings.isEmpty()).isTrue();
     }
+
     @Test
     public void findAllByBookerAndStatus_whenSecondUserAndStatusWAITING_thenReturnEmptyList() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStatus(secondUser, StatusBooking.WAITING, pageable).getContent();
         assertThat(bookings.isEmpty()).isTrue();
     }
+
     @Test
-    public void findAllByBooker_whenFirstUser_thenReturnListBooking(){
+    public void findAllByBooker_whenFirstUser_thenReturnListBooking() {
         final int size = 4;
         List<Booking> bookings = bookingRepository.findAllByBooker(firstUser, pageable).getContent();
         assertThat(bookings.size() == size).isTrue();
@@ -171,36 +180,42 @@ public class BookingRepositoryTest {
         assertThat(bookings.contains(thirdBooking)).isTrue();
         assertThat(bookings.contains(fourthBooking)).isTrue();
     }
+
     @Test
-    public void findAllByBooker_whenSecondUser_thenReturnEmptyList(){
+    public void findAllByBooker_whenSecondUser_thenReturnEmptyList() {
         List<Booking> bookings = bookingRepository.findAllByBooker(secondUser, pageable).getContent();
         assertThat(bookings.isEmpty()).isTrue();
     }
+
     @Test
-    public void bookingСonfirmation_whenFourthBooking_thenReturnBooking(){
+    public void bookingСonfirmation_whenFourthBooking_thenReturnBooking() {
         final int limit = 1;
         Optional<Booking> booking = bookingRepository.bookingСonfirmation(bookingId, itemId, limit);
         assertThat(booking.get().equals(fourthBooking)).isTrue();
     }
+
     @Test
-    public void bookingСonfirmation_whenBadBookingId_thenReturnBooking(){
+    public void bookingСonfirmation_whenBadBookingId_thenReturnBooking() {
         final int limit = 1;
         Long bookingId = 99L;
         Optional<Booking> booking = bookingRepository.bookingСonfirmation(bookingId, itemId, limit);
         assertThat(booking.isEmpty()).isTrue();
     }
+
     @Test
-    public void findCurrent_whenFirstUser_thenReturnFourthBooking(){
+    public void findCurrent_whenFirstUser_thenReturnFourthBooking() {
         List<Booking> bookings = bookingRepository.findCurrent(firstUser, pageable).getContent();
         assertThat(bookings.contains(fourthBooking)).isTrue();
     }
+
     @Test
-    public void findCurrent_whenSecondUser_thenReturnListEmpty(){
+    public void findCurrent_whenSecondUser_thenReturnListEmpty() {
         List<Booking> bookings = bookingRepository.findCurrent(secondUser, pageable).getContent();
         assertThat(bookings.isEmpty()).isTrue();
     }
+
     @Test
-    public void findAllByBookerAndStartIsAfter_whenFirstUser_thenReturnListBookings(){
+    public void findAllByBookerAndStartIsAfter_whenFirstUser_thenReturnListBookings() {
         final int size = 3;
         List<Booking> bookings = bookingRepository.findAllByBookerAndStartIsAfter(firstUser, LocalDateTime.now(), pageable).getContent();
         assertThat(bookings.size() == size).isTrue();
@@ -208,49 +223,57 @@ public class BookingRepositoryTest {
         assertThat(bookings.contains(secondBooking)).isTrue();
         assertThat(bookings.contains(thirdBooking)).isTrue();
     }
+
     @Test
-    public void findAllByBookerAndStartIsAfter_whenSecondUser_thenReturnListEmty(){
+    public void findAllByBookerAndStartIsAfter_whenSecondUser_thenReturnListEmty() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndStartIsAfter(secondUser, LocalDateTime.now(), pageable).getContent();
         assertThat(bookings.isEmpty()).isTrue();
     }
+
     @Test
-    public void findAllByBookerAndEndIsBefore_whenFirstUser_thenReturnListBookings(){
+    public void findAllByBookerAndEndIsBefore_whenFirstUser_thenReturnListBookings() {
         final int size = 1;
         List<Booking> bookings = bookingRepository.findAllByBookerAndEndIsBefore(oldUser, LocalDateTime.now(), pageable).getContent();
         assertThat(bookings.size() == size).isTrue();
         assertThat(bookings.contains(oldBooking)).isTrue();
     }
+
     @Test
-    public void findAllByBookerAndEndIsBefore_whenSecondUser_thenReturnListEmty(){
+    public void findAllByBookerAndEndIsBefore_whenSecondUser_thenReturnListEmty() {
         List<Booking> bookings = bookingRepository.findAllByBookerAndEndIsBefore(secondUser, LocalDateTime.now(), pageable).getContent();
         assertThat(bookings.isEmpty()).isTrue();
     }
+
     @Test
-    public void findAllByItemIdAndStatus_whenFirstUser_thenReturnListBookings(){
+    public void findAllByItemIdAndStatus_whenFirstUser_thenReturnListBookings() {
         List<Booking> bookings = bookingRepository.findAllByItemIdAndStatus(itemId, StatusBooking.WAITING);
         assertThat(bookings.contains(firstBooking));
     }
+
     @Test
-    public void findAllByItemIdAndStatus_whenBadItemId_thenReturnListBookings(){
+    public void findAllByItemIdAndStatus_whenBadItemId_thenReturnListBookings() {
         Long itemId = 99L;
         List<Booking> bookings = bookingRepository.findAllByItemIdAndStatus(itemId, StatusBooking.WAITING);
         assertThat(bookings.isEmpty());
     }
+
     @Test
-    public void findByBookerAndItem_whenBadItemId_thenReturnEmptyBooking(){
+    public void findByBookerAndItem_whenBadItemId_thenReturnEmptyBooking() {
         final int limit = 1;
         Optional<Booking> booking = bookingRepository.findByBookerAndItem(itemId, bookingId, LocalDateTime.now(), StatusBooking.WAITING.name(), limit);
         assertThat(booking.isEmpty()).isTrue();
     }
+
     @Test
-    public void findByBookerAndItem_whenBadItemId_thenReturnBooking(){
+    public void findByBookerAndItem_whenBadItemId_thenReturnBooking() {
         final int limit = 1;
         Optional<Booking> booking = bookingRepository.findByBookerAndItem(itemId, bookingId, LocalDateTime.parse("2028-10-23T17:19:33"),
                 StatusBooking.REJECTED.name(), limit);
         assertThat(booking.get().equals(firstBooking));
     }
+
     @Test
-    public void findAllByOwner_whenOwnerId_thenReturnListBookings(){
+    public void findAllByOwner_whenOwnerId_thenReturnListBookings() {
         List<Booking> bookings = bookingRepository.findAllByOwner(userId2, pageable);
         final int size = 5;
         assertThat(bookings.size() == size).isTrue();
@@ -260,11 +283,23 @@ public class BookingRepositoryTest {
         assertThat(bookings.contains(fourthBooking)).isTrue();
         assertThat(bookings.contains(oldBooking)).isTrue();
     }
+
     @Test
-    public void findAllByOwner_whenBadOwnerId_thenReturnListEmpty(){
+    public void findAllByOwner_whenBadOwnerId_thenReturnListEmpty() {
         Long userId2 = 99L;
         List<Booking> bookings = bookingRepository.findAllByOwner(userId2, pageable);
         assertThat(bookings.isEmpty()).isTrue();
     }
 
+    @Test
+    public void findAllByItemIdInAndStatus_whenIds_thenReturnListBooking() {
+        List<Booking> bookings = bookingRepository.findAllByItemIdInAndStatus(Arrays.asList(1L, 2L), StatusBooking.WAITING, pageable).getContent();
+        assertThat(bookings.contains(firstBooking)).isTrue();
+    }
+
+    @Test
+    public void findAllByItemIdInAndStatus_whenBadIds_thenReturnListEmpty() {
+        List<Booking> bookings = bookingRepository.findAllByItemIdInAndStatus(Arrays.asList(77L, 99L), StatusBooking.WAITING, pageable).getContent();
+        assertThat(bookings.isEmpty()).isTrue();
+    }
 }
