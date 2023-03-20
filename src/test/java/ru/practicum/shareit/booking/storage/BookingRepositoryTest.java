@@ -41,7 +41,6 @@ public class BookingRepositoryTest {
     @Autowired
     CommentRepository commentRepository;
     private User firstUser;
-    final Long userId1 = 1L;
     final Long userId2 = 2L;
     final Long bookingId = 1L;
     final Long itemId = 1L;
