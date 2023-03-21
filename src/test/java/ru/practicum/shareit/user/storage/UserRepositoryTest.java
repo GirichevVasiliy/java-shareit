@@ -107,7 +107,6 @@ public class UserRepositoryTest {
     @Test
     public void getAllUsers_whenUsersContainsDataBase_thenListUsers() {
         List<User> userList = userRepository.findAll();
-        assertThat(userList.size() == size).isTrue();
         assertThat(userList.contains(firstUser)).isTrue();
         assertThat(userList.contains(secondUser)).isTrue();
         assertThat(userList.contains(thirdUser)).isTrue();

@@ -19,6 +19,7 @@ class ItemRequestMapperTest {
     private ItemRequest itemRequest;
     private ItemRequestDto itemRequestDto;
     private AnswerDto answerDto;
+
     @BeforeEach
     private void init() {
         owner = User.builder()
@@ -50,6 +51,7 @@ class ItemRequestMapperTest {
                 .requestId(1L)
                 .build();
     }
+
     @Test
     @DisplayName("Тест создания ItemRequestDto в ItemRequestDto")
     void itemRequestDtoCreateTest() {
@@ -58,6 +60,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getDescription().equals(itemRequestDto.getDescription())).isTrue();
         assertThat(newItemRequestDto.getCreated() != null).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания ItemRequestDto в ItemRequestDto, Description = null")
     void itemRequestDtoCreateDescriptionIsNullTest() {
@@ -69,6 +72,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getDescription() == null).isTrue();
         assertThat(newItemRequestDto.getCreated() != null).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest, answer в ItemRequestDto")
     void itemRequestAndListAnswersToDtoTest() {
@@ -78,6 +82,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated().equals(itemRequest.getCreated())).isTrue();
         assertThat(newItemRequestDto.getItems().equals(Arrays.asList(answerDto))).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest, answer в ItemRequestDto")
     void itemRequestAndListAnswersToDtoIdIsNullTest() {
@@ -88,6 +93,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated().equals(itemRequest.getCreated())).isTrue();
         assertThat(newItemRequestDto.getItems().equals(Arrays.asList(answerDto))).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest, answer в ItemRequestDto")
     void itemRequestAndListAnswersToDtoDescriptionIsNullTest() {
@@ -98,6 +104,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated().equals(itemRequest.getCreated())).isTrue();
         assertThat(newItemRequestDto.getItems().equals(Arrays.asList(answerDto))).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest, answer в ItemRequestDto")
     void itemRequestAndListAnswersToDtoCreatedIsNullTest() {
@@ -108,6 +115,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated() == null).isTrue();
         assertThat(newItemRequestDto.getItems().equals(Arrays.asList(answerDto))).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest, answer в ItemRequestDto")
     void itemRequestAndListAnswersToDtoListAnswerIsEmptyTest() {
@@ -117,6 +125,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated().equals(itemRequest.getCreated())).isTrue();
         assertThat(newItemRequestDto.getItems().equals(new ArrayList<>())).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest ItemRequestDto, с чистым списком items")
     void itemRequestToDtoNewListIsEmptyTest() {
@@ -126,6 +135,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated().equals(itemRequest.getCreated())).isTrue();
         assertThat(newItemRequestDto.getItems().isEmpty()).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest ItemRequestDto, с чистым списком items, setId=null")
     void itemRequestToDtoNewListIsEmptyAndIdIsNullTest() {
@@ -136,6 +146,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated().equals(itemRequest.getCreated())).isTrue();
         assertThat(newItemRequestDto.getItems().isEmpty()).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest ItemRequestDto, с чистым списком items, Description = null")
     void itemRequestToDtoNewListIsEmptyAndDescriptionIsNullTest() {
@@ -146,6 +157,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated().equals(itemRequest.getCreated())).isTrue();
         assertThat(newItemRequestDto.getItems().isEmpty()).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания itemRequest ItemRequestDto, с чистым списком items, Created = null")
     void itemRequestToDtoNewListIsEmptyAndCreatedIsNullTest() {
@@ -156,6 +168,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequestDto.getCreated() == null).isTrue();
         assertThat(newItemRequestDto.getItems().isEmpty()).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания ItemRequest из itemRequestDto, User")
     void itemRequestCreateTest() {
@@ -168,6 +181,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequest.getCreated().equals(itemRequestDto.getCreated())).isTrue();
         assertThat(newItemRequest.getRequestor().equals(owner)).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания ItemRequest из itemRequestDto, User, description=null")
     void itemRequestCreateDescriptionIsNullTest() {
@@ -180,6 +194,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequest.getCreated().equals(itemRequestDto.getCreated())).isTrue();
         assertThat(newItemRequest.getRequestor().equals(owner)).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания ItemRequest из itemRequestDto, User, Created=null")
     void itemRequestCreateCreatedIsNullTest() {
@@ -192,6 +207,7 @@ class ItemRequestMapperTest {
         assertThat(newItemRequest.getCreated() == null).isTrue();
         assertThat(newItemRequest.getRequestor().equals(owner)).isTrue();
     }
+
     @Test
     @DisplayName("Тест создания ItemRequest из itemRequestDto, User, Requestor=null")
     void itemRequestCreateRequestorIsNullTest() {

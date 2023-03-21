@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.service.StateBooking;
 import ru.practicum.shareit.request.dto.AnswerDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
@@ -177,6 +176,7 @@ class ItemRequestControllerTest {
         verify(itemRequestService, times(1)).getAllItemRequests(userId, pageable);
         assertEquals(objectMapper.writeValueAsString(requestDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllItemRequestsTest_whenFromDefaultValue_thenReturnOk() {
@@ -192,6 +192,7 @@ class ItemRequestControllerTest {
         verify(itemRequestService, times(1)).getAllItemRequests(userId, pageable);
         assertEquals(objectMapper.writeValueAsString(requestDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllItemRequestsTest_whenSizeDefaultValue_thenReturnOk() {
@@ -208,6 +209,7 @@ class ItemRequestControllerTest {
         verify(itemRequestService, times(1)).getAllItemRequests(userId, pageableSize);
         assertEquals(objectMapper.writeValueAsString(requestDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllItemRequestsTest_whenSizeAndFromDefaultValue_thenReturnOk() {
@@ -223,28 +225,31 @@ class ItemRequestControllerTest {
         verify(itemRequestService, times(1)).getAllItemRequests(userId, pageableSize);
         assertEquals(objectMapper.writeValueAsString(requestDtoList), result);
     }
+
     @Test
     @SneakyThrows
     void getAllItemRequestsTest_whenItemRequestDtoValid_thenClientError() {
-      mockMvc.perform(get("/requests/all")
+        mockMvc.perform(get("/requests/all")
                         .param("from", "0")
                         .param("size", "2"))
                 .andExpect(status().is4xxClientError());
         verify(itemRequestService, never()).getAllItemRequests(any(), any());
     }
+
     @Test
     @SneakyThrows
     void getItemRequestByIdTest_whenItemRequestValid_thenReturnOk() {
-            when(itemRequestService.getItemRequestById(any(), any())).thenReturn(itemRequestDto);
-            String result = mockMvc.perform(get("/requests/{requestId}", requestId)
-                            .header("X-Sharer-User-Id", userId))
-                    .andExpect(status().is2xxSuccessful())
-                    .andReturn()
-                    .getResponse()
-                    .getContentAsString();
-            verify(itemRequestService, times(1)).getItemRequestById(any(), any());
-            assertEquals(objectMapper.writeValueAsString(itemRequestDto), result);
+        when(itemRequestService.getItemRequestById(any(), any())).thenReturn(itemRequestDto);
+        String result = mockMvc.perform(get("/requests/{requestId}", requestId)
+                        .header("X-Sharer-User-Id", userId))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        verify(itemRequestService, times(1)).getItemRequestById(any(), any());
+        assertEquals(objectMapper.writeValueAsString(itemRequestDto), result);
     }
+
     @Test
     @SneakyThrows
     void getItemRequestByIdTest_whenRequestIdNotValid_thenClientError() {
@@ -253,6 +258,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(itemRequestService, never()).getItemRequestById(any(), any());
     }
+
     @Test
     @SneakyThrows
     void getItemRequestByIdTest_whenUserIdNotValid_thenClientError() {

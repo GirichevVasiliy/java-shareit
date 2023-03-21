@@ -47,6 +47,7 @@ class UserServiceImplTest {
                 .email("y1@email.ru")
                 .build();
     }
+
     @Test
     void addUser_whenСorrectUser_thenReturnUserDto() {
         when(userRepository.save(user)).thenReturn(user);
@@ -54,6 +55,7 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).save(any());
         assertThat(newUserDto.equals(userDto)).isTrue();
     }
+
     @Test
     void updateUser_whenUserIsNotFound_thenThrowException() {
         assertThrows(
@@ -61,6 +63,7 @@ class UserServiceImplTest {
                 () -> userService.updateUser(userDto, userId1));
         verify(userRepository, never()).save(any());
     }
+
     @Test
     void updateUser_whenСorrectUser_thenReturnUserDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
@@ -69,24 +72,28 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).save(any());
         assertThat(newUserDto.equals(userDto)).isTrue();
     }
+
     @Test
     void getUserById_whenUserIsNotFound_thenThrowException() {
         assertThrows(
                 ResourceNotFoundException.class,
                 () -> userService.getUserById(userId1));
     }
+
     @Test
     void getUserById_whenUserIsFound_thenReturnUserDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         UserDto newUser = userService.getUserById(userId1);
         assertThat(newUser.equals(userDto)).isTrue();
     }
+
     @Test
     void deleteUserById_whenUserIsFound_void() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         userService.deleteUserById(userId1);
         verify(userRepository, times(1)).deleteById(userId1);
     }
+
     @Test
     void deleteUserById_whenUserIsFound_thenThrowException() {
         assertThrows(
@@ -94,12 +101,14 @@ class UserServiceImplTest {
                 () -> userService.deleteUserById(userId1));
         verify(userRepository, never()).deleteById(userId1);
     }
+
     @Test
     void getAllUsers_whenUserDtoListNotEmpty() {
         when(userRepository.findAll()).thenReturn(Arrays.asList(user));
         List<UserDto> userDtoList = userService.getAllUsers();
         assertThat(userDtoList.contains(userDto)).isTrue();
     }
+
     @Test
     void getAllUsers_whenUserDtoListEmpty() {
         when(userRepository.findAll()).thenReturn(new ArrayList<>());

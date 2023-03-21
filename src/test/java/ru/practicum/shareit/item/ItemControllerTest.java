@@ -476,6 +476,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(commentService, never()).addComment(any(), any(), any());
     }
+
     @Test
     @SneakyThrows
     void postCommentTest_whenTextCommentDtoNotValid_thenClientError() {
@@ -487,6 +488,7 @@ class ItemControllerTest {
                 .andExpect(status().is4xxClientError());
         verify(commentService, never()).addComment(any(), any(), any());
     }
+
     @Test
     @SneakyThrows
     void postCommentTest_whenAuthorNameCommentDtoNotValid_thenReturnOk() {
