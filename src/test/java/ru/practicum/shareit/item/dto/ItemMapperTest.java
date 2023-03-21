@@ -118,16 +118,16 @@ class ItemMapperTest {
     void toItemDtoListTest() {
         List<CommentDto> commentDtoList = Arrays.asList(new CommentDto(1L, "text", "name",
                 LocalDateTime.parse("2024-10-23T17:19:33")));
-        ItemDto NewItemDto = ItemMapper.toItemDtoList(item, commentDtoList);
-        assertThat(NewItemDto.getId().equals(item.getId())).isTrue();
-        assertThat(NewItemDto.getName().equals(item.getName())).isTrue();
-        assertThat(NewItemDto.getAvailable().equals(item.getAvailable())).isTrue();
-        assertThat(NewItemDto.getRequestId().equals(item.getRequest().getId())).isTrue();
-        assertThat(NewItemDto.getDescription().equals(item.getDescription())).isTrue();
-        assertThat(NewItemDto.getOwner().equals(ownerDto)).isTrue();
-        assertThat(NewItemDto.getComments().equals(commentDtoList)).isTrue();
-        assertThat(NewItemDto.getLastBooking() == null).isTrue();
-        assertThat(NewItemDto.getNextBooking() == null).isTrue();
+        ItemDto newItemDto = ItemMapper.toItemDtoList(item, commentDtoList);
+        assertThat(newItemDto.getId().equals(item.getId())).isTrue();
+        assertThat(newItemDto.getName().equals(item.getName())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(item.getAvailable())).isTrue();
+        assertThat(newItemDto.getRequestId().equals(item.getRequest().getId())).isTrue();
+        assertThat(newItemDto.getDescription().equals(item.getDescription())).isTrue();
+        assertThat(newItemDto.getOwner().equals(ownerDto)).isTrue();
+        assertThat(newItemDto.getComments().equals(commentDtoList)).isTrue();
+        assertThat(newItemDto.getLastBooking() == null).isTrue();
+        assertThat(newItemDto.getNextBooking() == null).isTrue();
     }
 
     @Test

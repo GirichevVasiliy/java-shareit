@@ -331,8 +331,7 @@ class BookingControllerTest {
     @Test
     @SneakyThrows
     void getAllBookingsTest_whenBookingListStatusUNSUPPORTED_STATUS_thenReturnOk() {
-        when(bookingService.getAllBookings(userId, StateBooking.UNSUPPORTED_STATUS, pageable)).
-                thenThrow(new ValidationStateException("Unknown state: UNSUPPORTED_STATUS"));
+        when(bookingService.getAllBookings(userId, StateBooking.UNSUPPORTED_STATUS, pageable)).thenThrow(new ValidationStateException("Unknown state: UNSUPPORTED_STATUS"));
         mockMvc.perform(get("/bookings")
                         .param("state", "UNSUPPORTED_STATUS")
                         .param("from", "0")

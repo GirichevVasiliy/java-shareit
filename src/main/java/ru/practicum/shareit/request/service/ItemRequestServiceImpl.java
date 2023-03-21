@@ -29,9 +29,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRepository itemRepository;
 
     @Autowired
-    public ItemRequestServiceImpl(ItemRequestRepository itemRequestRepository,
-                                  UserRepository userRepository,
-                                  ItemRepository itemRepository) {
+    public ItemRequestServiceImpl(ItemRequestRepository itemRequestRepository, UserRepository userRepository, ItemRepository itemRepository) {
         this.itemRequestRepository = itemRequestRepository;
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
@@ -97,14 +95,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return answerList;
     }
 
-    private List<ItemRequestDto> creatingItemRequestDtoWithAnswers(Map<Long, List<Answer>> answersForItemRequest,
-                                                                   List<ItemRequest> itemRequestsForUser) {
+    private List<ItemRequestDto> creatingItemRequestDtoWithAnswers(Map<Long, List<Answer>> answersForItemRequest, List<ItemRequest> itemRequestsForUser) {
         List<ItemRequestDto> itemRequestDtos = new ArrayList<>();
         if (!answersForItemRequest.isEmpty()) {
             for (ItemRequest itemRequest : itemRequestsForUser) {
-                ItemRequestDto ItemRequestDto = ItemRequestMapper
+                ItemRequestDto itemRequestDto = ItemRequestMapper
                         .itemRequestAndListAnswersToDto(itemRequest, answersForItemRequest.get(itemRequest.getId()));
-                itemRequestDtos.add(ItemRequestDto);
+                itemRequestDtos.add(itemRequestDto);
             }
         } else {
             for (ItemRequest itemRequest : itemRequestsForUser) {
