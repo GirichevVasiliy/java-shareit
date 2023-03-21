@@ -104,8 +104,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             }
         } else {
             for (ItemRequest itemRequest : itemRequestsForUser) {
-                ItemRequestDto ItemRequestDto = ItemRequestMapper.itemRequestToDto(itemRequest);
-                itemRequestDtos.add(ItemRequestDto);
+                ItemRequestDto itemRequestDto = ItemRequestMapper.itemRequestToDto(itemRequest);
+                itemRequestDtos.add(itemRequestDto);
             }
         }
         return itemRequestDtos;
