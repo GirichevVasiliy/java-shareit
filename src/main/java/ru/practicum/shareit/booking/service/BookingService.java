@@ -13,7 +13,7 @@ public interface BookingService {
 
     BookingDto getBookingById(Long bookingId, Long userId);
 
-    List<BookingDto> getAllBookings(Long userId, StateBooking stateBooking,Pageable pageable);
+    List<BookingDto> getAllBookings(Long userId, StateBooking stateBooking, Pageable pageable);
 
     List<BookingDto> getAllBookingsForOwner(Long ownerId, StateBooking stateBooking, Pageable pageable);
 }
