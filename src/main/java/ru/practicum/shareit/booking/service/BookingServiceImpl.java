@@ -128,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.REJECTED, pageableNew).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             default:
-                throw new ValidationStateException("Unknown state: UNSUPPORTED_STATUS");
+                throw new ValidationStateException("Unknown state: " + stateBooking);
         }
     }
 
@@ -163,7 +163,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookings.stream().filter(b -> b.getStatus().equals(StatusBooking.REJECTED)).map(BookingMapper::bookingToDto)
                         .collect(Collectors.toList());
             default:
-                throw new ValidationStateException("Unknown state: UNSUPPORTED_STATUS");
+                throw new ValidationStateException("Unknown state: " + stateBooking);
         }
     }
 
