@@ -83,7 +83,6 @@ public class ItemRequestRepositoryTest {
                 LocalDateTime.parse("2024-10-23T17:19:55")));
         entityManager.persist(secondItemRequest);
 
-
         firstItem = itemRepository.save(new Item(1L, "item1", "text", true, onwer, firstItemRequest));
         entityManager.persist(firstItem);
 
@@ -120,18 +119,21 @@ public class ItemRequestRepositoryTest {
         itemRequestRepository.deleteAll();
         commentRepository.deleteAll();
     }
+
     @Test
-    public void findByRequestorIdOrderByCreatedDesc_whenSecondUser_thenReturnEmptyList(){
+    public void findByRequestorIdOrderByCreatedDesc_whenSecondUser_thenReturnEmptyList() {
         List<ItemRequest> itemRequests = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId2);
         assertThat(itemRequests.isEmpty()).isTrue();
     }
+
     @Test
-    public void findByRequestorIdOrderByCreatedDesc_whenFirstUser_thenReturnList(){
+    public void findByRequestorIdOrderByCreatedDesc_whenFirstUser_thenReturnList() {
         List<ItemRequest> itemRequests = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId1);
         assertThat(itemRequests.contains(firstItemRequest)).isTrue();
     }
+
     @Test
-    public void findAllByRequestorNot_whenFirstUser_thenReturnList(){
+    public void findAllByRequestorNot_whenFirstUser_thenReturnList() {
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorNot(firstUser, pageable).getContent();
         assertThat(itemRequests.contains(secondItemRequest)).isTrue();
     }

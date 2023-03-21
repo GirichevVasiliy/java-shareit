@@ -99,14 +99,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequestDto> itemRequestDtos = new ArrayList<>();
         if (!answersForItemRequest.isEmpty()) {
             for (ItemRequest itemRequest : itemRequestsForUser) {
-                ItemRequestDto itemRequestDto = ItemRequestMapper
-                        .itemRequestAndListAnswersToDto(itemRequest, answersForItemRequest.get(itemRequest.getId()));
+                ItemRequestDto itemRequestDto = ItemRequestMapper.itemRequestAndListAnswersToDto(itemRequest, answersForItemRequest.get(itemRequest.getId()));
                 itemRequestDtos.add(itemRequestDto);
             }
         } else {
             for (ItemRequest itemRequest : itemRequestsForUser) {
-                ItemRequestDto ItemRequestDto = ItemRequestMapper
-                        .itemRequestToDto(itemRequest);
+                ItemRequestDto ItemRequestDto = ItemRequestMapper.itemRequestToDto(itemRequest);
                 itemRequestDtos.add(ItemRequestDto);
             }
         }
