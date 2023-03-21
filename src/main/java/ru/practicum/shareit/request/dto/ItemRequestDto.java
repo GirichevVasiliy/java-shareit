@@ -20,5 +20,4 @@ public class ItemRequestDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final LocalDateTime created;
     private final List<AnswerDto> items;
-
 }
