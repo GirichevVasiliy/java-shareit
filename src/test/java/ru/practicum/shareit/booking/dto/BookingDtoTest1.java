@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
-class BookingDtoTest {
+public class BookingDtoTest1 {
     @Autowired
     private JacksonTester<BookingDto> json;
     private static final LocalDateTime START = LocalDateTime.of(2024, 10, 23, 17, 19, 33);
@@ -41,5 +41,4 @@ class BookingDtoTest {
         assertThat(result).extractingJsonPathNumberValue("$.booker.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.status").isEqualTo("APPROVED");
     }
-
 }
