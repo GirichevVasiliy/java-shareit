@@ -61,7 +61,8 @@ public class ItemMapper {
                 .comments(comments)
                 .build();
     }
-    public static Answer answerCreateForItem(Item item){
+
+    public static Answer answerCreateForItem(Item item) {
         ItemRequest request = item.getRequest();
         Long requestId = request != null ? request.getId() : null;
         return Answer.builder()
