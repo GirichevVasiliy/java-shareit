@@ -31,7 +31,7 @@ public class DateBookingDtoTest {
 
     @Test
     @SneakyThrows
-    public void DateBookingDtoTest() {
+    public void dateBookingDtoTest() {
         DateBookingDto dateBookingDto = new DateBookingDto(1L, user.getId(), START, END);
         JsonContent<DateBookingDto> result = json.write(dateBookingDto);
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
