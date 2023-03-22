@@ -138,8 +138,34 @@ class BookingServiceImplTest {
     void addBooking_whenStartAndEndTimeIsOld_thenThrowException() {
         inputBookingDto.setStart(LocalDateTime.parse("2018-10-23T17:19:45"));
         inputBookingDto.setEnd(LocalDateTime.parse("2017-10-23T17:19:45"));
-        assertThrows(
-                ValidationDateException.class,
+        assertThrows(ValidationDateException.class,
+                () -> bookingService.addBooking(inputBookingDto, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void addBooking_whenStartAndEndTimeIsOldIsNull_thenThrowException() {
+        inputBookingDto.setStart(null);
+        inputBookingDto.setEnd(null);
+        assertThrows(NullPointerException.class,
+                () -> bookingService.addBooking(inputBookingDto, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void addBooking_whenStartIsNull_thenThrowException() {
+        inputBookingDto.setStart(null);
+        inputBookingDto.setEnd(LocalDateTime.parse("2017-10-23T17:19:45"));
+        assertThrows(NullPointerException.class,
+                () -> bookingService.addBooking(inputBookingDto, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void addBooking_whenEndIsNull_thenThrowException() {
+        inputBookingDto.setStart(LocalDateTime.parse("2018-10-23T17:19:45"));
+        inputBookingDto.setEnd(null);
+        assertThrows(NullPointerException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
@@ -148,8 +174,7 @@ class BookingServiceImplTest {
     void addBooking_whenStartTimeIsOld_thenThrowException() {
         inputBookingDto.setStart(LocalDateTime.parse("2016-10-23T17:19:45"));
         inputBookingDto.setEnd(LocalDateTime.parse("2023-10-23T17:19:45"));
-        assertThrows(
-                ValidationDateException.class,
+        assertThrows(ValidationDateException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
@@ -158,25 +183,29 @@ class BookingServiceImplTest {
     void addBooking_whenEndTimeIsBeforeStart_thenThrowException() {
         inputBookingDto.setStart(LocalDateTime.parse("2024-10-23T17:19:45"));
         inputBookingDto.setEnd(LocalDateTime.parse("2021-10-23T17:19:46"));
-        assertThrows(
-                ValidationDateException.class,
+        assertThrows(ValidationDateException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
 
     @Test
-    void forAllTests_whenUserNotFound_thenThrowException() {
-        assertThrows(
-                ResourceNotFoundException.class,
+    void addBooking_whenUserNotFound_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
 
     @Test
-    void forAllTests_whenItemNotFound_thenThrowException() {
+    void addBooking_whenUserIsNull_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.addBooking(inputBookingDto, null));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void addBooking_whenItemNotFound_thenThrowException() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
-        assertThrows(
-                ResourceNotFoundException.class,
+        assertThrows(ResourceNotFoundException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
@@ -186,8 +215,7 @@ class BookingServiceImplTest {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
         item.setAvailable(false);
-        assertThrows(
-                ValidationAvailableException.class,
+        assertThrows(ValidationAvailableException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
     }
