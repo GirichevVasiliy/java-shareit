@@ -3,7 +3,6 @@ package ru.practicum.shareit.request.storage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exception.ResourceNotFoundException;
 import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.comment.storage.CommentRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -30,8 +28,6 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @DataJpaTest
 public class ItemRequestRepositoryTest {
@@ -132,16 +128,19 @@ public class ItemRequestRepositoryTest {
         List<ItemRequest> itemRequests = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId2);
         assertThat(itemRequests.isEmpty()).isTrue();
     }
+
     @Test
     public void findByRequestorIdOrderByCreatedDesc_whenUserNull_thenReturnThrows() {
         List<ItemRequest> itemRequests = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(null);
         assertThat(itemRequests.isEmpty()).isTrue();
     }
+
     @Test
     public void findByRequestorIdOrderByCreatedDesc_whenNotFoundUserId_thenReturnThrows() {
         List<ItemRequest> itemRequests = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId99);
         assertThat(itemRequests.isEmpty()).isTrue();
     }
+
     @Test
     public void findByRequestorIdOrderByCreatedDesc_whenFirstUser_thenReturnList() {
         List<ItemRequest> itemRequests = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId1);
@@ -161,11 +160,13 @@ public class ItemRequestRepositoryTest {
         assertThat(itemRequests.get(0).getRequestor().equals(secondItemRequest.getRequestor())).isTrue();
         assertThat(itemRequests.get(0).getDescription().equals(secondItemRequest.getDescription())).isTrue();
     }
+
     @Test
     public void findAllByRequestorNot_whenUserIsNull_thenReturnList() {
         assertThrows(InvalidDataAccessApiUsageException.class,
                 () -> itemRequestRepository.findAllByRequestorNot(null, pageable));
     }
+
     @Test
     public void findAllByRequestorNot_whenPageableIsNull_thenReturnList() {
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorNot(firstUser, null).getContent();

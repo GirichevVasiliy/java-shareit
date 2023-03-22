@@ -28,4 +28,15 @@ class ItemTest {
         assertThat(result).extractingJsonPathNumberValue("$.request.id").isEqualTo(null);
         assertThat(result).extractingJsonPathNumberValue("$.owner.id").isEqualTo(1);
     }
+
+    @Test
+    @SneakyThrows
+    public void secondBookingDtoTest() {
+        Item item = new Item("text", "desc", true, null);
+        JsonContent<Item> result = json.write(item);
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("text");
+        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("desc");
+        assertThat(result).extractingJsonPathBooleanValue("$.available").isTrue();
+        assertThat(result).extractingJsonPathNumberValue("$.request").isEqualTo(null);
+    }
 }

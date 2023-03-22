@@ -24,4 +24,12 @@ class UserTest {
         assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("Alex");
     }
 
+    @Test
+    @SneakyThrows
+    public void secondUserDtoTest() {
+        User user = new User("ya@ya.ru", "Alex");
+        JsonContent<User> result = json.write(user);
+        assertThat(result).extractingJsonPathStringValue("$.email").isEqualTo("ya@ya.ru");
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("Alex");
+    }
 }

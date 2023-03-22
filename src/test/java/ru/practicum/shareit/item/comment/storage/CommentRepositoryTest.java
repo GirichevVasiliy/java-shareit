@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import ru.practicum.shareit.item.comment.dto.CommentMapper;
 import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -77,20 +76,23 @@ public class CommentRepositoryTest {
         Comment newComment = commentRepository.save(comment2);
         assertThat(newComment.equals(comment2)).isTrue();
     }
+
     @Test
     public void addCommentTestFirstItemIsNull() {
         Comment comment2 = new Comment(2L, "comment2", null, secondUser, LocalDateTime.now());
         Comment newComment = commentRepository.save(comment2);
         assertThat(newComment.getItem() == null).isTrue();
     }
+
     @Test
     public void addCommentTestUserIsNull() {
         Comment comment2 = new Comment(2L, "comment2", firstItem, null, LocalDateTime.now());
         Comment newComment = commentRepository.save(comment2);
         assertThat(newComment.getAuthor() == null).isTrue();
     }
+
     @Test
     public void addCommentIsNullTest() {
-        assertThrows(InvalidDataAccessApiUsageException.class, () ->  commentRepository.save(null));
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> commentRepository.save(null));
     }
 }

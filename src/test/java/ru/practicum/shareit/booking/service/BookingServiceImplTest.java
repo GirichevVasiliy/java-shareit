@@ -47,6 +47,7 @@ class BookingServiceImplTest {
     private BookingDto bookingDto;
     private User user;
     private UserDto ownerDto;
+    private Booking secondBooking;
     private InputBookingDto inputBookingDto;
     final Long userId1 = 1L;
     final Long userId2 = 2L;
@@ -130,6 +131,14 @@ class BookingServiceImplTest {
                 .end(LocalDateTime.parse("2024-10-23T17:19:45"))
                 .item(item)
                 .booker(user)
+                .status(StatusBooking.APPROVED)
+                .build();
+        secondBooking = Booking.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2024-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2024-10-23T17:19:45"))
+                .item(item)
+                .booker(onwer)
                 .status(StatusBooking.APPROVED)
                 .build();
     }
@@ -264,14 +273,16 @@ class BookingServiceImplTest {
 
     @Test
     void updateApprove_whenApproveIsNull_thenThrowException() {
-        assertThrows(ResourceNotFoundException.class,
+        when(userRepository.findById(userId1)).thenReturn(Optional.ofNullable(user));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        assertThrows(ValidationOwnerException.class,
                 () -> bookingService.updateApprove(bookingId, null, userId1));
         verify(bookingRepository, never()).save(any());
     }
 
     @Test
     void updateApprove_whenBookingNotFound_thenThrowException() {
-        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        when(userRepository.findById(userId1)).thenReturn(Optional.ofNullable(user));
         assertThrows(ResourceNotFoundException.class,
                 () -> bookingService.updateApprove(bookingId, true, userId1));
         verify(bookingRepository, never()).save(any());
@@ -330,6 +341,7 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingById_whenApproveIsNull_thenThrowException() {
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.ofNullable(booking));
         assertThrows(ResourceNotFoundException.class,
                 () -> bookingService.getBookingById(bookingId, userId1));
         verify(bookingRepository, never()).save(any());
@@ -339,6 +351,15 @@ class BookingServiceImplTest {
     void getBookingById_whenBookingById_thenThrowException() {
         assertThrows(ResourceNotFoundException.class,
                 () -> bookingService.getBookingById(null, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void getBookingById_whenNotBookingById_thenThrowException() {
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.ofNullable(secondBooking));
+        when(userRepository.findById(userId1)).thenReturn(Optional.ofNullable(user));
+        assertThrows(ValidationOwnerException.class,
+                () -> bookingService.getBookingById(bookingId, userId1));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -356,6 +377,12 @@ class BookingServiceImplTest {
         List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.ALL, pageable);
         assertThat(bookingDtoList.isEmpty());
         verify(bookingRepository).findAllByBooker(any(), any());
+    }
+
+    @Test
+    void getAllBookings_whenStateBookingALL_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.getAllBookings(userId1, StateBooking.ALL, pageable));
     }
 
     @Test
@@ -395,6 +422,14 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void getAllBookings_whenStateBookingNull_thenReturnListBookingDto() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerAndStatus(any(), any(), any())).thenReturn(page);
+        assertThrows(ValidationStateException.class,
+                () -> bookingService.getAllBookings(userId1, StateBooking.UNSUPPORTED_STATUS, pageable));
+    }
+
+    @Test
     void getAllBookings_whenStateBookingREJECTED_thenReturnListBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByBookerAndStatus(any(), any(), any())).thenReturn(page);
@@ -413,12 +448,35 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void getAllBookingsForOwner_whenUserNotFound_thenReturnListBookingDto() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.getAllBookingsForOwner(userId1, StateBooking.ALL, pageable));
+    }
+
+    @Test
     void getAllBookingsForOwner_whenBookingREJECTED_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.REJECTED, pageable);
         assertThat(list.isEmpty());
         verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+    }
+
+    @Test
+    void getAllBookingsForOwner_whenBookingCURRENT_thenReturnListBookingDto() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.CURRENT, pageable);
+        assertThat(list.isEmpty());
+        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+    }
+
+    @Test
+    void getAllBookingsForOwner_whenBookingUNSUPPORTED_STATUS_thenReturnListBookingDto() {
+        when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        assertThrows(ValidationStateException.class,
+                () -> bookingService.getAllBookingsForOwner(userId2, StateBooking.UNSUPPORTED_STATUS, pageable));
     }
 
     @Test

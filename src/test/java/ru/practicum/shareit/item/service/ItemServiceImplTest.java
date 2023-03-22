@@ -221,6 +221,24 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void updateItem_whenNameUpdateIsNull_thenReturnItemDto() {
+        ItemDto updateItem = ItemDto.builder()
+                .id(1L)
+                .name(null)
+                .description(null)
+                .available(null)
+                .owner(userDto)
+                .comments(new ArrayList<>())
+                .requestId(1L)
+                .build();
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(itemRequestRepository.findById(requestId)).thenReturn(Optional.ofNullable(itemRequest));
+        when(itemRepository.save(any())).thenReturn(item);
+        ItemDto newItemDto = itemService.updateItem(itemId, updateItem, userId2);
+        verify(itemRepository, times(1)).save(any());
+    }
+
+    @Test
     void getItemById_whenUserNotFound_thenThrowException() {
         assertThrows(
                 ResourceNotFoundException.class,
@@ -257,12 +275,29 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void getItemsByUser_whenСorrectDataAndBooking_thenReturnListItemDto() {
+        Page<Item> pageItems = new PageImpl<>(Arrays.asList(item), pageable, size);
+        when(itemRepository.findByOwnerIdOrderById(any(), any())).thenReturn(pageItems);
+        when(bookingRepository.findAllByItemIdInAndStatus(any(), any(), any())).thenReturn(pageBookings);
+        List<ItemDto> newListItemDto = itemService.getItemsByUser(userId1, pageable);
+        assertThat(newListItemDto.isEmpty());
+        verify(itemRepository).findByOwnerIdOrderById(any(), any());
+        verify(bookingRepository).findAllByItemIdInAndStatus(any(), any(), any());
+    }
+
+    @Test
+    void getAvailableItems_whenСorrectDataAnd_thenReturnListItemDto() {
+        when(itemRepository.getAvailableItems(any(), any())).thenReturn(pageItems);
+        List<ItemDto> newListItemDto = itemService.getAvailableItems(userId1, "", pageable);
+        assertThat(newListItemDto.isEmpty());
+    }
+
+    @Test
     void getAvailableItems_whenСorrectData_thenReturnListItemDto() {
         when(itemRepository.getAvailableItems(any(), any())).thenReturn(pageItems);
         List<ItemDto> newListItemDto = itemService.getAvailableItems(userId1, "text", pageable);
         assertThat(newListItemDto.isEmpty());
         verify(itemRepository).getAvailableItems(any(), any());
-
     }
 
     @Test
@@ -326,5 +361,22 @@ class ItemServiceImplTest {
         when(commentRepository.save(any())).thenReturn(comment);
         CommentDto newCommentDto = itemService.addComment(itemId, userId1, commentDto);
         verify(commentRepository, times(1)).save(any());
+    }
+
+    @Test
+    void addComment_whenNotFoundUser_thenThrowException() {
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> itemService.addComment(itemId, userId1, commentDto));
+        verify(commentRepository, never()).save(any());
+    }
+
+    @Test
+    void addComment_whenNotFoundUser_thenThrowException1() {
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> itemService.addComment(itemId, userId1, commentDto));
+        verify(commentRepository, never()).save(any());
     }
 }
