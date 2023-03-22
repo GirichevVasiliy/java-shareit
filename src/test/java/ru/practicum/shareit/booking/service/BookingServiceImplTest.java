@@ -221,7 +221,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void forAllTests_whenUserIsOwner_thenThrowException() {
+    void addBooking_whenUserIsOwner_thenThrowException() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
         item.setAvailable(true);
@@ -232,7 +232,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBooking_whenBookingСorrect_thenReturnBookingDto() {
+    void addBooking_whenBookingCorrect_thenReturnBookingDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
         item.setAvailable(true);
@@ -242,10 +242,37 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void forAllTests_whenBookingNotFound_thenThrowException() {
+    void updateApprove_whenItemNotFound_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.updateApprove(bookingId, true, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void updateApprove_whenBookingIdIsNull_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.updateApprove(null, true, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void updateApprove_whenUserIdIsNull_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.updateApprove(bookingId, true, null));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void updateApprove_whenApproveIsNull_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.updateApprove(bookingId, null, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void updateApprove_whenBookingNotFound_thenThrowException() {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
-        assertThrows(
-                ResourceNotFoundException.class,
+        assertThrows(ResourceNotFoundException.class,
                 () -> bookingService.updateApprove(bookingId, true, userId1));
         verify(bookingRepository, never()).save(any());
     }
@@ -299,6 +326,27 @@ class BookingServiceImplTest {
         BookingDto newBookingDto = bookingService.getBookingById(bookingId, userId1);
         assertThat(newBookingDto.equals(bookingDto)).isTrue();
         verify(bookingRepository, times(1)).findById(any());
+    }
+
+    @Test
+    void getBookingById_whenApproveIsNull_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.getBookingById(bookingId, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void getBookingById_whenBookingById_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.getBookingById(null, userId1));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void getBookingById_whenUserId_thenThrowException() {
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.getBookingById(bookingId, null));
+        verify(bookingRepository, never()).save(any());
     }
 
     @Test
