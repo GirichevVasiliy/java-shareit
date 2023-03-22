@@ -70,7 +70,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void forAllTests_whenUserNotFound_thenThrowException() {
+    void addItemRequest_whenUserNotFound_thenThrowException() {
         assertThrows(
                 ResourceNotFoundException.class,
                 () -> itemRequestService.addItemRequest(itemRequestDto, userId1));
@@ -80,16 +80,15 @@ class ItemRequestServiceImplTest {
     @Test
     void addItemRequest_whenСorrectData_thenReturnItemRequestDto() {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
-        when(itemRequestRepository.save(any())).thenReturn(itemRequest);
+        when(itemRequestRepository.save(itemRequest)).thenReturn(itemRequest);
         ItemRequest newItemRequest = itemRequestRepository.save(itemRequest);
-        verify(itemRequestRepository, times(1)).save(any());
+        verify(itemRequestRepository, times(1)).save(itemRequest);
         assertThat(newItemRequest.equals(itemRequest)).isTrue();
     }
 
     @Test
     void getAllItemRequestsUser_whenNotFoundUser_thenReturnListItemRequestDto() {
-        assertThrows(
-                ResourceNotFoundException.class,
+        assertThrows(ResourceNotFoundException.class,
                 () -> itemRequestService.getAllItemRequestsUser(userId1));
         verify(itemRequestRepository, never()).findByRequestorIdOrderByCreatedDesc(any());
     }
