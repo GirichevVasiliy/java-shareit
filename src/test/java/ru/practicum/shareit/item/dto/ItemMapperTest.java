@@ -89,6 +89,21 @@ class ItemMapperTest {
     }
 
     @Test
+    @DisplayName("Тест перевода Item в ItemDto")
+    void toItemDtoSinglTestRequestId() {
+        item.setRequest(null);
+        ItemDto newItemDto = ItemMapper.toItemDtoSingl(item);
+        assertThat(newItemDto.getId().equals(item.getId())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(item.getAvailable())).isTrue();
+        assertThat(newItemDto.getRequestId() == null).isTrue();
+        assertThat(newItemDto.getName().equals(item.getName())).isTrue();
+        assertThat(newItemDto.getDescription().equals(item.getDescription())).isTrue();
+        assertThat(newItemDto.getOwner().getId().equals(item.getOwner().getId())).isTrue();
+        assertThat(newItemDto.getOwner().getName().equals(item.getOwner().getName())).isTrue();
+        assertThat(newItemDto.getOwner().getEmail().equals(item.getOwner().getEmail())).isTrue();
+    }
+
+    @Test
     @DisplayName("Тест перевода ItemDto в Item")
     void toItemTest() {
         Item newItem = ItemMapper.toItem(itemDto);
@@ -114,6 +129,22 @@ class ItemMapperTest {
     }
 
     @Test
+    @DisplayName("Тест перевода Item в ItemDtoFull")
+    void toItemDtoFullequestisNull() {
+        item.setRequest(null);
+        ItemDto itemDtoFull = ItemMapper.toItemDtoFull(item, new ArrayList<>(), last, next);
+        assertThat(itemDtoFull.getId().equals(item.getId())).isTrue();
+        assertThat(itemDtoFull.getName().equals(item.getName())).isTrue();
+        assertThat(itemDtoFull.getAvailable().equals(item.getAvailable())).isTrue();
+        assertThat(itemDtoFull.getRequestId() == null).isTrue();
+        assertThat(itemDtoFull.getOwner().equals(ownerDto)).isTrue();
+        assertThat(itemDtoFull.getComments().equals(item.getComments())).isTrue();
+        assertThat(itemDtoFull.getDescription().equals(item.getDescription())).isTrue();
+        assertThat(itemDtoFull.getLastBooking().equals(last)).isTrue();
+        assertThat(itemDtoFull.getNextBooking().equals(next)).isTrue();
+    }
+
+    @Test
     @DisplayName("Тест перевода Item и списка комментариев в ItemDto")
     void toItemDtoListTest() {
         List<CommentDto> commentDtoList = Arrays.asList(new CommentDto(1L, "text", "name",
@@ -131,6 +162,24 @@ class ItemMapperTest {
     }
 
     @Test
+    @DisplayName("Тест перевода Item и списка комментариев в ItemDto")
+    void toItemDtoListTestsetRequestNull() {
+        item.setRequest(null);
+        List<CommentDto> commentDtoList = Arrays.asList(new CommentDto(1L, "text", "name",
+                LocalDateTime.parse("2024-10-23T17:19:33")));
+        ItemDto newItemDto = ItemMapper.toItemDtoList(item, commentDtoList);
+        assertThat(newItemDto.getId().equals(item.getId())).isTrue();
+        assertThat(newItemDto.getName().equals(item.getName())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(item.getAvailable())).isTrue();
+        assertThat(newItemDto.getRequestId() == null).isTrue();
+        assertThat(newItemDto.getDescription().equals(item.getDescription())).isTrue();
+        assertThat(newItemDto.getOwner().equals(ownerDto)).isTrue();
+        assertThat(newItemDto.getComments().equals(commentDtoList)).isTrue();
+        assertThat(newItemDto.getLastBooking() == null).isTrue();
+        assertThat(newItemDto.getNextBooking() == null).isTrue();
+    }
+
+    @Test
     @DisplayName("Тест перевода Item в Answer")
     void answerCreateForItem() {
         Answer answer = ItemMapper.answerCreateForItem(item);
@@ -138,6 +187,18 @@ class ItemMapperTest {
         assertThat(answer.getItemName().equals(item.getName())).isTrue();
         assertThat(answer.getAvailable().equals(item.getAvailable())).isTrue();
         assertThat(answer.getRequestId().equals(item.getRequest().getId())).isTrue();
+        assertThat(answer.getDescription().equals(item.getDescription())).isTrue();
+    }
+
+    @Test
+    @DisplayName("Тест перевода Item в Answer")
+    void answerCreateForItemRequestIsNull() {
+        item.setRequest(null);
+        Answer answer = ItemMapper.answerCreateForItem(item);
+        assertThat(answer.getItemId().equals(item.getId())).isTrue();
+        assertThat(answer.getItemName().equals(item.getName())).isTrue();
+        assertThat(answer.getAvailable().equals(item.getAvailable())).isTrue();
+        assertThat(answer.getRequestId() == null).isTrue();
         assertThat(answer.getDescription().equals(item.getDescription())).isTrue();
     }
 }

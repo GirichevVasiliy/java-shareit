@@ -74,6 +74,19 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUser_whenNotCorrectUser_thenReturnUserDto() {
+        userDto = UserDto.builder()
+                .id(null)
+                .name(null)
+                .email(null)
+                .build();
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        UserDto newUserDto = userService.updateUser(userDto, userId1);
+        verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
     void getUserById_whenUserIsNotFound_thenThrowException() {
         assertThrows(
                 ResourceNotFoundException.class,

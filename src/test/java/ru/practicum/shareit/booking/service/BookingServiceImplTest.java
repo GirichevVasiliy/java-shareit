@@ -25,6 +25,7 @@ import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -439,6 +440,18 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void getAllBookings_whenStateBookingСheckPageable_thenReturnListBookingDto() {
+        Pageable pageable = PageRequest.of(2, 2, Sort.by("start").descending());
+        final int size = 2;
+        Page<Booking> page = new PageImpl<>(new ArrayList<>(), pageable, size);
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByBookerAndStatus(any(), any(), any())).thenReturn(page);
+        List<BookingDto> bookingDtoList = bookingService.getAllBookings(userId1, StateBooking.REJECTED, pageable);
+        assertThat(bookingDtoList.isEmpty());
+        verify(bookingRepository).findAllByBookerAndStatus(any(), any(), any());
+    }
+
+    @Test
     void getAllBookingsForOwner_whenBookingALL_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
@@ -456,7 +469,7 @@ class BookingServiceImplTest {
     @Test
     void getAllBookingsForOwner_whenBookingREJECTED_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.REJECTED, pageable);
         assertThat(list.isEmpty());
         verify(bookingRepository, times(1)).findAllByOwner(any(), any());
@@ -465,7 +478,7 @@ class BookingServiceImplTest {
     @Test
     void getAllBookingsForOwner_whenBookingCURRENT_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.CURRENT, pageable);
         assertThat(list.isEmpty());
         verify(bookingRepository, times(1)).findAllByOwner(any(), any());
@@ -482,7 +495,7 @@ class BookingServiceImplTest {
     @Test
     void getAllBookingsForOwner_whenBookingWAITING_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.WAITING, pageable);
         assertThat(list.isEmpty());
         verify(bookingRepository, times(1)).findAllByOwner(any(), any());
@@ -491,7 +504,7 @@ class BookingServiceImplTest {
     @Test
     void getAllBookingsForOwner_whenBookingFUTURE_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.FUTURE, pageable);
         assertThat(list.isEmpty());
         verify(bookingRepository, times(1)).findAllByOwner(any(), any());
@@ -500,7 +513,7 @@ class BookingServiceImplTest {
     @Test
     void getAllBookingsForOwner_whenBookingPAST_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(new ArrayList<>());
+        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.PAST, pageable);
         assertThat(list.isEmpty());
         verify(bookingRepository, times(1)).findAllByOwner(any(), any());

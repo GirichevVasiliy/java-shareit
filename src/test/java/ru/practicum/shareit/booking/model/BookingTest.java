@@ -41,5 +41,4 @@ class BookingTest {
         assertThat(result).extractingJsonPathNumberValue("$.booker.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.status").isEqualTo("APPROVED");
     }
-
 }

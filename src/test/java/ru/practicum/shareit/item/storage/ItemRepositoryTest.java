@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.storage;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -122,67 +123,93 @@ public class ItemRepositoryTest {
     }
 
     @Test
-    public void findByOwnerId_whenUserId2_thenReturnItems() {
+    public void findByOwnerId_whenUserId2_thenReturnItemsTest() {
         List<Item> items = itemRepository.findByOwnerId(userId2);
         assertThat(items.contains(firstItem)).isTrue();
         assertThat(items.contains(secondItem)).isTrue();
     }
 
     @Test
-    public void findByOwnerId_whenBadUserId_thenReturnListEmpty() {
+    public void findByOwnerId_whenBadUserId_thenReturnListEmptyTest() {
         final Long id = 99L;
         List<Item> items = itemRepository.findByOwnerId(id);
         assertThat(items.isEmpty()).isTrue();
     }
 
     @Test
-    public void findByOwnerIdOrderById_whenUserId2_thenReturnItems() {
+    public void findByOwnerId_whenBadUserIdNull_thenReturnListEmptyTest() {
+        List<Item> items = itemRepository.findByOwnerId(null);
+        assertThat(items.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void findByOwnerIdOrderById_whenUserId2_thenReturnItemsTest() {
         List<Item> items = itemRepository.findByOwnerIdOrderById(userId2, pageable).getContent();
         assertThat(items.contains(firstItem)).isTrue();
         assertThat(items.contains(secondItem)).isTrue();
     }
 
     @Test
-    public void findByOwnerIdOrderById_whenBadUserId_thenReturnListEmpty() {
+    public void findByOwnerIdOrderById_whenUserNull_thenReturnItemsTest() {
+        List<Item> items = itemRepository.findByOwnerIdOrderById(null, pageable).getContent();
+        assertThat(items.isEmpty()).isTrue();
+    }
+
+    @Test
+    @SneakyThrows
+    public void findByOwnerIdOrderById_whenPageableNull_thenReturnItemsTest() {
+        List<Item> items = itemRepository.findByOwnerIdOrderById(userId2, null).getContent();
+        assertThat(items.contains(firstItem)).isTrue();
+        assertThat(items.contains(secondItem)).isTrue();
+    }
+
+    @Test
+    public void findByOwnerIdOrderById_whenUserNullAndPageableNull_thenReturnItemsTest() {
+        List<Item> items = itemRepository.findByOwnerIdOrderById(null, null).getContent();
+        assertThat(items.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void findByOwnerIdOrderById_whenBadUserId_thenReturnListEmptyTest() {
         final Long id = 99L;
         List<Item> items = itemRepository.findByOwnerIdOrderById(id, pageable).getContent();
         assertThat(items.isEmpty()).isTrue();
     }
 
     @Test
-    public void getAvailableItems_whenContainsText_thenReturnItems() {
+    public void getAvailableItems_whenContainsText_thenReturnItemsTest() {
         List<Item> items = itemRepository.getAvailableItems("tex", pageable).getContent();
         assertThat(items.contains(firstItem)).isTrue();
         assertThat(items.contains(secondItem)).isTrue();
     }
 
     @Test
-    public void getAvailableItems_whenBadNotText_thenReturnListEmpty() {
+    public void getAvailableItems_whenBadNotText_thenReturnListEmptyTest() {
         List<Item> items = itemRepository.getAvailableItems("wwww", pageable).getContent();
         assertThat(items.isEmpty()).isTrue();
     }
 
     @Test
-    public void findAllByRequestIn_whenContainsReques_thenReturnItems() {
+    public void findAllByRequestIn_whenContainsReques_thenReturnItemsTest() {
         List<Item> items = itemRepository.findAllByRequestIn(Arrays.asList(firstItemRequest, secondItemRequest));
         assertThat(items.contains(firstItem)).isTrue();
         assertThat(items.contains(secondItem)).isTrue();
     }
 
     @Test
-    public void findAllByRequestIn_whenBadNotRequests_thenReturnListEmpty() {
+    public void findAllByRequestIn_whenBadNotRequests_thenReturnListEmptyTest() {
         List<Item> items = itemRepository.findAllByRequestIn(new ArrayList<>());
         assertThat(items.isEmpty()).isTrue();
     }
 
     @Test
-    public void findAllByRequest_whenContainsFirstItemRequest_thenReturnItems() {
+    public void findAllByRequest_whenContainsFirstItemRequest_thenReturnItemsTest() {
         List<Item> items = itemRepository.findAllByRequest(firstItemRequest);
         assertThat(items.contains(firstItem));
     }
 
     @Test
-    public void findAllByRequest_whenContainsRequestNull_thenReturnListEmpty() {
+    public void findAllByRequest_whenContainsRequestNull_thenReturnListEmptyTest() {
         List<Item> items = itemRepository.findAllByRequest(null);
         assertThat(items.isEmpty()).isTrue();
     }
