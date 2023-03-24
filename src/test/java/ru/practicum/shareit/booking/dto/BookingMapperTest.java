@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusBooking;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+@SpringBootTest
 class BookingMapperTest {
     private BookingDto bookingDtoControl;
     private InputBookingDto inputBookingDto;
