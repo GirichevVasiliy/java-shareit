@@ -63,6 +63,7 @@ class ItemServiceImplTest {
     final Long requestId = 1L;
     private ItemRequest itemRequest;
     private Booking booking;
+    private Booking booking2;
     private Item item;
     private ItemDto itemDto;
     private User onwer;
@@ -132,6 +133,14 @@ class ItemServiceImplTest {
                 .booker(user)
                 .status(StatusBooking.APPROVED)
                 .build();
+        booking2 = Booking.builder()
+                .id(2L)
+                .start(LocalDateTime.parse("2022-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2022-10-23T17:19:45"))
+                .item(item)
+                .booker(user)
+                .status(StatusBooking.APPROVED)
+                .build();
         commentDto = CommentDto.builder()
                 .id(1L)
                 .text("comment")
@@ -154,6 +163,15 @@ class ItemServiceImplTest {
         ItemDto newItemDto = itemService.addItem(itemDto, userDto);
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.equals(itemDto)).isTrue();
+        assertThat(newItemDto.getRequestId().equals(itemDto.getRequestId())).isTrue();
+        assertThat(newItemDto.getName().equals(itemDto.getName())).isTrue();
+        assertThat(newItemDto.getOwner().equals(itemDto.getOwner())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(itemDto.getAvailable())).isTrue();
+        assertThat(newItemDto.getId().equals(itemDto.getId())).isTrue();
+        assertThat(newItemDto.getDescription().equals(itemDto.getDescription())).isTrue();
+        assertThat(newItemDto.getComments() == null).isTrue();
+        assertThat(newItemDto.getLastBooking() == null).isTrue();
+        assertThat(newItemDto.getNextBooking() == null).isTrue();
     }
 
     @Test
@@ -171,6 +189,14 @@ class ItemServiceImplTest {
         ItemDto newItemDto = itemService.addItem(itemDto, userDto);
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.getRequestId().equals(item.getRequest().getRequestor().getId())).isTrue();
+        assertThat(newItemDto.getName().equals(itemDto.getName())).isTrue();
+        assertThat(newItemDto.getOwner().equals(itemDto.getOwner())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(itemDto.getAvailable())).isTrue();
+        assertThat(newItemDto.getId().equals(itemDto.getId())).isTrue();
+        assertThat(newItemDto.getDescription().equals(itemDto.getDescription())).isTrue();
+        assertThat(newItemDto.getComments() == null).isTrue();
+        assertThat(newItemDto.getLastBooking() == null).isTrue();
+        assertThat(newItemDto.getNextBooking() == null).isTrue();
     }
 
     @Test
@@ -193,12 +219,12 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void updateItem_whenRequestIdIsNull_thenReturnItemDto() {
+    void updateItem_whenRequestIdIsNullAndAvailable_thenReturnItemDto() {
         itemDto = ItemDto.builder()
                 .id(1L)
                 .name("item1")
                 .description("text")
-                .available(true)
+                .available(null)
                 .owner(ownerDto)
                 .requestId(null)
                 .build();
@@ -208,6 +234,14 @@ class ItemServiceImplTest {
         ItemDto newItemDto = itemService.updateItem(itemId, itemDto, userId2);
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.getRequestId().equals(item.getRequest().getRequestor().getId())).isTrue();
+        assertThat(newItemDto.getName().equals(itemDto.getName())).isTrue();
+        assertThat(newItemDto.getOwner().equals(itemDto.getOwner())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(true)).isTrue();
+        assertThat(newItemDto.getId().equals(itemDto.getId())).isTrue();
+        assertThat(newItemDto.getDescription().equals(itemDto.getDescription())).isTrue();
+        assertThat(newItemDto.getComments() == null).isTrue();
+        assertThat(newItemDto.getLastBooking() == null).isTrue();
+        assertThat(newItemDto.getNextBooking() == null).isTrue();
     }
 
     @Test
@@ -218,6 +252,15 @@ class ItemServiceImplTest {
         ItemDto newItemDto = itemService.updateItem(itemId, itemDto, userId2);
         verify(itemRepository, times(1)).save(any());
         assertThat(newItemDto.equals(itemDto)).isTrue();
+        assertThat(newItemDto.getName().equals(itemDto.getName())).isTrue();
+        assertThat(newItemDto.getRequestId().equals(itemDto.getRequestId())).isTrue();
+        assertThat(newItemDto.getId().equals(itemDto.getId())).isTrue();
+        assertThat(newItemDto.getDescription().equals(itemDto.getDescription())).isTrue();
+        assertThat(newItemDto.getOwner().equals(itemDto.getOwner())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(itemDto.getAvailable())).isTrue();
+        assertThat(newItemDto.getNextBooking() == null).isTrue();
+        assertThat(newItemDto.getLastBooking() == null).isTrue();
+        assertThat(newItemDto.getComments() == null).isTrue();
     }
 
     @Test
@@ -236,6 +279,15 @@ class ItemServiceImplTest {
         when(itemRepository.save(any())).thenReturn(item);
         ItemDto newItemDto = itemService.updateItem(itemId, updateItem, userId2);
         verify(itemRepository, times(1)).save(any());
+        assertThat(newItemDto.getName().equals(itemDto.getName())).isTrue();
+        assertThat(newItemDto.getRequestId().equals(itemDto.getRequestId())).isTrue();
+        assertThat(newItemDto.getId().equals(itemDto.getId())).isTrue();
+        assertThat(newItemDto.getDescription().equals(itemDto.getDescription())).isTrue();
+        assertThat(newItemDto.getOwner().equals(itemDto.getOwner())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(itemDto.getAvailable())).isTrue();
+        assertThat(newItemDto.getNextBooking() == null).isTrue();
+        assertThat(newItemDto.getLastBooking() == null).isTrue();
+        assertThat(newItemDto.getComments() == null).isTrue();
     }
 
     @Test
@@ -262,11 +314,20 @@ class ItemServiceImplTest {
         ItemDto newItemDto = itemService.getItemById(itemId, userId2);
         verify(itemRepository, times(1)).findById(any());
         assertThat(newItemDto.equals(itemDto));
+        assertThat(newItemDto.getName().equals(itemDto.getName())).isTrue();
+        assertThat(newItemDto.getRequestId().equals(itemDto.getRequestId())).isTrue();
+        assertThat(newItemDto.getId().equals(itemDto.getId())).isTrue();
+        assertThat(newItemDto.getDescription().equals(itemDto.getDescription())).isTrue();
+        assertThat(newItemDto.getOwner().equals(itemDto.getOwner())).isTrue();
+        assertThat(newItemDto.getAvailable().equals(itemDto.getAvailable())).isTrue();
+        assertThat(newItemDto.getNextBooking() == null).isTrue();
+        assertThat(newItemDto.getLastBooking() == null).isTrue();
+        assertThat(newItemDto.getComments().isEmpty()).isTrue();
     }
 
     @Test
     void getItemsByUser_whenСorrectData_thenReturnListItemDto() {
-        when(itemRepository.findByOwnerIdOrderById(any(), any())).thenReturn(pageItems);
+        when(itemRepository.findByOwnerIdOrderById(itemId, pageable)).thenReturn(pageItems);
         when(bookingRepository.findAllByItemIdInAndStatus(any(), any(), any())).thenReturn(pageBookings);
         List<ItemDto> newListItemDto = itemService.getItemsByUser(userId1, pageable);
         assertThat(newListItemDto.isEmpty());
@@ -276,9 +337,19 @@ class ItemServiceImplTest {
 
     @Test
     void getItemsByUser_whenСorrectDataAndBooking_thenReturnListItemDto() {
+        item = Item.builder()
+                .id(1L)
+                .name("item1")
+                .description("text")
+                .available(true)
+                .owner(user)
+                .comments(new ArrayList<>())
+                .request(itemRequest)
+                .build();
         Page<Item> pageItems = new PageImpl<>(Arrays.asList(item), pageable, size);
-        when(itemRepository.findByOwnerIdOrderById(any(), any())).thenReturn(pageItems);
-        when(bookingRepository.findAllByItemIdInAndStatus(any(), any(), any())).thenReturn(pageBookings);
+        Page<Booking> pageBookings = new PageImpl<>(Arrays.asList(booking, booking2), pageable, size);
+        when(itemRepository.findByOwnerIdOrderById(userId1, pageable)).thenReturn(pageItems);
+        when(bookingRepository.findAllByItemIdInAndStatus(Arrays.asList(1L), StatusBooking.APPROVED, pageable)).thenReturn(pageBookings);
         List<ItemDto> newListItemDto = itemService.getItemsByUser(userId1, pageable);
         assertThat(newListItemDto.isEmpty());
         verify(itemRepository).findByOwnerIdOrderById(any(), any());
@@ -295,6 +366,24 @@ class ItemServiceImplTest {
     @Test
     void getAvailableItems_whenСorrectData_thenReturnListItemDto() {
         when(itemRepository.getAvailableItems(any(), any())).thenReturn(pageItems);
+        List<ItemDto> newListItemDto = itemService.getAvailableItems(userId1, "text", pageable);
+        assertThat(newListItemDto.isEmpty());
+        verify(itemRepository).getAvailableItems(any(), any());
+    }
+
+    @Test
+    void getAvailableItems_whenСorrectDataAndComment_thenReturnListItemDto() {
+        item = Item.builder()
+                .id(1L)
+                .name("item1")
+                .description("text")
+                .available(true)
+                .owner(onwer)
+                .comments(Arrays.asList(comment))
+                .request(itemRequest)
+                .build();
+        Page<Item> pageItems = new PageImpl<>(Arrays.asList(item), pageable, size);
+        when(itemRepository.getAvailableItems("text", pageable)).thenReturn(pageItems);
         List<ItemDto> newListItemDto = itemService.getAvailableItems(userId1, "text", pageable);
         assertThat(newListItemDto.isEmpty());
         verify(itemRepository).getAvailableItems(any(), any());
@@ -361,6 +450,13 @@ class ItemServiceImplTest {
         when(commentRepository.save(any())).thenReturn(comment);
         CommentDto newCommentDto = itemService.addComment(itemId, userId1, commentDto);
         verify(commentRepository, times(1)).save(any());
+        assertThat(newCommentDto.equals(commentDto));
+        assertThat(newCommentDto.getId().equals(commentDto.getId()));
+        assertThat(newCommentDto.getId().equals(commentDto.getId()));
+        assertThat(newCommentDto.getId().equals(commentDto.getId()));
+        assertThat(newCommentDto.getId().equals(commentDto.getId()));
+        assertThat(newCommentDto.getId().equals(commentDto.getId()));
+        assertThat(newCommentDto.getId().equals(commentDto.getId()));
     }
 
     @Test

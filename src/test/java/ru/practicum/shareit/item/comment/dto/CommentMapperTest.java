@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.comment.dto;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+@JsonTest
 public class CommentMapperTest {
     private User owner;
     private User firstUser;

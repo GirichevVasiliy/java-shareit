@@ -44,6 +44,8 @@ class ItemRequestServiceImplTest {
     final Long userId1 = 1L;
     final Long requestId = 1L;
     private ItemRequest itemRequest;
+    private User onwer;
+    private Item item;
     final Pageable pageable = PageRequest.of(0, 2, Sort.by("start").descending());
     final int size = 0;
     private ItemRequestDto itemRequestDto;
@@ -66,6 +68,20 @@ class ItemRequestServiceImplTest {
                 .id(1L)
                 .description("text")
                 .created(LocalDateTime.parse("2024-10-23T17:19:33"))
+                .build();
+        onwer = User.builder()
+                .id(2L)
+                .name("user2")
+                .email("y2@email.ru")
+                .build();
+        item = Item.builder()
+                .id(1L)
+                .name("item1")
+                .description("text")
+                .available(true)
+                .owner(onwer)
+                .comments(new ArrayList<>())
+                .request(itemRequest)
                 .build();
     }
 
@@ -104,10 +120,12 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAllItemRequests_whenСorrectData_thenReturnListItemRequestDto() {
+        Page<ItemRequest> pageItemRequest = new PageImpl<>(Arrays.asList(itemRequest), pageable, size);
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(itemRequestRepository.findAllByRequestorNot(user, pageable)).thenReturn(pageItemRequest);
+        when(itemRepository.findAllByRequestIn(Arrays.asList(itemRequest))).thenReturn(Arrays.asList(item));
         List<ItemRequestDto> requestDtoList = itemRequestService.getAllItemRequests(userId1, pageable);
-        assertThat(requestDtoList.isEmpty()).isTrue();
+        assertThat(!requestDtoList.contains(itemRequestDto)).isTrue();
     }
 
     @Test

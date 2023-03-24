@@ -71,6 +71,10 @@ class UserServiceImplTest {
         UserDto newUserDto = userService.updateUser(userDto, userId1);
         verify(userRepository, times(1)).save(any());
         assertThat(newUserDto.equals(userDto)).isTrue();
+        assertThat(newUserDto.getEmail().equals(userDto.getEmail())).isTrue();
+        assertThat(newUserDto.getName().equals(userDto.getName())).isTrue();
+        assertThat(newUserDto.getId().equals(userDto.getId())).isTrue();
+
     }
 
     @Test
@@ -83,6 +87,41 @@ class UserServiceImplTest {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
         UserDto newUserDto = userService.updateUser(userDto, userId1);
+        assertThat(newUserDto.getEmail().equals(user.getEmail())).isTrue();
+        assertThat(newUserDto.getName().equals(user.getName())).isTrue();
+        assertThat(newUserDto.getId().equals(user.getId())).isTrue();
+        verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
+    void updateUser_whenNotCorrectUserName_thenReturnUserDto() {
+        userDto = UserDto.builder()
+                .id(1L)
+                .name(null)
+                .email("y1@email.ru")
+                .build();
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        UserDto newUserDto = userService.updateUser(userDto, userId1);
+        assertThat(newUserDto.getEmail().equals(userDto.getEmail())).isTrue();
+        assertThat(newUserDto.getName().equals(user.getName())).isTrue();
+        assertThat(newUserDto.getId().equals(userDto.getId())).isTrue();
+        verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
+    void updateUser_whenNotCorrectUserEmail_thenReturnUserDto() {
+        userDto = UserDto.builder()
+                .id(1L)
+                .name("user1")
+                .email(null)
+                .build();
+        when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        UserDto newUserDto = userService.updateUser(userDto, userId1);
+        assertThat(newUserDto.getEmail().equals(user.getEmail())).isTrue();
+        assertThat(newUserDto.getName().equals(userDto.getName())).isTrue();
+        assertThat(newUserDto.getId().equals(userDto.getId())).isTrue();
         verify(userRepository, times(1)).save(any());
     }
 
@@ -98,6 +137,9 @@ class UserServiceImplTest {
         when(userRepository.findById(userId1)).thenReturn(Optional.of(user));
         UserDto newUser = userService.getUserById(userId1);
         assertThat(newUser.equals(userDto)).isTrue();
+        assertThat(newUser.getEmail().equals(user.getEmail())).isTrue();
+        assertThat(newUser.getName().equals(user.getName())).isTrue();
+        assertThat(newUser.getId().equals(user.getId())).isTrue();
     }
 
     @Test

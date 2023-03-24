@@ -247,7 +247,14 @@ class BookingServiceImplTest {
         when(itemRepository.findById(inputBookingDto.getItemId())).thenReturn(Optional.of(item));
         item.setAvailable(true);
         when(bookingRepository.save(any())).thenReturn(booking);
-        bookingService.addBooking(inputBookingDto, userId1);
+        BookingDto newBookingDto = bookingService.addBooking(inputBookingDto, userId1);
+        assertThat(newBookingDto.equals(bookingDto));
+        assertThat(newBookingDto.getStart().equals(bookingDto.getStart()));
+        assertThat(newBookingDto.getEnd().equals(bookingDto.getEnd()));
+        assertThat(newBookingDto.getId().equals(bookingDto.getId()));
+        assertThat(newBookingDto.getItem().equals(bookingDto.getItem()));
+        assertThat(newBookingDto.getStatus().equals(bookingDto.getStatus()));
+        assertThat(newBookingDto.getBooker().equals(bookingDto.getBooker()));
         verify(bookingRepository, times(1)).save(any());
     }
 
@@ -307,6 +314,11 @@ class BookingServiceImplTest {
         when(bookingRepository.save(any())).thenReturn(booking);
         BookingDto newBooking = bookingService.updateApprove(bookingId, true, userId2);
         assertThat(newBooking.getStatus().equals(StatusBooking.APPROVED.name())).isTrue();
+        assertThat(newBooking.getStart().equals(bookingDto.getStart()));
+        assertThat(newBooking.getEnd().equals(bookingDto.getEnd()));
+        assertThat(newBooking.getId().equals(bookingDto.getId()));
+        assertThat(newBooking.getItem().equals(bookingDto.getItem()));
+        assertThat(newBooking.getBooker().equals(bookingDto.getBooker()));
         verify(bookingRepository, times(1)).save(any());
     }
 
@@ -318,6 +330,11 @@ class BookingServiceImplTest {
         when(bookingRepository.save(any())).thenReturn(booking);
         BookingDto newBooking = bookingService.updateApprove(bookingId, false, userId2);
         assertThat(newBooking.getStatus().equals(StatusBooking.REJECTED.name())).isTrue();
+        assertThat(newBooking.getStart().equals(bookingDto.getStart()));
+        assertThat(newBooking.getEnd().equals(bookingDto.getEnd()));
+        assertThat(newBooking.getId().equals(bookingDto.getId()));
+        assertThat(newBooking.getItem().equals(bookingDto.getItem()));
+        assertThat(newBooking.getBooker().equals(bookingDto.getBooker()));
         verify(bookingRepository, times(1)).save(any());
     }
 
@@ -337,6 +354,12 @@ class BookingServiceImplTest {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         BookingDto newBookingDto = bookingService.getBookingById(bookingId, userId1);
         assertThat(newBookingDto.equals(bookingDto)).isTrue();
+        assertThat(newBookingDto.getStart().equals(bookingDto.getStart()));
+        assertThat(newBookingDto.getEnd().equals(bookingDto.getEnd()));
+        assertThat(newBookingDto.getId().equals(bookingDto.getId()));
+        assertThat(newBookingDto.getItem().equals(bookingDto.getItem()));
+        assertThat(newBookingDto.getStatus().equals(bookingDto.getStatus()));
+        assertThat(newBookingDto.getBooker().equals(bookingDto.getBooker()));
         verify(bookingRepository, times(1)).findById(any());
     }
 

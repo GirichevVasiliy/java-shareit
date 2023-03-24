@@ -150,8 +150,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
         log.info("Получен запрос на поиск вещи: " + text + " от пользователя с ID " + userId);
         if (!text.isEmpty()) {
             return itemRepository.getAvailableItems(text.toLowerCase(), pageable).getContent().stream()
-                    .map(item -> ItemMapper.toItemDtoList(item, item.getComments().stream().map(CommentMapper::toCommentDto)
-                            .collect(Collectors.toList())))
+                    .map(item -> ItemMapper.toItemDtoList(item, item.getComments().stream().map(CommentMapper::toCommentDto).collect(Collectors.toList())))
                     .collect(Collectors.toList());
         } else {
             return new ArrayList<>();
