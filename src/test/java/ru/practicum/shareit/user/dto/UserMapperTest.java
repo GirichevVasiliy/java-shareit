@@ -3,11 +3,10 @@ package ru.practicum.shareit.user.dto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import ru.practicum.shareit.user.model.User;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-@JsonTest
+
 class UserMapperTest {
     private User user;
     private UserDto userDto;
