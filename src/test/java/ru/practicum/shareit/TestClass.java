@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.controller.BookingController;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StatusBooking;
@@ -28,7 +26,6 @@ import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.controller.UserController;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.storage.UserRepository;
 
@@ -83,7 +80,7 @@ public class TestClass {
 
     @Test
     @SneakyThrows
-    public void Test() {
+    public void test() {
         try {
             bookingController.addBooking(1L, new InputBookingDto(1L, LocalDateTime.of(2024, 01, 11, 11, 22), LocalDateTime.of(2033, 01, 11, 11, 22)));
             bookingService.getBookingById(1L, 1L);
@@ -91,7 +88,7 @@ public class TestClass {
             bookingRepository.save(new Booking(1L, LocalDateTime.of(2023, 01, 11, 11, 22), LocalDateTime.of(2033, 01, 11, 11, 22), null, null, StatusBooking.WAITING));
             errorHandler.handleValidationDateBookingException(new ValidationDateBookingException(""));
             commentService.addComment(1L, 2L, new CommentDto(1L, "", "", LocalDateTime.of(2002, 01, 11, 11, 22)));
-            commentRepository.save( new Comment(1L, "", null, null, LocalDateTime.of(2002, 01, 11, 11, 22)));
+            commentRepository.save(new Comment(1L, "", null, null, LocalDateTime.of(2002, 01, 11, 11, 22)));
             itemController.getItemById(1L, 1L);
             itemService.getAllItems();
             itemServiceImpl.getAllItems();
@@ -104,7 +101,7 @@ public class TestClass {
             userService.getAllUsers();
             userServiceImpl.getUserById(1L);
             userRepository.findById(1L);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
 
