@@ -31,9 +31,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findAllByBookerAndEndIsBefore(User booker, LocalDateTime localDateTimeNow, Pageable pageable);
 
     List<Booking> findAllByItemIdAndStatus(Long itemId, StatusBooking status);
-    @Query(value = "SELECT * FROM bookings b JOIN items i ON i.id = b.item_id WHERE b.item_id = :itemId " +
-            "AND b.start_date BETWEEN :start AND :end OR b.end_date BETWEEN :start AND :end AND b.status != :status LIMIT :limit", nativeQuery = true)
-    List<Booking> findAllByItemIdAndStatusAndBetweenTime(Long itemId, LocalDateTime start, LocalDateTime end, String status, Integer limit);
 
     @Query(value = "SELECT * FROM bookings b JOIN items i ON i.id = b.item_id WHERE b.item_id = :itemId AND b.booker_id = :bookerId " +
             "AND b.end_date < :currentTime AND  b.status != :status LIMIT :limit", nativeQuery = true)
