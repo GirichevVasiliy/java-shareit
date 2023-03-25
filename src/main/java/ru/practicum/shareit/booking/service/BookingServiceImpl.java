@@ -171,6 +171,9 @@ public class BookingServiceImpl implements BookingService {
         if (endBooking.isBefore(startBooking)) {
             return false;
         }
+        if (endBooking.equals(startBooking)) {
+            return false;
+        }
         if (startBooking.isBefore(LocalDateTime.now()) || endBooking.isBefore(LocalDateTime.now())) {
             return false;
         }
@@ -178,8 +181,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private Pageable checkPageable(Pageable pageable) {
-        if (pageable.getPageNumber() == (pageable.getPageSize())) {
+       /* if (pageable.getPageNumber() == (pageable.getPageSize())) {
             Integer i = (pageable.getPageNumber()) / pageable.getPageSize();
+            return PageRequest.of(i, pageable.getPageSize(), Sort.by("start").descending());
+        }
+        return pageable;*/
+        if ((pageable.getPageNumber() + 1)/(pageable.getPageSize()) > 0 && ((pageable.getPageNumber() + 1)%(pageable.getPageSize()) == 0)){
+            Integer i = ((pageable.getPageNumber() + 1) / pageable.getPageSize()) - 1 ;
+            return PageRequest.of(i, pageable.getPageSize(), Sort.by("start").descending());
+        } else if ((pageable.getPageNumber() + 1)/(pageable.getPageSize()) > 0 && ((pageable.getPageNumber() + 1)%(pageable.getPageSize()) != 0)){
+            Integer i = ((pageable.getPageNumber() + 1) / pageable.getPageSize()) ;
             return PageRequest.of(i, pageable.getPageSize(), Sort.by("start").descending());
         }
         return pageable;

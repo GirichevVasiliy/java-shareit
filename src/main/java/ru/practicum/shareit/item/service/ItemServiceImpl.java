@@ -196,7 +196,7 @@ public class ItemServiceImpl implements ItemService, CommentService {
         }
         LocalDateTime nowTime = LocalDateTime.now();
         Optional<Booking> bookingLast = bookings.stream().sorted(Comparator.comparing(Booking::getEnd).reversed())
-                .filter(b -> b.getEnd().isBefore(nowTime)).findFirst();
+                .filter(b -> b.getStart().isBefore(nowTime)).findFirst();
         if (bookingLast.isEmpty()) {
             return null;
         }
