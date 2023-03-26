@@ -17,7 +17,7 @@ import ru.practicum.shareit.item.comment.service.CommentService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -38,7 +38,7 @@ class ItemControllerTest {
     @MockBean
     private ItemService itemService;
     @MockBean
-    private UserService userService;
+    private UserServiceImpl userService;
     @MockBean
     private CommentService commentService;
     private ItemDto itemDto;

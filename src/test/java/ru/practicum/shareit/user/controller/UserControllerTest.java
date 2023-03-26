@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.exception.ResourceNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
-    private UserService userService;
+    private UserServiceImpl userService;
     final Long userId = 1L;
     private UserDto userDto;
     private UserDto userDtoName;
