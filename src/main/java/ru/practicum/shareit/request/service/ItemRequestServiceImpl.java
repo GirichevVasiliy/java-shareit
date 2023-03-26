@@ -52,7 +52,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         List<ItemRequest> itemRequestsForUser = getItemRequest(user.get().getId());
         Map<Long, List<Answer>> answersForItemRequest = getAnswers(itemRequestsForUser);
-        return creatingItemRequestDtoWithAnswers(answersForItemRequest, itemRequestsForUser);
+        return createItemRequestDtoWithAnswers(answersForItemRequest, itemRequestsForUser);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(() -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorNot(user.get(), pageable).getContent();
         Map<Long, List<Answer>> answersForItemRequest = getAnswers(itemRequests);
-        return creatingItemRequestDtoWithAnswers(answersForItemRequest, itemRequests);
+        return createItemRequestDtoWithAnswers(answersForItemRequest, itemRequests);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return answerList;
     }
 
-    private List<ItemRequestDto> creatingItemRequestDtoWithAnswers(Map<Long, List<Answer>> answersForItemRequest, List<ItemRequest> itemRequestsForUser) {
+    private List<ItemRequestDto> createItemRequestDtoWithAnswers(Map<Long, List<Answer>> answersForItemRequest, List<ItemRequest> itemRequestsForUser) {
         List<ItemRequestDto> itemRequestDtos = new ArrayList<>();
         if (!answersForItemRequest.isEmpty()) {
             for (ItemRequest itemRequest : itemRequestsForUser) {

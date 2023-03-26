@@ -48,6 +48,7 @@ class BookingControllerTest {
     final Long userId = 1L;
     final Long bookingId = 1L;
     final Pageable pageable = PageRequest.of(0, 2, Sort.by("start").descending());
+    private Sort sortByStart = Sort.by(Sort.Direction.DESC, "start");
 
     @BeforeEach
     private void init() {
@@ -106,7 +107,11 @@ class BookingControllerTest {
     @Test
     @SneakyThrows
     void addBookingTest_whenBookingNotValidEndTime_thenClientError() {
-        inputBookingDto.setEnd(null);
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.parse("2024-10-23T17:19:33"))
+                .end(null)
+                .build();
         mockMvc.perform(post("/bookings")
                         .content(objectMapper.writeValueAsString(inputBookingDto))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +123,11 @@ class BookingControllerTest {
     @Test
     @SneakyThrows
     void addBookingTest_whenBookingNotValidStartTime_thenClientError() {
-        inputBookingDto.setStart(null);
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(1L)
+                .start(null)
+                .end(LocalDateTime.parse("2024-10-23T17:19:45"))
+                .build();
         mockMvc.perform(post("/bookings")
                         .content(objectMapper.writeValueAsString(inputBookingDto))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -130,7 +139,11 @@ class BookingControllerTest {
     @Test
     @SneakyThrows
     void addBookingTest_whenBookingNotValidItemId_thenClientError() {
-        inputBookingDto.setItemId(null);
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(null)
+                .start(LocalDateTime.parse("2024-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2024-10-23T17:19:45"))
+                .build();
         mockMvc.perform(post("/bookings")
                         .content(objectMapper.writeValueAsString(inputBookingDto))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -412,7 +425,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusALL_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("state", "ALL")
@@ -431,7 +444,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusWAITING_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.WAITING, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("state", "WAITING")
@@ -450,7 +463,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusREJECTED_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.REJECTED, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("state", "REJECTED")
@@ -469,7 +482,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusPAST_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.PAST, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("state", "PAST")
@@ -488,7 +501,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusFUTURE_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.FUTURE, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("state", "FUTURE")
@@ -507,7 +520,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusCURRENT_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.CURRENT, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("state", "CURRENT")
@@ -525,7 +538,7 @@ class BookingControllerTest {
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListStatusUNSUPPORTED_STATUS_thenReturnedClientError() {
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.UNSUPPORTED_STATUS, pageableSize))
                 .thenThrow(new ValidationStateException("Unknown state: UNSUPPORTED_STATUS"));
         mockMvc.perform(get("/bookings/owner")
@@ -542,7 +555,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingNotState_thenReturnedClientError() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("size", "2")
@@ -558,7 +571,7 @@ class BookingControllerTest {
     @Test
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingListUserIdNotValid_thenReturnedClientError() {
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         mockMvc.perform(get("/bookings/owner")
                         .param("state", "ALL")
                         .param("from", "0")
@@ -571,7 +584,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingLisFromDefaultValue_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 2);
+        final Pageable pageableSize = PageRequest.of(0, 2, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("state", "ALL")
@@ -589,7 +602,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingLisSizeDefaultValue_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 10);
+        final Pageable pageableSize = PageRequest.of(0, 10, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .param("state", "ALL")
@@ -607,7 +620,7 @@ class BookingControllerTest {
     @SneakyThrows
     void getAllBookingsForOwnerTest_whenBookingLisSizeAndFromAndStateDefaultValue_thenReturnOk() {
         final List<BookingDto> bookingDtoList = Arrays.asList(bookingDto);
-        final Pageable pageableSize = PageRequest.of(0, 10);
+        final Pageable pageableSize = PageRequest.of(0, 10, sortByStart);
         when(bookingService.getAllBookingsForOwner(userId, StateBooking.ALL, pageableSize)).thenReturn(bookingDtoList);
         String result = mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", userId))

@@ -3,9 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -136,7 +134,6 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getAllBookingsForOwner(Long ownerId, StateBooking stateBooking, Pageable pageable) {
         Optional<User> owner = Optional.ofNullable(userRepository.findById(ownerId).orElseThrow(
                 () -> new ResourceNotFoundException(" Пользователь с " + ownerId + " не найден")));
-       // List<Booking> bookings = bookingRepository.findAllByOwner(ownerId, pageable);
         switch (stateBooking) {
             case ALL:
                 return bookingRepository.findAllByOwner(ownerId, pageable).stream()
@@ -160,33 +157,6 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationStateException("Unknown state: " + stateBooking);
         }
     }
-
-   /* private List<BookingDto> getAllBookingsForOwnerState(List<Booking> bookings, StateBooking stateBooking) {
-        LocalDateTime now = LocalDateTime.now();
-        switch (stateBooking) {
-            case ALL:
-                return bookings.stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
-            case CURRENT:
-                return bookings.stream()
-                        .filter(b -> now.isAfter(b.getStart()) && now.isBefore(b.getEnd())).map(BookingMapper::bookingToDto)
-                        .collect(Collectors.toList());
-            case PAST:
-                return bookings.stream().filter(b -> now.isAfter(b.getEnd())).map(BookingMapper::bookingToDto)
-                        .collect(Collectors.toList());
-            case WAITING:
-                return bookings.stream()
-                        .filter(b -> b.getStatus().equals(StatusBooking.WAITING)).map(BookingMapper::bookingToDto)
-                        .collect(Collectors.toList());
-            case FUTURE:
-                return bookings.stream()
-                        .filter(b -> now.isBefore(b.getStart())).map(BookingMapper::bookingToDto).collect(Collectors.toList());
-            case REJECTED:
-                return bookings.stream().filter(b -> b.getStatus().equals(StatusBooking.REJECTED)).map(BookingMapper::bookingToDto)
-                        .collect(Collectors.toList());
-            default:
-                throw new ValidationStateException("Unknown state: " + stateBooking);
-        }
-    }*/
 
     private boolean checkDate(LocalDateTime startBooking, LocalDateTime endBooking) {
         if (endBooking.isBefore(startBooking)) {

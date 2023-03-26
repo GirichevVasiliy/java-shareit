@@ -1,17 +1,15 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.SneakyThrows;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
 public class DateBookingDtoTest {
@@ -32,12 +30,12 @@ public class DateBookingDtoTest {
     @Test
     @SneakyThrows
     public void dateBookingDtoTest() {
-        DateBookingDto dateBookingDto = new DateBookingDto(1L, user.getId(), START, END);
-        JsonContent<DateBookingDto> result = json.write(dateBookingDto);
-        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathNumberValue("$.bookerId").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.start").isNotBlank();
-        assertThat(result).extractingJsonPathStringValue("$.end").isNotBlank();
+        String testData = String.format("{\"id\":1,\"bookerId\":1,\"start\":\"2024-10-23T17:19:33\"," +
+                "\"end\":\"2024-10-23T17:19:45\"}");
+        DateBookingDto dateBookingDto = json.parseObject(testData);
+        AssertionsForClassTypes.assertThat(dateBookingDto.getId().equals(1L)).isTrue();
+        AssertionsForClassTypes.assertThat(dateBookingDto.getStart().equals(START)).isTrue();
+        AssertionsForClassTypes.assertThat(dateBookingDto.getEnd().equals(END)).isTrue();
     }
 }
 

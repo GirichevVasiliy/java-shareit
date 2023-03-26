@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.ValidationForPageableException;
@@ -90,8 +89,9 @@ public class ItemController {
     ) {
         return commentService.addComment(itemId, authorId, commentDto);
     }
+
     private Pageable getPageable(int from, int size) {
-        if (from < 0 || size < 0){
+        if (from < 0 || size < 0) {
             throw new ValidationForPageableException("Неверно заданы данные для поиска");
         }
         Pageable pageable = PageRequest.of(from / size, size);

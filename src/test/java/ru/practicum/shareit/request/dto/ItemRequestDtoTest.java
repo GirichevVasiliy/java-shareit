@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,11 +22,9 @@ public class ItemRequestDtoTest {
     @Test
     @SneakyThrows
     public void itemRequestDtoTest() {
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "desc", CREATE, items);
-        JsonContent<ItemRequestDto> result = json.write(itemRequestDto);
-        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("desc");
-        assertThat(result).extractingJsonPathStringValue("$.created").isNotBlank();
-        assertThat(result).extractingJsonPathArrayValue("$.items").isEmpty();
+        ItemRequestDto itemRequest = new ItemRequestDto(1L, "desc", CREATE, items);
+        String testData = String.format("{\"id\":1,\"description\":\"desc\",\"created\":\"2024-10-23T17:19:33\",\"items\":[]}");
+        ItemRequestDto itemRequestDto = json.parseObject(testData);
+        assertThat(itemRequestDto.equals(itemRequest)).isTrue();
     }
 }

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -18,12 +17,9 @@ public class AnswerDtoTest {
     @Test
     @SneakyThrows
     public void answerDtoTest() {
-        AnswerDto answerDto = new AnswerDto(1L, "answer", "desc", true, requestId);
-        JsonContent<AnswerDto> result = json.write(answerDto);
-        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("answer");
-        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("desc");
-        assertThat(result).extractingJsonPathBooleanValue("$.available").isTrue();
-        assertThat(result).extractingJsonPathNumberValue("$.requestId").isEqualTo(1);
+        AnswerDto answer = new AnswerDto(1L, "answer", "desc", true, requestId);
+        String testData = String.format("{\"id\":1,\"name\":\"answer\",\"description\":\"desc\",\"available\":true,\"requestId\":1}");
+        AnswerDto answerDto = json.parseObject(testData);
+        assertThat(answerDto.equals(answer)).isTrue();
     }
 }

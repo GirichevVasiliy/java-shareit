@@ -14,7 +14,6 @@ import ru.practicum.shareit.exception.ValidationForPageableException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.ValidationException;
 import java.util.List;
 
 /**
@@ -54,7 +53,7 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL", required = false) StateBooking state,
             @RequestParam(defaultValue = "0") @Min(0) Integer from,
             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return bookingService.getAllBookings(userId, state,  getPageable(from, size));
+        return bookingService.getAllBookings(userId, state, getPageable(from, size));
     }
 
     @GetMapping("owner")
@@ -65,8 +64,9 @@ public class BookingController {
             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         return bookingService.getAllBookingsForOwner(userId, state, getPageable(from, size));
     }
+
     private Pageable getPageable(int from, int size) {
-        if (from < 0 || size < 0){
+        if (from < 0 || size < 0) {
             throw new ValidationForPageableException("Неверно заданы данные для поиска");
         }
         Sort sortByStart = Sort.by(Sort.Direction.DESC, "start");

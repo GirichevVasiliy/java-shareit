@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -32,13 +31,17 @@ class BookingDtoTest {
     @Test
     @SneakyThrows
     public void bookingDtoTest() {
-        BookingDto bookingDto = new BookingDto(1L, START, END, itemDto, user, "APPROVED");
-        JsonContent<BookingDto> result = json.write(bookingDto);
-        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.start").isNotBlank();
-        assertThat(result).extractingJsonPathStringValue("$.end").isNotBlank();
-        assertThat(result).extractingJsonPathNumberValue("$.item.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathNumberValue("$.booker.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.status").isEqualTo("APPROVED");
+        String testData = String.format("{\"id\":1,\"start\":\"2024-10-23T17:19:33\",\"end\":\"2024-10-23T17:19:45\"," +
+                "\"item\":{\"id\":1,\"name\":\"item1\",\"description\":\"text\",\"available\":true,\"requestId\":1," +
+                "\"owner\":{\"id\":1,\"email\":\"user1\",\"name\":\"y1@email.ru\"},\"comments\":null,\"lastBooking\"" +
+                ":null,\"nextBooking\":null},\"booker\":{\"id\":1,\"email\":\"user1\",\"name\":\"y1@email.ru\"},\"status\"" +
+                ":\"APPROVED\"}");
+        BookingDto bookingDto = json.parseObject(testData);
+        assertThat(bookingDto.getId().equals(1L)).isTrue();
+        assertThat(bookingDto.getStart().equals(START)).isTrue();
+        assertThat(bookingDto.getEnd().equals(END)).isTrue();
+        assertThat(bookingDto.getItem().equals(itemDto)).isTrue();
+        assertThat(bookingDto.getBooker().equals(user)).isTrue();
+        assertThat(bookingDto.getStatus().equals("APPROVED")).isTrue();
     }
 }

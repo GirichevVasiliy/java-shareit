@@ -51,8 +51,9 @@ public class ItemRequestController {
                                              @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
         return itemRequestService.getItemRequestById(requestId, userId);
     }
+
     private Pageable getPageable(int from, int size) {
-        if (from < 0 || size < 0){
+        if (from < 0 || size < 0) {
             throw new ValidationForPageableException("Неверно заданы данные для поиска");
         }
         Sort sortByStart = Sort.by(Sort.Direction.DESC, "created");

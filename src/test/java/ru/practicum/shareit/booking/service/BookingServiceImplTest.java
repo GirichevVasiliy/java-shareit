@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static ru.practicum.shareit.booking.model.StatusBooking.WAITING;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -146,8 +147,11 @@ class BookingServiceImplTest {
 
     @Test
     void addBooking_whenStartAndEndTimeIsOld_thenThrowException() {
-        inputBookingDto.setStart(LocalDateTime.parse("2018-10-23T17:19:45"));
-        inputBookingDto.setEnd(LocalDateTime.parse("2017-10-23T17:19:45"));
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.parse("2018-10-23T17:19:45"))
+                .end(LocalDateTime.parse("2017-10-23T17:19:45"))
+                .build();
         assertThrows(ValidationDateException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
@@ -155,8 +159,11 @@ class BookingServiceImplTest {
 
     @Test
     void addBooking_whenStartAndEndTimeIsOldIsNull_thenThrowException() {
-        inputBookingDto.setStart(null);
-        inputBookingDto.setEnd(null);
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(1L)
+                .start(null)
+                .end(null)
+                .build();
         assertThrows(NullPointerException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
@@ -164,8 +171,11 @@ class BookingServiceImplTest {
 
     @Test
     void addBooking_whenStartIsNull_thenThrowException() {
-        inputBookingDto.setStart(null);
-        inputBookingDto.setEnd(LocalDateTime.parse("2017-10-23T17:19:45"));
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(1L)
+                .start(null)
+                .end(LocalDateTime.parse("2017-10-23T17:19:45"))
+                .build();
         assertThrows(NullPointerException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
@@ -173,8 +183,11 @@ class BookingServiceImplTest {
 
     @Test
     void addBooking_whenEndIsNull_thenThrowException() {
-        inputBookingDto.setStart(LocalDateTime.parse("2018-10-23T17:19:45"));
-        inputBookingDto.setEnd(null);
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.parse("2018-10-23T17:19:45"))
+                .end(null)
+                .build();
         assertThrows(NullPointerException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
@@ -182,8 +195,11 @@ class BookingServiceImplTest {
 
     @Test
     void addBooking_whenStartTimeIsOld_thenThrowException() {
-        inputBookingDto.setStart(LocalDateTime.parse("2016-10-23T17:19:45"));
-        inputBookingDto.setEnd(LocalDateTime.parse("2023-10-23T17:19:45"));
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.parse("2016-10-23T17:19:45"))
+                .end(LocalDateTime.parse("2023-10-23T17:19:45"))
+                .build();
         assertThrows(ValidationDateException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
@@ -191,8 +207,11 @@ class BookingServiceImplTest {
 
     @Test
     void addBooking_whenEndTimeIsBeforeStart_thenThrowException() {
-        inputBookingDto.setStart(LocalDateTime.parse("2024-10-23T17:19:45"));
-        inputBookingDto.setEnd(LocalDateTime.parse("2021-10-23T17:19:46"));
+        inputBookingDto = InputBookingDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.parse("2024-10-23T17:19:45"))
+                .end(LocalDateTime.parse("2021-10-23T17:19:46"))
+                .build();
         assertThrows(ValidationDateException.class,
                 () -> bookingService.addBooking(inputBookingDto, userId1));
         verify(bookingRepository, never()).save(any());
@@ -308,7 +327,7 @@ class BookingServiceImplTest {
 
     @Test
     void updateApprove_whenTrue_thenReturnBookingDto() {
-        booking.setStatus(StatusBooking.WAITING);
+        booking.setStatus(WAITING);
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any())).thenReturn(booking);
@@ -324,7 +343,7 @@ class BookingServiceImplTest {
 
     @Test
     void updateApprove_whenFalse_thenReturnBookingDto() {
-        booking.setStatus(StatusBooking.WAITING);
+        booking.setStatus(WAITING);
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any())).thenReturn(booking);
@@ -492,19 +511,19 @@ class BookingServiceImplTest {
     @Test
     void getAllBookingsForOwner_whenBookingREJECTED_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
+        when(bookingRepository.findAllRejectedByOwnerId(userId2, StatusBooking.REJECTED, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.REJECTED, pageable);
-        assertThat(list.isEmpty());
-        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+        assertThat(list.contains(bookingDto)).isTrue();
+        verify(bookingRepository, times(1)).findAllRejectedByOwnerId(any(), any(), any());
     }
 
     @Test
     void getAllBookingsForOwner_whenBookingCURRENT_thenReturnListBookingDto() {
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
+        when(bookingRepository.findAllCurrentByOwnerId(userId2, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.CURRENT, pageable);
-        assertThat(list.isEmpty());
-        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+        assertThat(list.contains(bookingDto)).isTrue();
+        verify(bookingRepository, times(1)).findAllCurrentByOwnerId(any(), any());
     }
 
     @Test
@@ -517,28 +536,76 @@ class BookingServiceImplTest {
 
     @Test
     void getAllBookingsForOwner_whenBookingWAITING_thenReturnListBookingDto() {
+        booking = Booking.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2022-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2027-10-23T17:19:45"))
+                .item(item)
+                .booker(user)
+                .status(WAITING)
+                .build();
+        bookingDto = BookingDto.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2022-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2027-10-23T17:19:45"))
+                .item(itemDto)
+                .booker(userDto)
+                .status("WAITING")
+                .build();
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
+        when(bookingRepository.findAllWaitingByOwnerId(userId2, WAITING, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.WAITING, pageable);
-        assertThat(list.isEmpty());
-        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+        assertThat(list.contains(bookingDto)).isTrue();
+        verify(bookingRepository, times(1)).findAllWaitingByOwnerId(any(), any(), any());
     }
 
     @Test
     void getAllBookingsForOwner_whenBookingFUTURE_thenReturnListBookingDto() {
+        booking = Booking.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2027-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2027-10-23T17:19:45"))
+                .item(item)
+                .booker(user)
+                .status(StatusBooking.APPROVED)
+                .build();
+        bookingDto = BookingDto.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2027-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2027-10-23T17:19:45"))
+                .item(itemDto)
+                .booker(userDto)
+                .status("APPROVED")
+                .build();
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
+        when(bookingRepository.findAllFutureByOwnerId(userId2, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.FUTURE, pageable);
-        assertThat(list.isEmpty());
-        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+        assertThat(list.contains(bookingDto)).isTrue();
+        verify(bookingRepository, times(1)).findAllFutureByOwnerId(any(), any());
     }
 
     @Test
     void getAllBookingsForOwner_whenBookingPAST_thenReturnListBookingDto() {
+        booking = Booking.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2020-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2020-10-23T17:19:45"))
+                .item(item)
+                .booker(user)
+                .status(StatusBooking.APPROVED)
+                .build();
+        bookingDto = BookingDto.builder()
+                .id(1L)
+                .start(LocalDateTime.parse("2020-10-23T17:19:33"))
+                .end(LocalDateTime.parse("2020-10-23T17:19:45"))
+                .item(itemDto)
+                .booker(userDto)
+                .status("APPROVED")
+                .build();
         when(userRepository.findById(userId2)).thenReturn(Optional.of(onwer));
-        when(bookingRepository.findAllByOwner(userId2, pageable)).thenReturn(Arrays.asList(booking));
+        when(bookingRepository.findAllPastByOwnerId(userId2, pageable)).thenReturn(Arrays.asList(booking));
         List<BookingDto> list = bookingService.getAllBookingsForOwner(userId2, StateBooking.PAST, pageable);
-        assertThat(list.isEmpty());
-        verify(bookingRepository, times(1)).findAllByOwner(any(), any());
+        assertThat(list.contains(bookingDto)).isTrue();
+        verify(bookingRepository, times(1)).findAllPastByOwnerId(any(), any());
     }
 }

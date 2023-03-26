@@ -1,19 +1,17 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.SneakyThrows;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
 public class ItemDtoTest {
@@ -28,15 +26,11 @@ public class ItemDtoTest {
     @Test
     @SneakyThrows
     public void bookingDtoTest() {
-        ItemDto itemDto = new ItemDto(1L, "text", "desc", true, requestId, user, comments, null, null);
-        JsonContent<ItemDto> result = json.write(itemDto);
-        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("text");
-        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("desc");
-        assertThat(result).extractingJsonPathBooleanValue("$.available").isTrue();
-        assertThat(result).extractingJsonPathNumberValue("$.requestId").isEqualTo(1);
-        assertThat(result).extractingJsonPathNumberValue("$.owner.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.lastBooking").isEqualTo(null);
-        assertThat(result).extractingJsonPathStringValue("$.nextBooking").isEqualTo(null);
+        ItemDto item = new ItemDto(1L, "text", "desc", true, requestId, user, comments, null, null);
+        String testData = String.format("{\"id\":1,\"name\":\"text\",\"description\":\"desc\",\"available\":true,\"requestId\"" +
+                ":1,\"owner\":{\"id\":1,\"email\":\"user1\",\"name\":\"y1@email.ru\"},\"comments\":[],\"lastBooking\"" +
+                ":null,\"nextBooking\":null}");
+        ItemDto itemDto = json.parseObject(testData);
+        AssertionsForClassTypes.assertThat(itemDto.equals(item)).isTrue();
     }
 }

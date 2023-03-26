@@ -61,6 +61,7 @@ public class ErrorHandler {
     public Map<String, String> handleValidationDateBookingException(final ValidationDateBookingException e) {
         return Map.of("400", e.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationForPageableException(final ValidationForPageableException e) {
