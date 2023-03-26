@@ -105,27 +105,27 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookings(Long userId, StateBooking stateBooking, Pageable pageable) {
-        Pageable pageableNew = checkPageable(pageable);
+
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException(" Пользователь с " + userId + " не найден")));
         switch (stateBooking) {
             case ALL:
-                return bookingRepository.findAllByBooker(user.get(), pageableNew).getContent().stream()
+                return bookingRepository.findAllByBooker(user.get(), pageable).getContent().stream()
                         .map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case CURRENT:
-                return bookingRepository.findCurrent(user.get(), pageableNew).getContent()
+                return bookingRepository.findCurrent(user.get(), pageable).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findAllByBookerAndEndIsBefore(user.get(), LocalDateTime.now(), pageableNew).getContent()
+                return bookingRepository.findAllByBookerAndEndIsBefore(user.get(), LocalDateTime.now(), pageable).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case WAITING:
-                return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.WAITING, pageableNew).getContent()
+                return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.WAITING, pageable).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findAllByBookerAndStartIsAfter(user.get(), LocalDateTime.now(), pageableNew).getContent()
+                return bookingRepository.findAllByBookerAndStartIsAfter(user.get(), LocalDateTime.now(), pageable).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             case REJECTED:
-                return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.REJECTED, pageableNew).getContent()
+                return bookingRepository.findAllByBookerAndStatus(user.get(), StatusBooking.REJECTED, pageable).getContent()
                         .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
             default:
                 throw new ValidationStateException("Unknown state: " + stateBooking);
@@ -136,11 +136,32 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getAllBookingsForOwner(Long ownerId, StateBooking stateBooking, Pageable pageable) {
         Optional<User> owner = Optional.ofNullable(userRepository.findById(ownerId).orElseThrow(
                 () -> new ResourceNotFoundException(" Пользователь с " + ownerId + " не найден")));
-        List<Booking> bookings = bookingRepository.findAllByOwner(ownerId, pageable);
-        return getAllBookingsForOwnerState(bookings, stateBooking);
+       // List<Booking> bookings = bookingRepository.findAllByOwner(ownerId, pageable);
+        switch (stateBooking) {
+            case ALL:
+                return bookingRepository.findAllByOwner(ownerId, pageable).stream()
+                        .map(BookingMapper::bookingToDto).collect(Collectors.toList());
+            case CURRENT:
+                return bookingRepository.findAllCurrentByOwnerId(ownerId, pageable)
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
+            case PAST:
+                return bookingRepository.findAllPastByOwnerId(ownerId, pageable)
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
+            case WAITING:
+                return bookingRepository.findAllWaitingByOwnerId(ownerId, StatusBooking.WAITING, pageable)
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
+            case FUTURE:
+                return bookingRepository.findAllFutureByOwnerId(ownerId, pageable)
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
+            case REJECTED:
+                return bookingRepository.findAllRejectedByOwnerId(ownerId, StatusBooking.REJECTED, pageable)
+                        .stream().map(BookingMapper::bookingToDto).collect(Collectors.toList());
+            default:
+                throw new ValidationStateException("Unknown state: " + stateBooking);
+        }
     }
 
-    private List<BookingDto> getAllBookingsForOwnerState(List<Booking> bookings, StateBooking stateBooking) {
+   /* private List<BookingDto> getAllBookingsForOwnerState(List<Booking> bookings, StateBooking stateBooking) {
         LocalDateTime now = LocalDateTime.now();
         switch (stateBooking) {
             case ALL:
@@ -165,7 +186,7 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new ValidationStateException("Unknown state: " + stateBooking);
         }
-    }
+    }*/
 
     private boolean checkDate(LocalDateTime startBooking, LocalDateTime endBooking) {
         if (endBooking.isBefore(startBooking)) {
@@ -178,16 +199,5 @@ public class BookingServiceImpl implements BookingService {
             return false;
         }
         return true;
-    }
-
-    private Pageable checkPageable(Pageable pageable) {
-        if ((pageable.getPageNumber() + 1) / (pageable.getPageSize()) > 0 && ((pageable.getPageNumber() + 1) % (pageable.getPageSize()) == 0)) {
-            Integer i = ((pageable.getPageNumber() + 1) / pageable.getPageSize()) - 1;
-            return PageRequest.of(i, pageable.getPageSize(), Sort.by("start").descending());
-        } else if ((pageable.getPageNumber() + 1) / (pageable.getPageSize()) > 0 && ((pageable.getPageNumber() + 1) % (pageable.getPageSize()) != 0)) {
-            Integer i = ((pageable.getPageNumber() + 1) / pageable.getPageSize());
-            return PageRequest.of(i, pageable.getPageSize(), Sort.by("start").descending());
-        }
-        return pageable;
     }
 }

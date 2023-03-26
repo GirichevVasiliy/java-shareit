@@ -9,17 +9,16 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @Builder
 public class InputBookingDto {
     @NotNull
-    private Long itemId;
+    private final Long itemId;
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime start;
+    private final LocalDateTime start;
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime end;
+    private final LocalDateTime end;
 
     public InputBookingDto(Long itemId, LocalDateTime start, LocalDateTime end) {
         this.itemId = itemId;

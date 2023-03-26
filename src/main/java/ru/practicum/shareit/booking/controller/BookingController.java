@@ -2,16 +2,19 @@ package ru.practicum.shareit.booking.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.StateBooking;
+import ru.practicum.shareit.exception.ValidationForPageableException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.ValidationException;
 import java.util.List;
 
 /**
@@ -51,7 +54,7 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL", required = false) StateBooking state,
             @RequestParam(defaultValue = "0") @Min(0) Integer from,
             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return bookingService.getAllBookings(userId, state, PageRequest.of(from, size, Sort.by("start").descending()));
+        return bookingService.getAllBookings(userId, state,  getPageable(from, size));
     }
 
     @GetMapping("owner")
@@ -60,7 +63,14 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL", required = false) StateBooking state,
             @RequestParam(defaultValue = "0") @Min(0) Integer from,
             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return bookingService.getAllBookingsForOwner(userId, state, PageRequest.of(from, size));
+        return bookingService.getAllBookingsForOwner(userId, state, getPageable(from, size));
     }
-
+    private Pageable getPageable(int from, int size) {
+        if (from < 0 || size < 0){
+            throw new ValidationForPageableException("Неверно заданы данные для поиска");
+        }
+        Sort sortByStart = Sort.by(Sort.Direction.DESC, "start");
+        Pageable pageable = PageRequest.of(from / size, size, sortByStart);
+        return pageable;
+    }
 }

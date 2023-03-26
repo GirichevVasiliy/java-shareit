@@ -36,8 +36,21 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.end_date < :currentTime AND  b.status != :status LIMIT :limit", nativeQuery = true)
     Optional<Booking> findByBookerAndItem(Long itemId, Long bookerId, LocalDateTime currentTime, String status, Integer limit);
 
-    @Query("SELECT b FROM Booking b INNER JOIN Item i ON i.id = b.item.id WHERE i.owner.id = :ownerId ORDER BY b.start DESC")
+    @Query("SELECT b FROM Booking b INNER JOIN Item i ON i.id = b.item.id WHERE i.owner.id = :ownerId")
     List<Booking> findAllByOwner(Long ownerId, Pageable pageable);
 
     Page<Booking> findAllByItemIdInAndStatus(List<Long> ids, StatusBooking status, Pageable pageable);
+
+    @Query("SELECT b FROM Booking b JOIN Item i ON b.item.id = i.id WHERE i.owner.id = :ownerId AND CURRENT_TIMESTAMP BETWEEN b.start AND b.end")
+    List<Booking> findAllCurrentByOwnerId(Long ownerId, Pageable pageable);
+
+    @Query("SELECT b FROM Booking b JOIN Item i ON b.item.id = i.id WHERE i.owner.id = :ownerId AND CURRENT_TIMESTAMP > b.end")
+    List<Booking> findAllPastByOwnerId(Long ownerId, Pageable pageable);
+
+    @Query("SELECT b FROM Booking b JOIN Item i ON b.item.id = i.id WHERE i.owner.id = :ownerId AND b.status = :status")
+    List<Booking> findAllWaitingByOwnerId(Long ownerId,  StatusBooking status, Pageable pageable);
+    @Query("SELECT b FROM Booking b JOIN Item i ON b.item.id = i.id WHERE i.owner.id = :ownerId AND CURRENT_TIMESTAMP < b.start")
+    List<Booking> findAllFutureByOwnerId(Long ownerId, Pageable pageable);
+    @Query("SELECT b FROM Booking b JOIN Item i ON b.item.id = i.id WHERE i.owner.id = :ownerId AND b.status = :status")
+    List<Booking> findAllRejectedByOwnerId(Long ownerId, StatusBooking status, Pageable pageable);
 }
