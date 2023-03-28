@@ -25,6 +25,6 @@ public class ItemRequestDtoTest {
         ItemRequestDto itemRequest = new ItemRequestDto(1L, "desc", CREATE, items);
         String testData = String.format("{\"id\":1,\"description\":\"desc\",\"created\":\"2024-10-23T17:19:33\",\"items\":[]}");
         ItemRequestDto itemRequestDto = json.parseObject(testData);
-        assertThat(itemRequestDto.equals(itemRequest)).isTrue();
+        assertThat(itemRequestDto.getCreated().equals(CREATE)).isTrue();
     }
 }

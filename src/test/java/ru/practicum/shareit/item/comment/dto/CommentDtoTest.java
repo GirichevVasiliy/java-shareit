@@ -25,6 +25,6 @@ class CommentDtoTest {
         String testData = String.format("{\"id\":1,\"text\":\"text\",\"authorName\":\"y1@email.ru\",\"created\"" +
                 ":\"2024-10-23T17:19:33.000\"}");
         CommentDto commentDto = json.parseObject(testData);
-        assertThat(commentDto.equals(comment));
+        assertThat(commentDto.getCreated().equals(CREATE));
     }
 }

@@ -52,19 +52,19 @@ class BookingControllerTest {
 
     @BeforeEach
     private void init() {
-        UserDto ownerDto = UserDto.builder()
+        final UserDto ownerDto = UserDto.builder()
                 .id(1L)
                 .name("user1")
                 .email("y1@email.ru")
                 .build();
 
-        UserDto bookerDto = UserDto.builder()
+        final UserDto bookerDto = UserDto.builder()
                 .id(2L)
                 .name("user2")
                 .email("y2@email.ru")
                 .build();
 
-        ItemDto itemDto = ItemDto.builder()
+        final ItemDto itemDto = ItemDto.builder()
                 .id(1L)
                 .name("item1")
                 .description("item1Desc")

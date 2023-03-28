@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.practicum.shareit.exception.ResourceNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -14,6 +15,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -23,8 +25,6 @@ public class UserServiceTest {
     @Autowired
     UserServiceImpl userService;
     private UserDto userDto;
-    private UserDto userDto2;
-    private UserDto userDto3;
     final Long userId = 1L;
 
 
@@ -35,16 +35,6 @@ public class UserServiceTest {
                 .name("user1")
                 .email("y@email.ru")
                 .build();
-        userDto2 = UserDto.builder()
-                .id(2L)
-                .name("user2")
-                .email("y@2email.ru")
-                .build();
-        userDto3 = UserDto.builder()
-                .id(3L)
-                .name("user3")
-                .email("y@3email.ru")
-                .build();
     }
 
     @Test
@@ -52,25 +42,34 @@ public class UserServiceTest {
         User user = new User("y@email.ru", "user1");
         UserDto saveUserDto = userService.addUser(UserMapper.userToDto(user));
         assertThat(saveUserDto.equals(userDto)).isTrue();
+
         UserDto newUserDto = userService.getUserById(userId);
         assertThat(newUserDto.equals(userDto)).isTrue();
+
         User updateUser = new User("userNew", "y@NEWemail.ru");
         UserDto updateUserDto = userService.updateUser(UserMapper.userToDto(updateUser), userId);
         assertThat(updateUserDto.getId().equals(userId)).isTrue();
         assertThat(updateUserDto.getName().equals(updateUserDto.getName())).isTrue();
         assertThat(updateUserDto.getEmail().equals(updateUserDto.getEmail())).isTrue();
+
         User user2 = new User("y@2email.ru", "user2");
         UserDto saveUserDto2 = userService.addUser(UserMapper.userToDto(user2));
+
         User user3 = new User("y@3email.ru", "user3");
         UserDto saveUserDto3 = userService.addUser(UserMapper.userToDto(user3));
+
         List<UserDto> userList = userService.getAllUsers();
         assertThat(userList.contains(updateUserDto)).isTrue();
         assertThat(userList.contains(saveUserDto2)).isTrue();
         assertThat(userList.contains(saveUserDto3)).isTrue();
+
         userService.deleteUserById(userId);
         List<UserDto> userListAfterDelete = userService.getAllUsers();
         assertThat(userListAfterDelete.contains(updateUserDto)).isFalse();
         assertThat(userListAfterDelete.contains(saveUserDto2)).isTrue();
         assertThat(userListAfterDelete.contains(saveUserDto3)).isTrue();
+
+        final Long badIdUser = 99L;
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(badIdUser));
     }
 }

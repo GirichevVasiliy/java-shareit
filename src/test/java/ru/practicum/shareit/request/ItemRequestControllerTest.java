@@ -16,10 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.request.dto.AnswerDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,16 +39,11 @@ class ItemRequestControllerTest {
     private ObjectMapper objectMapper;
     @MockBean
     private ItemRequestServiceImpl itemRequestService;
-    @MockBean
-    private UserRepository userRepository;
-    @MockBean
-    private ItemRequestMapper itemRequestMapper;
     private ItemRequestDto itemRequestDto;
     private AnswerDto answerDto;
     private User user;
     final Long userId = 1L;
     final Long onwerId = 2L;
-    final Long itemId = 1L;
     final Long requestId = 2L;
     final Pageable pageable = PageRequest.of(0, 2, Sort.by("created").descending());
 

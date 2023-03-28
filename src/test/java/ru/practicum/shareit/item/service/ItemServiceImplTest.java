@@ -97,11 +97,6 @@ class ItemServiceImplTest {
                 .name("user2")
                 .email("y2@email.ru")
                 .build();
-        UserDto bookerDto2 = UserDto.builder()
-                .id(2L)
-                .name("user2")
-                .email("y2@email.ru")
-                .build();
         itemDto = ItemDto.builder()
                 .id(1L)
                 .name("item1")

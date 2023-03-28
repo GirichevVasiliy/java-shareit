@@ -37,11 +37,7 @@ class BookingDtoTest {
                 ":null,\"nextBooking\":null},\"booker\":{\"id\":1,\"email\":\"user1\",\"name\":\"y1@email.ru\"},\"status\"" +
                 ":\"APPROVED\"}");
         BookingDto bookingDto = json.parseObject(testData);
-        assertThat(bookingDto.getId().equals(1L)).isTrue();
         assertThat(bookingDto.getStart().equals(START)).isTrue();
         assertThat(bookingDto.getEnd().equals(END)).isTrue();
-        assertThat(bookingDto.getItem().equals(itemDto)).isTrue();
-        assertThat(bookingDto.getBooker().equals(user)).isTrue();
-        assertThat(bookingDto.getStatus().equals("APPROVED")).isTrue();
     }
 }

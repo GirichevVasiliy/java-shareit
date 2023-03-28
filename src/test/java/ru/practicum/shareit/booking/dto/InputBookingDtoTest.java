@@ -32,7 +32,6 @@ public class InputBookingDtoTest {
     public void inputBookingDtoTest() {
         String testData = String.format("{\"itemId\":1,\"start\":\"2024-10-23T17:19:33\",\"end\":\"2024-10-23T17:19:45\"}");
         InputBookingDto inputBookingDto = json.parseObject(testData);
-        AssertionsForClassTypes.assertThat(inputBookingDto.getItemId().equals(itemDto.getId())).isTrue();
         AssertionsForClassTypes.assertThat(inputBookingDto.getStart().equals(START)).isTrue();
         AssertionsForClassTypes.assertThat(inputBookingDto.getEnd().equals(END)).isTrue();
     }

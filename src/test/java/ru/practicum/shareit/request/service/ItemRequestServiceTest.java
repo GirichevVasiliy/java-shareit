@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.practicum.shareit.exception.ResourceNotFoundException;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
@@ -17,6 +18,7 @@ import ru.practicum.shareit.util.CreatePageable;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -59,6 +61,10 @@ public class ItemRequestServiceTest {
     public void itemRequestIntegrationTest() {
         UserDto saveUserDto1 = userService.addUser(userDto1);
         UserDto saveUserDto2 = userService.addUser(userDto2);
+
+        final Long badIdUser = 99L;
+        assertThrows(ResourceNotFoundException.class, () -> itemRequestService.addItemRequest(ItemRequestMapper.itemRequestDtoCreate(itemRequestDto1),
+                badIdUser));
 
         ItemRequestDto saveItemRequestDto1 = itemRequestService.addItemRequest(ItemRequestMapper.itemRequestDtoCreate(itemRequestDto1),
                 saveUserDto1.getId());
