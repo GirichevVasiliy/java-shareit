@@ -1,17 +1,15 @@
 package ru.practicum.shareit.item.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.ValidationForPageableException;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.service.CommentService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.util.CreatePageable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -66,7 +64,7 @@ public class ItemController {
     public List<ItemDto> getItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                         @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                         @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return itemService.getItemsByUser(userId, getPageable(from, size));
+        return itemService.getItemsByUser(userId, CreatePageable.getPageable(from, size));
     }
 
     /**
@@ -80,7 +78,7 @@ public class ItemController {
                                            @RequestParam String text,
                                            @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                            @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return itemService.getAvailableItems(userId, text, getPageable(from, size));
+        return itemService.getAvailableItems(userId, text, CreatePageable.getPageable(from, size));
     }
 
     @PostMapping("/{itemId}/comment")
@@ -88,13 +86,5 @@ public class ItemController {
                                   @Validated @RequestBody CommentDto commentDto
     ) {
         return commentService.addComment(itemId, authorId, commentDto);
-    }
-
-    private Pageable getPageable(int from, int size) {
-        if (from < 0 || size < 0) {
-            throw new ValidationForPageableException("Неверно заданы данные для поиска");
-        }
-        Pageable pageable = PageRequest.of(from / size, size);
-        return pageable;
     }
 }

@@ -38,7 +38,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b INNER JOIN Item i ON i.id = b.item.id WHERE i.owner.id = :ownerId")
     List<Booking> findAllByOwner(Long ownerId, Pageable pageable);
-
+    @Query(value = "SELECT b FROM Booking b INNER JOIN Item i ON i.id = b.item.id WHERE i.owner.id = :ownerId ORDER BY b.start DESC", countQuery = "SELECT count(*) FROM Booking b INNER JOIN Item i ON i.id = b.item.id WHERE i.owner.id = :ownerId")
+    List<Booking> findAllByOwnerIdCust(Long ownerId, Pageable pageable);
     Page<Booking> findAllByItemIdInAndStatus(List<Long> ids, StatusBooking status, Pageable pageable);
 
     @Query("SELECT b FROM Booking b JOIN Item i ON b.item.id = i.id WHERE i.owner.id = :ownerId AND CURRENT_TIMESTAMP BETWEEN b.start AND b.end")

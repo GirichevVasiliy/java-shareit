@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -25,6 +26,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class BookingServiceTest {
     @Autowired
     private BookingServiceImpl bookingService;
+    @Autowired
+    private BookingRepository bookingRepository;
     private BookingDto bookingDto;
     private UserDto ownerDto;
     private ItemDto itemDto;
