@@ -49,5 +49,6 @@ public class ItemClient extends BaseClient {
 
     public ResponseEntity<Object> addComment(Long itemId, Long authorId, CommentDto commentDto){
         return null; // return post()
+
     }
 }
