@@ -44,10 +44,10 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAvailableItems(Long userId, String text, Integer from, Integer size) {
-        return get()
+       return null;// return get()
     }
 
     public ResponseEntity<Object> addComment(Long itemId, Long authorId, CommentDto commentDto){
-        return post()
+        return null;// return post()
     }
 }
