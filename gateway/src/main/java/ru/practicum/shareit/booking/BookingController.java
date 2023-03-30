@@ -7,10 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.dto.BookItemRequestDto;
-import ru.practicum.shareit.booking.dto.BookingState;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.InputBookingDto;
+import ru.practicum.shareit.booking.dto.oldDto.BookingState;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -21,6 +23,35 @@ import javax.validation.constraints.PositiveOrZero;
 @Validated
 public class BookingController {
 	private final BookingClient bookingClient;
+
+	@PostMapping
+	public ResponseEntity addBooking(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+								 @Valid @RequestBody InputBookingDto inputBookingDto) {
+		log.info("Creating booking {}, userId={}", inputBookingDto, userId);
+		return bookingClient.addBooking(userId, inputBookingDto);
+	}
+
+	@PatchMapping("/{bookingId}")
+	public ResponseEntity updateApprove(@PathVariable Long bookingId,
+									@RequestParam @NotNull Boolean approved,
+									@RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+		return bookingClient.updateApprove(bookingId, approved, userId);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	@GetMapping
 	public ResponseEntity<Object> getBookings(@RequestHeader("X-Sharer-User-Id") long userId,
@@ -33,12 +64,7 @@ public class BookingController {
 		return bookingClient.getBookings(userId, state, from, size);
 	}
 
-	@PostMapping
-	public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
-			@RequestBody @Valid BookItemRequestDto requestDto) {
-		log.info("Creating booking {}, userId={}", requestDto, userId);
-		return bookingClient.bookItem(userId, requestDto);
-	}
+
 
 	@GetMapping("/{bookingId}")
 	public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId,

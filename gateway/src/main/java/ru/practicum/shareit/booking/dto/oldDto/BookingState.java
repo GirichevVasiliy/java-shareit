@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.booking.dto.oldDto;
 
 import java.util.Optional;
 
