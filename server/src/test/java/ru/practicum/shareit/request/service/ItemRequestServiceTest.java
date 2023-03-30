@@ -29,8 +29,6 @@ public class ItemRequestServiceTest {
     ItemRequestServiceImpl itemRequestService;
     @Autowired
     UserServiceImpl userService;
-    @Autowired
-    ItemService itemService;
     private UserDto userDto1;
     private UserDto userDto2;
     final Long userId1 = 1L;
