@@ -16,7 +16,7 @@ import ru.practicum.shareit.exception.ForbiddenResourceException;
 import ru.practicum.shareit.exception.InvalidOwnerException;
 import ru.practicum.shareit.exception.ResourceNotFoundException;
 import ru.practicum.shareit.exception.ValidationDateBookingException;
-import ru.practicum.shareit.item.comment.dto.CommentDto;
+import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.comment.storage.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;

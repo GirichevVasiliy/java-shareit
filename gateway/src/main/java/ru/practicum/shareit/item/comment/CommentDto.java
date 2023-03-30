@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.comment.dto;
+package ru.practicum.shareit.item.comment;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

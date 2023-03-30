@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.comment.dto;
+package ru.practicum.shareit.item.comment;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
