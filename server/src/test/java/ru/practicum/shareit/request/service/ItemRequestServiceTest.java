@@ -13,7 +13,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserServiceImpl;
-import ru.practicum.shareit.util.CreatePageable;
+import ru.practicum.shareit.util.PageableFactory;
 
 import java.util.List;
 
@@ -95,7 +95,7 @@ public class ItemRequestServiceTest {
         assertThat(findItemRequestDtoById.getId().equals(saveItemRequestDto1.getId())).isTrue();
         assertThat(findItemRequestDtoById.getDescription().equals(saveItemRequestDto1.getDescription())).isTrue();
 
-        List<ItemRequestDto> dtoList = itemRequestService.getAllItemRequests(2L, CreatePageable.getPageable(0, 2));
+        List<ItemRequestDto> dtoList = itemRequestService.getAllItemRequests(2L, PageableFactory.getPageable(0, 2));
         assertThat(dtoList.size() == size2).isTrue();
     }
 }

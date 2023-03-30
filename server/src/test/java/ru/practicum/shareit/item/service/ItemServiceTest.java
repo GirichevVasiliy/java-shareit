@@ -22,7 +22,7 @@ import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserServiceImpl;
-import ru.practicum.shareit.util.CreatePageable;
+import ru.practicum.shareit.util.PageableFactory;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -163,7 +163,7 @@ public class ItemServiceTest {
         assertThat(itemContainsComment.getComments().get(0).getId().equals(saveCommentDto.getId())).isTrue();
 
         final int size2 = 2;
-        List<ItemDto> itemDtoList = itemService.getItemsByUser(ownerDto.getId(), CreatePageable.getPageable(0, 10));
+        List<ItemDto> itemDtoList = itemService.getItemsByUser(ownerDto.getId(), PageableFactory.getPageable(0, 10));
         assertThat(itemDtoList.size() == size2).isTrue();
         assertThat(itemDtoList.get(1).getLastBooking().equals(BookingMapper.bookingToDto(lastBooking)));
 

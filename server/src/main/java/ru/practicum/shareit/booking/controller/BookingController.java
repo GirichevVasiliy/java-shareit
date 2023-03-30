@@ -6,7 +6,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.StateBooking;
-import ru.practicum.shareit.util.CreatePageable;
+import ru.practicum.shareit.util.PageableFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -50,7 +50,7 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL", required = false) StateBooking state,
             @RequestParam(defaultValue = "0") @Min(0) Integer from,
             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return bookingService.getAllBookings(userId, state, CreatePageable.getPageableSortDescStart(from, size));
+        return bookingService.getAllBookings(userId, state, PageableFactory.getPageableSortDescStart(from, size));
     }
 
     @GetMapping("owner")
@@ -59,6 +59,6 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL", required = false) StateBooking state,
             @RequestParam(defaultValue = "0") @Min(0) Integer from,
             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return bookingService.getAllBookingsForOwner(userId, state, CreatePageable.getPageableSortDescStart(from, size));
+        return bookingService.getAllBookingsForOwner(userId, state, PageableFactory.getPageableSortDescStart(from, size));
     }
 }

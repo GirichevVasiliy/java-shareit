@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.exception.ValidationForPageableException;
 
-public class CreatePageable {
+public class PageableFactory {
     public static Pageable getPageableSortDescStart(int from, int size) {
         if (from < 0 || size < 0) {
             throw new ValidationForPageableException("Неверно заданы данные для поиска");

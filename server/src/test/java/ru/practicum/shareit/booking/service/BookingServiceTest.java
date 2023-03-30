@@ -22,7 +22,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserServiceImpl;
-import ru.practicum.shareit.util.CreatePageable;
+import ru.practicum.shareit.util.PageableFactory;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -170,10 +170,10 @@ public class BookingServiceTest {
 
         final int size2 = 2;
         List<BookingDto> allBookings = bookingService.getAllBookings(userDto.getId(), StateBooking.ALL,
-                CreatePageable.getPageableSortDescStart(0, 10));
+                PageableFactory.getPageableSortDescStart(0, 10));
         assertThat(allBookings.size() == size2).isTrue();
         List<BookingDto> allBookingsOwner = bookingService.getAllBookingsForOwner(ownerDto.getId(), StateBooking.WAITING,
-                CreatePageable.getPageableSortDescStart(0, 10));
+                PageableFactory.getPageableSortDescStart(0, 10));
         final int size1 = 1;
         assertThat(allBookingsOwner.size() == size1).isTrue();
 

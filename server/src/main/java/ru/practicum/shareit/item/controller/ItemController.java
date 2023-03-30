@@ -9,7 +9,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.util.CreatePageable;
+import ru.practicum.shareit.util.PageableFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -64,7 +64,7 @@ public class ItemController {
     public List<ItemDto> getItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                         @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                         @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return itemService.getItemsByUser(userId, CreatePageable.getPageable(from, size));
+        return itemService.getItemsByUser(userId, PageableFactory.getPageable(from, size));
     }
 
     /**
@@ -78,7 +78,7 @@ public class ItemController {
                                            @RequestParam String text,
                                            @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                            @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return itemService.getAvailableItems(userId, text, CreatePageable.getPageable(from, size));
+        return itemService.getAvailableItems(userId, text, PageableFactory.getPageable(from, size));
     }
 
     @PostMapping("/{itemId}/comment")

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
-import ru.practicum.shareit.util.CreatePageable;
+import ru.practicum.shareit.util.PageableFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -40,7 +40,7 @@ public class ItemRequestController {
     public List<ItemRequestDto> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
                                                    @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                                    @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-        return itemRequestService.getAllItemRequests(userId, CreatePageable.getPageableSortDescCreated(from, size));
+        return itemRequestService.getAllItemRequests(userId, PageableFactory.getPageableSortDescCreated(from, size));
     }
 
     @GetMapping("/{requestId}")
