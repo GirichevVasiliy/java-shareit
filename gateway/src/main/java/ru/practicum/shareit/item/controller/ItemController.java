@@ -25,6 +25,7 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
                                           @Valid @RequestBody ItemDto itemDto) {
+        log.info("Add item {}, userId={}", itemDto, userId);
         return itemClient.addItem(itemDto, userId);
     }
 
@@ -32,12 +33,14 @@ public class ItemController {
     public ResponseEntity<Object> updateItem(@PathVariable("itemId") @NotNull Long itemId,
                                              @Valid @RequestBody ItemDto itemDto,
                                              @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+        log.info("Update item {}, userId={}, itemId={}", itemDto, userId, itemId);
         return itemClient.updateItem(itemId, itemDto, userId);
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemById(@PathVariable("itemId") @NotNull Long itemId,
                                               @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+        log.info("Get item by id itemId={} userId={}", itemId, userId);
         return itemClient.getItemById(itemId, userId);
     }
 
@@ -45,6 +48,7 @@ public class ItemController {
     public ResponseEntity<Object> getItemsByUser(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
                                                  @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                  @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        log.info("Get item by user id, userId={}, from={},  size={}", userId, from, size);
         return itemClient.getItemsByUser(userId, from, size);
     }
 
@@ -53,14 +57,15 @@ public class ItemController {
                                                     @RequestParam String text,
                                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                     @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        log.info("Search item by text={}, userId={}, from={},  size={}",text, userId, from, size);
         return itemClient.getAvailableItems(userId, text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> postComment(@PathVariable @NotNull Long itemId,
                                               @RequestHeader("X-Sharer-User-Id") @NotNull Long authorId,
-                                              @Valid @RequestBody CommentDto commentDto
-    ) {
+                                              @Valid @RequestBody CommentDto commentDto) {
+        log.info("Add comment {}, itemId={}, authorId={}",commentDto, itemId, authorId);
         return itemClient.addComment(itemId, authorId, commentDto);
     }
 }
