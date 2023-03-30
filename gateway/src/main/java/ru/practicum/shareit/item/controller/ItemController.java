@@ -48,6 +48,7 @@ public class ItemController {
         return itemClient.getItemsByUser(userId, from, size);
     }
 
+
     @GetMapping("/search")
     public ResponseEntity<Object> getAvailableItems(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
                                                     @RequestParam String text,
