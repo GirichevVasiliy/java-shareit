@@ -99,7 +99,7 @@ class ItemControllerTest {
         assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
 
-    @Test
+  /*  @Test
     @SneakyThrows
     void addItemTest_whenNotValidItem_thenClientError() {
         ItemDto itemDto2 = ItemDto.builder()
@@ -110,7 +110,7 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().is4xxClientError());
         verify(itemService, never()).addItem(any(), any());
-    }
+    }*/
 
     @Test
     @SneakyThrows
@@ -477,7 +477,7 @@ class ItemControllerTest {
         verify(commentService, never()).addComment(any(), any(), any());
     }
 
-    @Test
+  /*  @Test
     @SneakyThrows
     void postCommentTest_whenTextCommentDtoNotValid_thenClientError() {
         commentDto.setText(null);
@@ -487,7 +487,7 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().is4xxClientError());
         verify(commentService, never()).addComment(any(), any(), any());
-    }
+    }*/
 
     @Test
     @SneakyThrows

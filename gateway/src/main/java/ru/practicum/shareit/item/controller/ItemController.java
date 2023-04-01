@@ -10,7 +10,7 @@ import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -23,29 +23,29 @@ public class ItemController {
     private final ItemClient itemClient;
 
     @PostMapping
-    public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+    public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @Valid @RequestBody ItemDto itemDto) {
         log.info("Add item {}, userId={}", itemDto, userId);
         return itemClient.addItem(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> updateItem(@PathVariable("itemId") @NotNull Long itemId,
+    public ResponseEntity<Object> updateItem(@PathVariable("itemId") Long itemId,
                                              @Valid @RequestBody ItemDto itemDto,
-                                             @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+                                             @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Update item {}, userId={}, itemId={}", itemDto, userId, itemId);
         return itemClient.updateItem(itemId, itemDto, userId);
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Object> getItemById(@PathVariable("itemId") @NotNull Long itemId,
-                                              @RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+    public ResponseEntity<Object> getItemById(@PathVariable("itemId") Long itemId,
+                                              @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Get item by id itemId={} userId={}", itemId, userId);
         return itemClient.getItemById(itemId, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getItemsByUser(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+    public ResponseEntity<Object> getItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                  @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                  @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("Get item by user id, userId={}, from={},  size={}", userId, from, size);
@@ -53,7 +53,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> getAvailableItems(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+    public ResponseEntity<Object> getAvailableItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                     @RequestParam String text,
                                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                     @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
@@ -62,8 +62,8 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> postComment(@PathVariable @NotNull Long itemId,
-                                              @RequestHeader("X-Sharer-User-Id") @NotNull Long authorId,
+    public ResponseEntity<Object> postComment(@PathVariable Long itemId,
+                                              @RequestHeader("X-Sharer-User-Id") Long authorId,
                                               @Valid @RequestBody CommentDto commentDto) {
         log.info("Add comment {}, itemId={}, authorId={}",commentDto, itemId, authorId);
         return itemClient.addComment(itemId, authorId, commentDto);

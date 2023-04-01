@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Controller
 @RequestMapping(path = "/users")
@@ -25,7 +24,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable("id") @NotNull Long userId,
+    public ResponseEntity<Object> updateUser(@PathVariable("id") Long userId,
                                              @RequestBody UserDto userDto) {
         log.info("Update user {}, userId={}", userDto, userId);
         return userClient.updateUser(userDto, userId);
@@ -38,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable("id") @NotNull Long id) {
+    public ResponseEntity<Object> getUserById(@PathVariable("id") Long id) {
         log.info("Get user by, userId={}", id);
         return userClient.getUserById(id);
     }

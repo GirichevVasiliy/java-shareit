@@ -116,8 +116,8 @@ public class BookingServiceTest {
 
         InputBookingDto inputBookingDto1 = InputBookingDto.builder()
                 .itemId(saveItemDto.getId())
-                .start(LocalDateTime.parse("2023-04-01T13:00"))
-                .end(LocalDateTime.parse("2024-04-29T10:00"))
+                .start(LocalDateTime.parse("2023-06-01T13:00"))
+                .end(LocalDateTime.parse("2024-06-29T10:00"))
                 .build();
 
         BookingDto saveBookingDto1 = bookingService.addBooking(inputBookingDto1, userDto.getId());
@@ -139,7 +139,7 @@ public class BookingServiceTest {
 
         InputBookingDto inputBookingDtoBadItem = InputBookingDto.builder()
                 .itemId(99L)
-                .start(LocalDateTime.parse("2023-04-01T13:00"))
+                .start(LocalDateTime.parse("2023-04-06T13:00"))
                 .end(LocalDateTime.parse("2024-04-29T10:00"))
                 .build();
         assertThrows(ResourceNotFoundException.class, () -> bookingService.addBooking(inputBookingDtoBadItem, userDto2.getId()));
@@ -186,7 +186,7 @@ public class BookingServiceTest {
         ItemDto saveItemDtoNotAvailable = itemService.addItem(itemDtoNotAvailable, saveOwnerDto);
         InputBookingDto inputBookingDtoBadAvailable = InputBookingDto.builder()
                 .itemId(saveItemDtoNotAvailable.getId())
-                .start(LocalDateTime.parse("2023-04-01T13:00"))
+                .start(LocalDateTime.parse("2023-04-06T13:00"))
                 .end(LocalDateTime.parse("2024-04-29T10:00"))
                 .build();
         assertThrows(ValidationAvailableException.class, () -> bookingService.addBooking(inputBookingDtoBadAvailable, userDto.getId()));
@@ -200,7 +200,7 @@ public class BookingServiceTest {
         ItemDto saveItemDtoOwner = itemService.addItem(itemDtoOwner, saveOwnerDto);
         InputBookingDto inputBookingDtoOwner = InputBookingDto.builder()
                 .itemId(saveItemDtoOwner.getId())
-                .start(LocalDateTime.parse("2023-04-01T13:00"))
+                .start(LocalDateTime.parse("2023-04-06T13:00"))
                 .end(LocalDateTime.parse("2024-04-29T10:00"))
                 .build();
         assertThrows(ValidationOwnerException.class, () -> bookingService.addBooking(inputBookingDtoOwner, ownerDto.getId()));
